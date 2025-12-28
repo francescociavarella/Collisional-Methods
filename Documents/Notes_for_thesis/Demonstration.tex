@@ -4,6 +4,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{braket}
+\usepackage[utf8]{inputenc}
 
 \allowdisplaybreaks
 
@@ -23,9 +24,85 @@
 		Collection of notes, formulas and demonstrations in the field of dynamics of open quantum systems and Collisional Methods
 	\end{center}
 
-	\section{Diffusive Limit in Collisional Methods}
+	\section{Case of study : Excitonic Dimer}
+	Description of the excitonic dimer
+	
+	\subsection{Lindblad Evolution}
+	We will study the dynamic rappresented with a Lindblad equation of the density matrix of an excitonic dimer.We'll use an initial density matrix which only has population in the first site: 
+	\begin{equation}
+		\rho (0)  = \begin{bmatrix}1 & 0 \\ 0 & 0 \\\end{bmatrix}
+	\end{equation}
+	The Lindblad equation reads:
+	\begin{equation}
+		\frac{d}{dt} \rho (t) = 	-\frac{i}{\hbar} \left[ \hat{H}, \rho (t) \right] + \sum_{j}^{N^2} {\gamma_j \left( \mathcal{L}_j \rho (t) \mathcal{L}_j^\dagger - \frac{1}{2} \left[ \mathcal{L}_j^\dagger \mathcal{L}_j, \rho (t) \right]_+ \right) }
+	\end{equation}
+	First of all we will focus only on the exciton tranfer between the two dimers, so the Jump Operator has this form:
+	\begin{equation}
+		\mathcal{L}_{1\rightarrow2} = \ket{e_2}\bra{e_1} \; ; \; \mathcal{L}_{2\rightarrow1} = \ket{e_1}\bra{e_2}
+	\end{equation}
+	So that the Dissipator gives:
+	\begin{align}
+		&\mathcal{L}_{1\rightarrow2}\rho_{11}\mathcal{L}_{1\rightarrow2}^\dagger = \ket{e_2}\bra{e_1}\ket{e_1}\bra{e_1}\ket{e_1}\bra{e_2} = \ket{e_2}\bra{e_2} = \rho_{22} \\
+		&\frac{1}{2} \mathcal{L}_{1\rightarrow2}^\dagger\mathcal{L}_{1\rightarrow2}\rho_{11} = \frac{1}{2} \ket{e_1}\bra{e_2}\ket{e_2}\bra{e_1}\ket{e_1}\bra{e_1} 
+		= \frac{1}{2} \ket{e_1}\bra{e_1} = \frac{1}{2}\rho_{11} \\
+		&\frac{1}{2} \rho_{11}
+		\mathcal{L}_{1\rightarrow2}^\dagger\mathcal{L}_{1\rightarrow2} = \frac{1}{2} \ket{e_1}\bra{e_1}\ket{e_1}\bra{e_2}\ket{e_2}\bra{e_1} = \frac{1}{2} \ket{e_1}\bra{e_1} = \frac{1}{2}\rho_{11}  
+	\end{align}
+	and the same for the evolution of $ \rho_{22} $
+	
+	\section{Collisional Methods}
+	Description of collisional methods
+	
+	\subsection{Quantum Jump / Monte Carlo limit in Collisional Methods}
+	The goal is to reproduce the Lindbald dynamic seen above using a Collsional Model, that gives us a trajectory of evolution of a single state of the density matrix $ \ket{\Psi_k} $ rappresentig a qubit. By repeting the dynamic several times it's possibile to recrate the Linbald evolution of the density matrix.
+	Different unravelling of the $ \rho (t) $ can be achieved by using different Collsional Hamiltonian. First we will reproduce the so called "Quantum Jump" or "Monte Carlo" limit, in which essentially the ancilla states stochastically jumps between the states $ \ket{0_a} $ and $ \ket{1_a} $ with a small probability to move to $ \ket{1} $ related to an effective collision, wich corresponds to an application of a $ \sigma_{z} $ to the system's state. \\
+	The associated Hamiltonian acting on the System-Ancilla states is:
+	\begin{align}
+		&\mathcal{H}_{CM} = \mathcal{H}_{exc} \otimes \mathbb{I}^{\otimes N} + \mathcal{H}_{collision} \\
+		&= \sum_{j=1}^{N} {\frac{\varepsilon_j}{2} \sigma_{z}^{j} \otimes \mathbb{I}^{\otimes N} } + \sum_{\langle j,j' \rangle} {\frac{V_{j,j'}}{2} \left( \sigma_{x}^{j}\sigma_{x}^{j'} \otimes \mathbb{I}^{\otimes N} + \sigma_{y}^{j}\sigma_{y}^{j'} \otimes \mathbb{I}^{\otimes N} \right)} + \sum_{j=1}^{N}{c_j \sigma_{z}^{j} \otimes \sigma_{x}^{a_j}}
+	\end{align}
+	where $ \sigma_{\alpha}^j = \mathbb{I}^{\otimes j-1} \otimes \sigma_{\alpha} \otimes \mathbb{I}^{\otimes N-j}  $ . \\
+	The collision force $ c_j $ is related to the Lindblad phase shift constant by the equation $ c_j = \sqrt{\gamma_j / 4 \Delta t} $ 
+	Let's focus on the Interaction Hamiltonian and how it acts on an already enatgled system-ancilla states $ \ket{\Psi} = \ket{\Psi_S} \otimes \ket{0_a} $ \\
+	\\
+	The evolution operator based on $ \mathcal{H}_{collsion} $ is :
+	\begin{equation}
+		U_{collsion} = \exp \left(-i c_j \sigma_{z}^{j} \otimes \sigma_{x}^{a_j} \Delta t\right) = \cos \left(c_j \Delta t \right) \mathbb{I}^j \otimes \mathbb{I}^a - i \sin \left(c_j \Delta t \right) \sigma_{z}^{j} \otimes \sigma_{x}^{a_j}
+	\end{equation}
+	And applied to $ \ket{\Psi} $ gives:
+	\begin{align} 
+		\ket{\Psi'} &= \cos \left(c_j \Delta t \right) \mathbb{I}^j \otimes \mathbb{I}^a \ket{\Psi} - i \sin \left(c_j \Delta t \right) \sigma_{z}^{j} \otimes \sigma_{x}^{a} \ket{\Psi} \\
+		&= \cos \left(c_j \Delta t \right) \ket{\Psi_S} \otimes \ket{0_a} - i \sin \left(c_j \Delta t \right) \sigma_{z}^{j} \ket{\Psi_S} \otimes \sigma_{x}^{a} \ket{0_a} \\
+		&= \cos \left(c_j \Delta t \right) \ket{\Psi_S} \otimes \ket{0_a} - i \sin \left(c_j \Delta t \right) \sigma_{z}^{j} \ket{\Psi_S} \otimes \ket{1_a}
+	\end{align}
+	By measuring the Ancilla's state we can deduce if we had an avoided collision $ \ket{0_a} $ or an occurred collision $ \ket{1_a} $, which imples the application to the system of $ \sigma_{z}^{j} \ket{\Psi_S} $ which introduce a flip in the phase of the interacting site, with a probability of $ \left| {\sin \left(c_j \Delta t \right)} \right|^2  $, which contributes to the site dephasing process, helping the excitonic tranport (ENAQT - Enviroment Assisted Quantum Transport). \\
+	Measuring repeted time $ s $ the Ancilla states correspond on tracing its states out, so that we could rebuild the density matrix as :
+	\begin{equation}
+		\rho_S = \left| c_0 \right| ^2 \ket{\Psi_{0,S}}\bra{\Psi_{0,S}} + \left| c_1 \right|^2 \ket{\Psi_{1,S}}\bra{\Psi_{1,S}}
+	\end{equation}
+	where $ c_0 \propto \cos \left(c_j \Delta t \right)  $ and $ c_1 \propto \sin \left(c_j \Delta t \right) $
+	\\
+	Now we can proceed in two different ways:
+	\begin{itemize}
+		\item Evolution of the $ \rho (t) $ with $ U(t) $ and $ U(t)^{\dagger} $; than we trace out the ancilla subsystem with a partial trace over its degree of freedom, in order to get back the average evolution of the system, which gaves a trajectory that reproduces the Lindblad ME. This proves that the Collisional Method gives the same evolution of a Lindblad ME.
+		\item Evolution of the only $ \ket{\Psi_{\mathcal{S}}} $ with $ U(t) $ and then the measure on the Ancilla, in order to apply the $ \sigma_z^s $ to the system's state or don't do anything, i.e. apply $ \mathbb{I}^s $. In a Quantistic Computer that can handle the sovrapposition of the ground and excited state of the ancilla, we can just apply the $  U(t) $ build on the $ H_{CM} $ we had already defined.
+	\end{itemize}
+	In a Classical Computer we have to simulate the collision with the Ancilla (so that we never pass in a composed state $ \ket{\Psi_{\mathcal{S}}} \otimes \ket{\mathcal{a}} $); this could be done by extracting a random number from a distriubution that replicates the probability given by $ \left| \sin{(c_1 \Delta t)} \right|^2 $, than if the condition in respected it means that an effective collsion has occured and so the ancilla is in the state $ \ket{1_a} $ and so we apply $ \sigma_z^s $ to the system's state; if is not we don't modify the system's state. \\
+	In this way we repoduce a stochastic evolution oh the $ \ket{\Psi_{\mathcal{S}}} $, i.e. a single random trajectory; if we generate different trajectories and the mediate over them $ \overline{\ket{\Psi_{\mathcal{S}}} \bra{\Psi_{\mathcal{S}}}} $ we can rebuild the evolution of the density matrix obtained with the Linblad ME. \\
+	The algorithm to create a single trajectories is the following:
+	\begin{itemize}
+		\item [1.] Apply the unitary evolution due to only $ H_{site} $ and the hopping potential $ V $ for a disctrete time step $ \Delta t $
+		\item[2.] Extract a random number between 0 and 1 for every system's site 
+		\item[3.] If the extracted number for the single site is lower than $ \left| \sin{(c_i \Delta t)} \right| $ we apply the $ \sigma_z $ operator to that site 
+		\item[4.] Record the site popolutation at that time, than restart the algorithm
+	\end{itemize}
+	
+	\clearpage
+	\newpage
+		
+	\subsection{Diffusive Limit in Collisional Methods}
 
-	\subsection{Evolution Operator and Ancilla Initialization}
+	\subsubsection{Evolution Operator and Ancilla Initialization}
 	In this case we define \begin{equation} 
 		\mathcal{H}_{CM} = c_{j} \sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \quad \text{and} \quad \rho_{a} = \frac{1}{2}\left( |0\rangle \langle0| + |1\rangle \langle1| \right)
 		\end{equation}
@@ -89,7 +166,7 @@
 		& + \left( \cos{\left(c_j \Delta t\right)} + i\sin{\left(c_j \Delta t \right)}  \sigma_{z}^{j}\right) \ket{\psi_{S}} \otimes \ket{1_a}  \Big] 
 	\end{align}
 	
-	\subsection{Density Matrix}
+	\subsubsection{Density Matrix}
 	
 		Now we rebuild the Density Matrix, but first we define:
 	
@@ -141,26 +218,14 @@
 		-i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \left[ \rho_S, \sigma_{z}^{j} \right] \Big) \notag \\
 		& =	\cos^{2}{\left( c_j \Delta t \right)} \, \rho_S + \sin^{2}{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\rho_S\sigma_{z}^{j} 
 	\end{align}	
-	
-	\subsection{Quantum Jump Limit}
-	
-		The equation above corresponds to the result obtained in the Quantum Jump Limit, where we have:
-
-	\begin{align}
-		&\mathcal{U} = \exp{-i c_{j} \Delta t \, \sigma_{z}^{j} \otimes \sigma_{x}^{a_j}} = \cos{\left(c_{j}\Delta t\right)} \mathbb{I}^{j} \otimes \mathbb{I}^{a_j} - i \sin{\left(c_{j}\Delta t\right)} \sigma_{z}^{j} \otimes \sigma_{x}^{a_j}\\
-		\notag \\
-		&\ket{\Psi'} = \mathcal{U} \ket{\Psi} = \mathcal{U} \left( \ket{\psi_S} \otimes \ket{0_a} \right) = \cos{\left(c_{j}\Delta t\right)} \ket{\psi_S} \otimes \ket{0_a} - i \sin{\left(c_{j}\Delta t\right)} \sigma_{z}^{j}  \ket{\psi_S} \otimes\ket{1_a} \\
-		\notag \\
-		&\rho_S = \cos^{2}{\left( c_j \Delta t \right)} \, \rho_S + \sin^{2}{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\rho_S\sigma_{z}^{j}
-	\end{align}
-	
+		
 	\clearpage
 	\newpage
 	
-	\section{Intermediate Limit}
+	\subsection{Intermediate Limit}
 	Once we've defined the Quantum Jump and the Diffusive Limit we now seek for an equation that can describe an intermediate regime, between the rare but big change applied with $ \sigma_{z}^{j} \otimes \sigma_{x}^{a_j} $ and $ \rho_a = \ket{0_a}\bra{0_a} $ (QJ limit) and the small but constant change applied with $ \sigma_{z}^{j} \otimes \sigma_{z}^{a_j} $ and $ \rho_a = \frac{1}{2} \left( \ket{0_a}\bra{0_a} + \ket{1_a}\bra{1_a} \right) $ (Dif limit).
 	
-	\subsection{Collisional Hamiltonian}
+	\subsubsection{Collisional Hamiltonian}
 	The first target is the definition of the Collisional Hamiltonian operator; since we are looking for an intermediate effect one idea could be to use a linear combination of the two different Pauli operator on the ancilla, while keeping always the same one on the system, in order to reproduce a Dephasing Dynamic. This should corresponds to a rotation respect to an axis with intermediate direction between the z and x axis. So in general we have:
 	
 	\begin{equation}
