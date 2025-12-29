@@ -307,9 +307,10 @@
 	  In this case we define 
 	  \begin{align} 
 	  	&\mathcal{H}_{CM} = c_{j} \sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \\
-	  	&\ket{\phi_{a}} = \left(\ket{0_a} + \ket{1_a}\right) \quad \text{and} \quad \rho_{a} = \frac{1}{2} \begin{pmatrix} 1 & 1 \\ 1 & 1 \end{pmatrix} 
+	  	&\ket{\phi_{a}} = \frac{1}{\sqrt{2}} \left(\ket{0_a} + \ket{1_a}\right) \quad \text{and} \quad \rho_{a} = \ket{\phi_a}\bra{\phi_a} = \frac{1}{2} \begin{pmatrix} 1 & 1 \\ 1 & 1 \end{pmatrix} 
 	  \end{align}
-	  It's fundamental the definition of the initial state of the Ancilla, as we will see in the development of the Unitary Evolution Operator: 
+	  The initialization of the ancilla state is fundamental to this regime. In this case, the ancilla is described by a wave function in a coherent superposition of the two basis states, resulting in a density matrix characterized by non-zero coherences. \\
+	  The Unitary Evolution Operator reads: 
 	  \begin{equation}
 	  	\mathcal{U} = \exp{\left( -i c_j \Delta t \, \sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \right)}
 	  \end{equation}
@@ -415,5 +416,7 @@
 	  	-i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \left[ \rho_S, \sigma_{z}^{j} \right] \Big) \notag \\
 	  	& =	\cos^{2}{\left( c_j \Delta t \right)} \, \rho_S + \sin^{2}{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\rho_S\sigma_{z}^{j} 
 	  \end{align}	
+	  
+	  \textbf{Physical Remark:} It is worth noting that the equivalence between the coherent and mixed initializations is a direct consequence of the interaction type and the partial trace operation. Since the interaction $\sigma_{z} \otimes \sigma_{z}$ is diagonal in the computational basis, it does not convert the initial ancilla coherences (the off-diagonal terms $\ket{0_a}\bra{1_a}$ and $\ket{1_a}\bra{0_a}$) into populations. Consequently, the interference terms derived above—specifically those involving the anticommutators—remain confined to the off-diagonal blocks of the total density matrix. The partial trace operation, defined as $\text{Tr}_{a} (\cdot) = \sum_{k} \bra{k} (\cdot) \ket{k}$, inherently selects only the diagonal blocks. Therefore, it instantly filters out all the terms that differentiate the coherent state from the mixed one, ensuring that the initial quantum coherence of the ancilla does not influence the reduced dynamics of the system.
 	  
 \end{document}	
