@@ -14,6 +14,9 @@
 \titleformat{\subsection}
 {\normalfont\small\bfseries}
 {\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+{\normalfont\small\bfseries}
+{\thesubsubsection}{1em}{}
 
 \begin{document}
 
@@ -103,13 +106,19 @@
 	\subsection{Diffusive Limit in Collisional Methods}
 
 	\subsubsection{Evolution Operator and Ancilla Initialization}
-	In this case we define \begin{equation} 
-		\mathcal{H}_{CM} = c_{j} \sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \quad \text{and} \quad \rho_{a} = \frac{1}{2}\left( |0\rangle \langle0| + |1\rangle \langle1| \right)
-		\end{equation}
-	It's fundamental the definition of the initial state of the Ancilla, as we will see in the development of the Unitary Evolution Operator: 
+	
+	In this framework, we define the interaction Hamiltonian and the initial state of the ancilla as follows:
+	\begin{align} 
+		&\mathcal{H}_{CM} = c_{j} \sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \quad \text{and} \quad \rho_{a} = \frac{1}{2} \, \mathbb{I}^{a_j} =\rho_{a} = \frac{1}{2} \begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix} 
+	\end{align}
+	
+	The definition of the initial state of the Ancilla as a completely mixed state is crucial. It implies that the wave function for the trajectory development will be initialized with probability $p=1/2$ in the state $ \ket{\phi_a} = \ket{0_a} $ and with probability $p=1/2$ in the state $ \ket{\phi_a} = \ket{1_a} $. \\
+	
+	The Unitary Evolution Operator reads: 
 	\begin{equation}
 		\mathcal{U} = \exp{\left( -i c_j \Delta t \, \sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \right)}
 	\end{equation}
+	
 	First we expand in the Taylor's Series the exponential which reads:
 	\begin{equation}
 	\begin{aligned}
@@ -122,9 +131,6 @@
 		&=1 - \frac{\left( c_j \Delta t \, \sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \right)^2}{2!} + \cdots  + \frac{\left( -i c_j \Delta t \, \sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \right)^{{2n}}}{2n!}  \\
 		&\,- i c_j\Delta t \, \sigma_{z}^{j} \otimes \sigma_{z}^{a_j} + \cdots  + \frac{\left( -i c_j \Delta t \, \sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \right)^{{2n+1}}}{(2n+1)!} \\ 
 	\end{align*}
-
-	\clearpage
-	\newpage
 
 	\begin{flushleft}
 		We now apply th Pauli Matrices property to calculate the exponential term: 
@@ -142,88 +148,103 @@
 	\end{flushleft}
 	 
 	\begin{align}
-		&=\sum_{2n=0}^{\infty}
-		{ \frac{\left( c_j \Delta t \right)^{{2n}}}{2n!} } \, - i \left(\sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \right) \sum_{2n=0}^{\infty}{ \frac{\left( c_j \Delta t  \right)^{{2n+1}}}{(2n+1)!} } \notag \\	
+		&=\mathbb{I}^{j} \otimes \mathbb{I}^{a_j} \, \sum_{2n=0}^{\infty}
+		{ \frac{\left( c_j \Delta t \right)^{{2n}}}{2n!} } \,  - i \left(\sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \right) \sum_{2n=0}^{\infty}{ \frac{\left( c_j \Delta t  \right)^{{2n+1}}}{(2n+1)!} } \notag \\	
 		&= \cos{\left(c_j \Delta t\right)} \mathbb{I}^{j} \otimes \mathbb{I}^{a_j} \, - \sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \otimes \sigma_{z}^{a_j}
 	\end{align}
 	
-	Now we can apply the evolution operator to the initial product state: 
+	\begin{flushleft}
+		Now we can apply the evolution operator to the two different initial state which are :
+	\end{flushleft}
+	
+	\begin{itemize}
+		\item $ \ket{\Psi_{0}} = \ket{\psi_S} \otimes \ket{\phi_a} = \ket{\psi_S} \otimes  \ket{0_a} $ \\
+		\item $ \ket{\Psi_{1}} = \ket{\psi_S} \otimes \ket{\phi_a} = \ket{\psi_S} \otimes  \ket{1_a} $
+	\end{itemize} 
+	
+	Let's first focus on the $ \ket{\Psi_{0}} $ initial state:
 	
 	\begin{align}
-		\ket{\Psi}
-		&= \ket{\psi_S} \otimes \ket{\phi_a}
-		= \ket{\psi_S} \otimes \frac{1}{\sqrt{2}} \left( \ket{0_a} + \ket{1_a} \right) \notag \\
-		&= \frac{1}{\sqrt{2}} \left(\ket{\psi_S} \otimes  \ket{0_a} + \ket{\psi_S} \otimes  \ket{1_a} \right)
+		\ket{\Psi'_{0}} = \mathcal{U} \ket{\Psi_{0}}
+		&= \cos{\left(c_j \Delta t\right)} \ket{\psi_{S}} \otimes \ket{0_a} - i\sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \ket{\psi_{S}} \otimes \sigma_{z}^{a_j}\ket{0_a} \notag \\
+		&= \cos{\left(c_j \Delta t\right)} \ket{\psi_{S}} \otimes \ket{0_a} - i\sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \ket{\psi_{S}} \otimes \ket{0_a} \notag \\
+		&= \left[\cos{\left(c_j \Delta t\right)} - i\sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \right] \ket{\psi_{S}} \otimes \ket{0_a}
 	\end{align}
+	
+	And then on the $ \ket{\Psi_{1}} $ initial state:
 	
 	\begin{align}
-		\ket{\Psi'} = \mathcal{U} \ket{\Psi}
-		&= \frac{1}{\sqrt{2}} \Big[ \cos{\left(c_j \Delta t\right)} \ket{\psi_{S}} \otimes \ket{0_a} - i\sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \ket{\psi_{S}} \otimes \sigma_{z}^{a_j}\ket{0_a} \notag \\
-		& + \cos{\left(c_j \Delta t\right)} \ket{\psi_{S}} \otimes \ket{1_a} - i\sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \ket{\psi_{S}} \otimes \sigma_{z}^{a_j}\ket{1_a} \Big] \notag \\
-		&= \frac{1}{\sqrt{2}} \Big[ \cos{\left(c_j \Delta t\right)} \ket{\psi_{S}} \otimes \ket{0_a} - i\sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \ket{\psi_{S}} \otimes \ket{0_a} \notag \\
-		& + \cos{\left(c_j \Delta t\right)} \ket{\psi_{S}} \otimes \ket{1_a} + i\sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \ket{\psi_{S}} \otimes \ket{1_a} \Big] \notag \\
-		&= \frac{1}{\sqrt{2}} \Big[ \left( \cos{\left(c_j \Delta t\right)} - i\sin{\left(c_j \Delta t \right)} \sigma_{z}^{j}\right) \ket{\psi_{S}} \otimes \ket{0_a}  \notag \\
-		& + \left( \cos{\left(c_j \Delta t\right)} + i\sin{\left(c_j \Delta t \right)}  \sigma_{z}^{j}\right) \ket{\psi_{S}} \otimes \ket{1_a}  \Big] 
+		\ket{\Psi'_{1}} = \mathcal{U} \ket{\Psi_{1}}
+		&= \cos{\left(c_j \Delta t\right)} \ket{\psi_{S}} \otimes \ket{1_a} - i\sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \ket{\psi_{S}} \otimes \sigma_{z}^{a_j}\ket{1_a} \notag \\
+		&= \cos{\left(c_j \Delta t\right)} \ket{\psi_{S}} \otimes \ket{1_a} + i\sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \ket{\psi_{S}} \otimes \ket{1_a} \notag \\
+		&= \left[\cos{\left(c_j \Delta t\right)} + i\sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \right] \ket{\psi_{S}} \otimes \ket{1_a}
 	\end{align}
 	
-	\subsubsection{Density Matrix}
+	\subsubsection{Density Matrix Reconstruction}
 	
-		Now we rebuild the Density Matrix, but first we define:
+	We can now define the effective operators acting on the system space. Let us define the operator $\mathcal{K}_0$ acting on $\ket{\psi_S}$ when the ancilla is $\ket{0}$:
+	\begin{equation}
+		\mathcal{K}_0 = \cos{\left( c_j \Delta t \right)} - i \sin{\left( c_j \Delta t \right)} \, \sigma_{z}^{j} = e^{-i c_j \Delta t \sigma_z^j}
+	\end{equation}
 	
-	\begin{equation*}
-	\begin{aligned}
-		\mathcal{A} = \cos{\left( c_j \Delta t \right)} - i \sin{\left( c_j \Delta t \right)} \sigma_{z}^{j} \quad ; \quad \mathcal{A^{\dagger}} = \cos{\left( c_j \Delta t \right)} + i \sin{\left( c_j \Delta t \right)} \sigma_{z}^{j} \quad \text{for} \quad \ket{0_a}\\
-		\mathcal{B} = \cos{\left( c_j \Delta t \right)} + i \sin{\left( c_j \Delta t \right)} \sigma_{z}^{j} \quad ; \quad \mathcal{B^{\dagger}} = \cos{\left( c_j \Delta t \right)} - i \sin{\left( c_j \Delta t \right)} \sigma_{z}^{j}  \quad \text{for} \quad \ket{1_a} 
-	\end{aligned}
-	\end{equation*}
-
-	\begin{align*}
-		\rho' &= \ket{\Psi'}\bra{\Psi'} \\ 
-		& = \frac{1}{2} \Big\{ \mathcal{A} \ket{\psi_S}\bra{\psi_S} \mathcal{A^{\dagger}} \otimes \ket{0_a}\bra{0_a} + \mathcal{B} \ket{\psi_S}\bra{\psi_S} \mathcal{B^{\dagger}} \otimes \ket{1_a}\bra{1_a} \\
-		& \qquad + \mathcal{A} \ket{\psi_S}\bra{\psi_S} \mathcal{B^{\dagger}} \otimes \ket{0_a}\bra{1_a} +  \mathcal{B} \ket{\psi_S}\bra{\psi_S} \mathcal{A^{\dagger}} \otimes \ket{1_a}\bra{0_a} \Big\} \\
-		& = \frac{1}{2} \Big\{ \left(\cos{\left( c_j \Delta t \right)} - i \sin{\left( c_j \Delta t \right) \sigma_{z}^{j}}\right)  \ket{\psi_S}\bra{\psi_S} \left( \cos{\left( c_j \Delta t \right)} + i \sin{\left( c_j \Delta t \right) \sigma_{z}^{j}}\right) \otimes \ket{0_a}\bra{0_a} \\
-		& \qquad + \left(\cos{\left( c_j \Delta t \right)} + i \sin{\left( c_j \Delta t \right) \sigma_{z}^{j}}\right)  \ket{\psi_S}\bra{\psi_S} \left( \cos{\left( c_j \Delta t \right)} - i \sin{\left( c_j \Delta t \right) \sigma_{z}^{j}}\right) \otimes \ket{1_a}\bra{1_a} \\
-		& \qquad + \left(\cos{\left( c_j \Delta t \right)} - i \sin{\left( c_j \Delta t \right) \sigma_{z}^{j}}\right)  \ket{\psi_S}\bra{\psi_S} \left( \cos{\left( c_j \Delta t \right)} - i \sin{\left( c_j \Delta t \right) \sigma_{z}^{j}}\right) \otimes \ket{0_a}\bra{1_a} \\
-		& \qquad + \left(\cos{\left( c_j \Delta t \right)} + i \sin{\left( c_j \Delta t \right) \sigma_{z}^{j}}\right)  \ket{\psi_S}\bra{\psi_S} \left( \cos{\left( c_j \Delta t \right)} + i \sin{\left( c_j \Delta t \right) \sigma_{z}^{j}}\right) \otimes \ket{1_a}\bra{0_a} \Big\} \\
-		& = \frac{1}{2} \Big\{ \Big( \cos^{2}{\left( c_j \Delta t \right)} \, \rho_S + \sin^{2}{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\rho_S\sigma_{z}^{j} \\
-		& \qquad +i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \rho_S \sigma_{z}^{j} - i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \sigma_{z}^{j} \rho_S \Big) \otimes \ket{0_a}\bra{0_a} \\
-		& \qquad  + \Big( \cos^{2}{\left( c_j \Delta t \right)} \, \rho_S + \sin^{2}{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\rho_S\sigma_{z}^{j} \\
-		& \qquad - i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \rho_S \sigma_{z}^{j} + i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \sigma_{z}^{j} \rho_S \Big) \otimes \ket{1_a}\bra{1_a} \\
-		& \qquad  + \Big( \cos^{2}{\left( c_j \Delta t \right)} \, \rho_S - \sin^{2}{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\rho_S\sigma_{z}^{j} \\
-		& \qquad - i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \rho_S \sigma_{z}^{j} - i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \sigma_{z}^{j} \rho_S \Big) \otimes \ket{0_a}\bra{1_a} \\
-		& \qquad  + \Big( \cos^{2}{\left( c_j \Delta t \right)} \, \rho_S - \sin^{2}{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\rho_S\sigma_{z}^{j} \\
-		& \qquad + i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \rho_S \sigma_{z}^{j} + i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \sigma_{z}^{j} \rho_S \Big) \otimes \ket{1_a}\bra{0_a} \Big\} \\
-		& = \frac{1}{2} \Big\{ \Big( \cos^{2}{\left( c_j \Delta t \right)} \, \rho_S + \sin^{2}{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\rho_S\sigma_{z}^{j} 
-		+i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \left[ \rho_S, \sigma_{z}^{j} \right] \Big) \otimes \ket{0_a}\bra{0_a} \\
-		& \qquad  + \Big( \cos^{2}{\left( c_j \Delta t \right)} \, \rho_S + \sin^{2}{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\rho_S\sigma_{z}^{j} 
-		-i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \left[ \rho_S, \sigma_{z}^{j} \right] \Big) \otimes \ket{1_a}\bra{1_a} \\
-		& \qquad  + \Big( \cos^{2}{\left( c_j \Delta t \right)} \, \rho_S - \sin^{2}{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\rho_S\sigma_{z}^{j} 
-		-i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \left[ \rho_S, \sigma_{z}^{j} \right]_{+} \Big) \otimes \ket{0_a}\bra{1_a} \\
-		& \qquad  + \Big( \cos^{2}{\left( c_j \Delta t \right)} \, \rho_S - \sin^{2}{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\rho_S\sigma_{z}^{j} 
-		+i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \left[ \rho_S, \sigma_{z}^{j} \right]_{+} \Big) \otimes \ket{1_a}\bra{0_a} \Big\}
-	\end{align*}
-
-	\clearpage
-	\newpage
+	And the operator $\mathcal{K}_1$ when the ancilla is $\ket{1}$:
+	\begin{equation}
+		\mathcal{K}_1 = \cos{\left( c_j \Delta t \right)} + i \sin{\left( c_j \Delta t \right)} \, \sigma_{z}^{j} = e^{+i c_j \Delta t \sigma_z^j} = \mathcal{K}_0^\dagger
+	\end{equation}
+	
+	Note that $\mathcal{K}_1$ is simply the Hermitian conjugate (and inverse) of $\mathcal{K}_0$. \\
 	
 	\begin{flushleft}
-		If we now operate the partial Trace over our total density matrix we obtain the System Density Matrix:
+		Let's now calculate the evolution of the completely mixed Density Matrix, reconstructing it's term from the wave function defined above:
+	\end{flushleft}
+	 
+	\begin{align}
+		\rho'_{0} &= \ket{\Psi'_{0}}\bra{\Psi'_{0}} = \mathcal{K}_{0} \ket{\psi_S}\bra{\psi_S} \mathcal{K}_{0}^{\dagger} \otimes \ket{0_a}\bra{0_a} = \mathcal{K}_{0} \ket{\psi_S}\bra{\psi_S} \mathcal{K}_{1} \otimes \ket{0_a}\bra{0_a} \notag \\ 
+		& = \Big [ \left(\cos{\left( c_j \Delta t \right)} - i \sin{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\right) \, \ket{\psi_S}\bra{\psi_S} \, \left(\cos{\left( c_j \Delta t \right)} + i \sin{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\right) \Big]    \otimes \ket{0_a}\bra{0_a} \notag \\
+		&= \Big [ \cos^{2}{\left(c_{j} \Delta t\right)} \ket{\psi_S}\bra{\psi_S} + \sin^{2}{\left(c_{j} \Delta t\right)} \, \sigma_{z} \ket{\psi_S}\bra{\psi_S} \sigma_{z} \notag  \\
+		& \quad + i \sin{\left(c_{j} \Delta t \right)} \cos{\left(c_{j} \Delta t\right)} \,  \ket{\psi_S}\bra{\psi_S} \sigma_{z} -i \sin{\left(c_{j} \Delta t \right)} \cos{\left(c_{j} \Delta t\right)} \, \sigma_{z} \ket{\psi_S}\bra{\psi_S} \Big] \otimes \ket{0_a}\bra{0_a} \notag \\
+		&= \Big [ \cos^{2}{\left(c_{j} \Delta t\right)} \rho_S + \sin^{2}{\left(c_{j} \Delta t\right)} \, \sigma_{z} \rho_S \sigma_{z} \notag \\
+		& \quad + i \sin{\left(c_{j} \Delta t \right)} \cos{\left(c_{j} \Delta t\right)} \, \rho_S \sigma_{z} - i \sin{\left(c_{j} \Delta t \right)} \cos{\left(c_{j} \Delta t\right)} \, \sigma_{z} \rho_S \Big] \otimes \ket{0_a}\bra{0_a} \\
+		\notag \\
+		\rho'_{1} &= \ket{\Psi'_{1}}\bra{\Psi'_{1}} = \mathcal{K}_{1} \ket{\psi_S}\bra{\psi_S} \mathcal{K}_{1}^{\dagger} \otimes \ket{1_a}\bra{1_a} = \mathcal{K}_{1} \ket{\psi_S}\bra{\psi_S} \mathcal{K}_{0} \otimes \ket{1_a}\bra{1_a} \notag \\ 
+		& = \Big [ \left(\cos{\left( c_j \Delta t \right)} + i \sin{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\right) \, \ket{\psi_S}\bra{\psi_S} \, \left(\cos{\left( c_j \Delta t \right)} - i \sin{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\right) \Big]    \otimes \ket{1_a}\bra{1_a} \notag \\
+		&= \Big [ \cos^{2}{\left(c_{j} \Delta t\right)} \ket{\psi_S}\bra{\psi_S} + \sin^{2}{\left(c_{j} \Delta t\right)} \, \sigma_{z} \ket{\psi_S}\bra{\psi_S} \sigma_{z} \notag \\
+		& \quad - i \sin{\left(c_{j} \Delta t \right)} \cos{\left(c_{j} \Delta t\right)} \,  \ket{\psi_S}\bra{\psi_S} \sigma_{z} + i \sin{\left(c_{j} \Delta t \right)} \cos{\left(c_{j} \Delta t\right)} \, \sigma_{z} \ket{\psi_S}\bra{\psi_S}  \Big] \otimes \ket{1_a}\bra{1_a} \notag \\
+		&= \Big [ \cos^{2}{\left(c_{j} \Delta t\right)} \rho_S + \sin^{2}{\left(c_{j} \Delta t\right)} \, \sigma_{z} \rho_S \sigma_{z} \notag \\
+		& \quad - i \sin{\left(c_{j} \Delta t \right)} \cos{\left(c_{j} \Delta t\right)} \, \rho_S \sigma_{z} + i \sin{\left(c_{j} \Delta t \right)} \cos{\left(c_{j} \Delta t\right)} \, \sigma_{z} \rho_S \Big] \otimes \ket{1_a}\bra{1_a}
+	\end{align}
+	
+	The complete Density Matrix can be reconstructed as : 
+	\begin{equation}
+		\rho' = \frac{1}{2} \rho'_{0} + \frac{1}{2} \rho'_{1} 
+	\end{equation} 
+	
+	Note that the coherent oscillation, i.e. the cross terms $ i \sin{\left(c_{j} \Delta t\right)} \, \cos{\left(c_{j} \Delta t\right)} $ cancel each other, so that we obtain :
+	
+	\begin{align}
+		\rho' &= \frac{1}{2} \Big[ \cos^{2}{\left(c_{j} \Delta t\right)} \rho_S + \sin^{2}{\left(c_{j} \Delta t\right)} \, \sigma_{z} \rho_S \sigma_{z} \Big] \otimes \ket{0_a}\bra{0_a} \notag \\
+		& + \frac{1}{2} \Big[ \cos^{2}{\left(c_{j} \Delta t\right)} \rho_S + \sin^{2}{\left(c_{j} \Delta t\right)} \, \sigma_{z} \rho_S \sigma_{z} \Big] \otimes \ket{1_a}\bra{1_a}
+	\end{align}
+	
+	\begin{flushleft}
+		If we now take the partial Trace over our total density matrix we obtain the System Density Matrix:
 	\end{flushleft}
 	
 	\begin{align}
-		\rho_S & = Tr_a(\rho') = \sum_{k=1}^{N_{anc}}{\bra{\phi_k}\rho'\ket{\phi_k}} \notag \\
-		&= \frac{1}{2} \Big\{ \Big( \cos^{2}{\left( c_j \Delta t \right)} \, \rho_S + \sin^{2}{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\rho_S\sigma_{z}^{j} 
-		+i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \left[ \rho_S, \sigma_{z}^{j} \right] \Big) \notag \\
-		& \qquad  + \Big( \cos^{2}{\left( c_j \Delta t \right)} \, \rho_S + \sin^{2}{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\rho_S\sigma_{z}^{j} 
-		-i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \left[ \rho_S, \sigma_{z}^{j} \right] \Big) \notag \\
-		& =	\cos^{2}{\left( c_j \Delta t \right)} \, \rho_S + \sin^{2}{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\rho_S\sigma_{z}^{j} 
+		\rho'_S & = Tr_a(\rho') = \sum_{k=1}^{N_{anc}}{\bra{\phi_k}\rho'\ket{\phi_k}} \notag \\
+		&= \cos^{2}{\left(c_{j} \Delta t\right)} \rho_S + \sin^{2}{\left(c_{j} \Delta t\right)} \, \sigma_{z} \rho_S \sigma_{z} 
 	\end{align}	
-		
+	
+	\begin{flushleft}
+		We already know that this dynamical map leads to a Master Equation related to the corresponding Lindblad Dephasing ME.
+	\end{flushleft}
+	
+	
 	\clearpage
 	\newpage
 	
 	\subsection{Intermediate Limit}
-	Once we've defined the Quantum Jump and the Diffusive Limit we now seek for an equation that can describe an intermediate regime, between the rare but big change applied with $ \sigma_{z}^{j} \otimes \sigma_{x}^{a_j} $ and $ \rho_a = \ket{0_a}\bra{0_a} $ (QJ limit) and the small but constant change applied with $ \sigma_{z}^{j} \otimes \sigma_{z}^{a_j} $ and $ \rho_a = \frac{1}{2} \left( \ket{0_a}\bra{0_a} + \ket{1_a}\bra{1_a} \right) $ (Dif limit).
+	Once we've defined the Quantum Jump and the Diffusive Limit we now seek for an equation that can describe an intermediate regime, between the rare but big change applied with $ \sigma_{z}^{j} \otimes \sigma_{x}^{a_j} $ and $ \rho_a = \ket{0_a}\bra{0_a} $ (QJ limit) and the small but constant change applied with $ \sigma_{z}^{j} \otimes \sigma_{z}^{a_j}$ and $ \rho_a = \frac{1}{2} \left(\ket{0_a} + \ket{1_a}\right)\left(\bra{0_a} + \bra{1_a} \right) $ (Dif limit).
 	
 	\subsubsection{Collisional Hamiltonian}
 	The first target is the definition of the Collisional Hamiltonian operator; since we are looking for an intermediate effect one idea could be to use a linear combination of the two different Pauli operator on the ancilla, while keeping always the same one on the system, in order to reproduce a Dephasing Dynamic. This should corresponds to a rotation respect to an axis with intermediate direction between the z and x axis. So in general we have:
@@ -276,5 +297,123 @@
 	  	& \ket{\Psi'} = \mathcal{U}(\Delta t)\ket{\Psi} = \mathcal{U}(\Delta t)\Big[ \ket{\psi_S} \otimes \left(g_{0} \ket{0_a} + g_{1}\ket{1_a} \right) \Big]
 	  \end{align}
 	  
+	  \clearpage
+	  \newpage
+	  
+	  \subsection{Another Regime}
+	  
+	  \subsubsection{Evolution Operator and Ancilla Initialization}
+	  
+	  In this case we define 
+	  \begin{align} 
+	  	&\mathcal{H}_{CM} = c_{j} \sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \\
+	  	&\ket{\phi_{a}} = \left(\ket{0_a} + \ket{1_a}\right) \quad \text{and} \quad \rho_{a} = \frac{1}{2} \begin{pmatrix} 1 & 1 \\ 1 & 1 \end{pmatrix} 
+	  \end{align}
+	  It's fundamental the definition of the initial state of the Ancilla, as we will see in the development of the Unitary Evolution Operator: 
+	  \begin{equation}
+	  	\mathcal{U} = \exp{\left( -i c_j \Delta t \, \sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \right)}
+	  \end{equation}
+	  First we expand in the Taylor's Series the exponential which reads:
+	  \begin{equation}
+	  	\begin{aligned}
+	  		&\exp{\left( -i c_j \Delta t \, \sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \right)} = \, \sum_{n=0}^{\infty}{\frac{\left( -i c_j \Delta t \, \sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \right)^n}{n!} } \\
+	  	\end{aligned}
+	  \end{equation}
+	  
+	  \begin{align*}
+	  	&= 1 - i c_j \Delta t \, \sigma_{z}^{j} \otimes \sigma_{z}^{a_j} - \frac{\left( c_j \Delta t \, \sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \right)^2}{2!} + i \frac{\left( c_j \Delta t \, \sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \right)^3}{3!} + \frac{\left( c_j \Delta t \, \sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \right)^4}{4!} + \cdots  \\
+	  	&=1 - \frac{\left( c_j \Delta t \, \sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \right)^2}{2!} + \cdots  + \frac{\left( -i c_j \Delta t \, \sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \right)^{{2n}}}{2n!}  \\
+	  	&\,- i c_j\Delta t \, \sigma_{z}^{j} \otimes \sigma_{z}^{a_j} + \cdots  + \frac{\left( -i c_j \Delta t \, \sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \right)^{{2n+1}}}{(2n+1)!} \\ 
+	  \end{align*}
+	  
+	  \begin{flushleft}
+	  	We now apply th Pauli Matrices property to calculate the exponential term: 
+	  \end{flushleft}
+	  
+	  \begin{equation}
+	  	\begin{aligned}
+	  		&\left(\sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \right)^{2} = \sigma_{z}^{j} \sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \sigma_{z}^{a_j} = \mathbb{I}^{j} \otimes \mathbb{I}^{a_j} \\
+	  		&\left(\sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \right)^{3} = \sigma_{z}^{j} \otimes \sigma_{z}^{a_j}
+	  	\end{aligned}
+	  \end{equation}
+	  
+	  \begin{flushleft}
+	  	So we can rewrite the summation and make evident the \textit{cos} and \textit{sin} expansion:
+	  \end{flushleft}
+	  
+	  \begin{align}
+	  	&=\sum_{2n=0}^{\infty}
+	  	{ \frac{\left( c_j \Delta t \right)^{{2n}}}{2n!} } \, - i \left(\sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \right) \sum_{2n=0}^{\infty}{ \frac{\left( c_j \Delta t  \right)^{{2n+1}}}{(2n+1)!} } \notag \\	
+	  	&= \cos{\left(c_j \Delta t\right)} \mathbb{I}^{j} \otimes \mathbb{I}^{a_j} \, - \sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \otimes \sigma_{z}^{a_j}
+	  \end{align}
+	  
+	  Now we can apply the evolution operator to the initial product state: 
+	  
+	  \begin{align}
+	  	\ket{\Psi}
+	  	&= \ket{\psi_S} \otimes \ket{\phi_a}
+	  	= \ket{\psi_S} \otimes \frac{1}{\sqrt{2}} \left( \ket{0_a} + \ket{1_a} \right) \notag \\
+	  	&= \frac{1}{\sqrt{2}} \left(\ket{\psi_S} \otimes  \ket{0_a} + \ket{\psi_S} \otimes  \ket{1_a} \right)
+	  \end{align}
+	  
+	  \begin{align}
+	  	\ket{\Psi'} = \mathcal{U} \ket{\Psi}
+	  	&= \frac{1}{\sqrt{2}} \Big[ \cos{\left(c_j \Delta t\right)} \ket{\psi_{S}} \otimes \ket{0_a} - i\sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \ket{\psi_{S}} \otimes \sigma_{z}^{a_j}\ket{0_a} \notag \\
+	  	& + \cos{\left(c_j \Delta t\right)} \ket{\psi_{S}} \otimes \ket{1_a} - i\sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \ket{\psi_{S}} \otimes \sigma_{z}^{a_j}\ket{1_a} \Big] \notag \\
+	  	&= \frac{1}{\sqrt{2}} \Big[ \cos{\left(c_j \Delta t\right)} \ket{\psi_{S}} \otimes \ket{0_a} - i\sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \ket{\psi_{S}} \otimes \ket{0_a} \notag \\
+	  	& + \cos{\left(c_j \Delta t\right)} \ket{\psi_{S}} \otimes \ket{1_a} + i\sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \ket{\psi_{S}} \otimes \ket{1_a} \Big] \notag \\
+	  	&= \frac{1}{\sqrt{2}} \Big[ \left( \cos{\left(c_j \Delta t\right)} - i\sin{\left(c_j \Delta t \right)} \sigma_{z}^{j}\right) \ket{\psi_{S}} \otimes \ket{0_a}  \notag \\
+	  	& + \left( \cos{\left(c_j \Delta t\right)} + i\sin{\left(c_j \Delta t \right)}  \sigma_{z}^{j}\right) \ket{\psi_{S}} \otimes \ket{1_a}  \Big] 
+	  \end{align}
+	  
+	  \subsubsection{Density Matrix}
+	  
+	  Now we rebuild the Density Matrix, but first we define:
+	  
+	  \begin{equation*}
+	  	\begin{aligned}
+	  		\mathcal{A} = \cos{\left( c_j \Delta t \right)} - i \sin{\left( c_j \Delta t \right)} \sigma_{z}^{j} \quad ; \quad \mathcal{A^{\dagger}} = \cos{\left( c_j \Delta t \right)} + i \sin{\left( c_j \Delta t \right)} \sigma_{z}^{j} \quad \text{for} \quad \ket{0_a}\\
+	  		\mathcal{B} = \cos{\left( c_j \Delta t \right)} + i \sin{\left( c_j \Delta t \right)} \sigma_{z}^{j} \quad ; \quad \mathcal{B^{\dagger}} = \cos{\left( c_j \Delta t \right)} - i \sin{\left( c_j \Delta t \right)} \sigma_{z}^{j}  \quad \text{for} \quad \ket{1_a} 
+	  	\end{aligned}
+	  \end{equation*}
+	  
+	  \begin{align*}
+	  	\rho' &= \ket{\Psi'}\bra{\Psi'} \\ 
+	  	& = \frac{1}{2} \Big\{ \mathcal{A} \ket{\psi_S}\bra{\psi_S} \mathcal{A^{\dagger}} \otimes \ket{0_a}\bra{0_a} + \mathcal{B} \ket{\psi_S}\bra{\psi_S} \mathcal{B^{\dagger}} \otimes \ket{1_a}\bra{1_a} \\
+	  	& \qquad + \mathcal{A} \ket{\psi_S}\bra{\psi_S} \mathcal{B^{\dagger}} \otimes \ket{0_a}\bra{1_a} +  \mathcal{B} \ket{\psi_S}\bra{\psi_S} \mathcal{A^{\dagger}} \otimes \ket{1_a}\bra{0_a} \Big\} \\
+	  	& = \frac{1}{2} \Big\{ \left(\cos{\left( c_j \Delta t \right)} - i \sin{\left( c_j \Delta t \right) \sigma_{z}^{j}}\right)  \ket{\psi_S}\bra{\psi_S} \left( \cos{\left( c_j \Delta t \right)} + i \sin{\left( c_j \Delta t \right) \sigma_{z}^{j}}\right) \otimes \ket{0_a}\bra{0_a} \\
+	  	& \qquad + \left(\cos{\left( c_j \Delta t \right)} + i \sin{\left( c_j \Delta t \right) \sigma_{z}^{j}}\right)  \ket{\psi_S}\bra{\psi_S} \left( \cos{\left( c_j \Delta t \right)} - i \sin{\left( c_j \Delta t \right) \sigma_{z}^{j}}\right) \otimes \ket{1_a}\bra{1_a} \\
+	  	& \qquad + \left(\cos{\left( c_j \Delta t \right)} - i \sin{\left( c_j \Delta t \right) \sigma_{z}^{j}}\right)  \ket{\psi_S}\bra{\psi_S} \left( \cos{\left( c_j \Delta t \right)} - i \sin{\left( c_j \Delta t \right) \sigma_{z}^{j}}\right) \otimes \ket{0_a}\bra{1_a} \\
+	  	& \qquad + \left(\cos{\left( c_j \Delta t \right)} + i \sin{\left( c_j \Delta t \right) \sigma_{z}^{j}}\right)  \ket{\psi_S}\bra{\psi_S} \left( \cos{\left( c_j \Delta t \right)} + i \sin{\left( c_j \Delta t \right) \sigma_{z}^{j}}\right) \otimes \ket{1_a}\bra{0_a} \Big\} \\
+	  	& = \frac{1}{2} \Big\{ \Big( \cos^{2}{\left( c_j \Delta t \right)} \, \rho_S + \sin^{2}{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\rho_S\sigma_{z}^{j} \\
+	  	& \qquad +i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \rho_S \sigma_{z}^{j} - i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \sigma_{z}^{j} \rho_S \Big) \otimes \ket{0_a}\bra{0_a} \\
+	  	& \qquad  + \Big( \cos^{2}{\left( c_j \Delta t \right)} \, \rho_S + \sin^{2}{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\rho_S\sigma_{z}^{j} \\
+	  	& \qquad - i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \rho_S \sigma_{z}^{j} + i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \sigma_{z}^{j} \rho_S \Big) \otimes \ket{1_a}\bra{1_a} \\
+	  	& \qquad  + \Big( \cos^{2}{\left( c_j \Delta t \right)} \, \rho_S - \sin^{2}{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\rho_S\sigma_{z}^{j} \\
+	  	& \qquad - i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \rho_S \sigma_{z}^{j} - i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \sigma_{z}^{j} \rho_S \Big) \otimes \ket{0_a}\bra{1_a} \\
+	  	& \qquad  + \Big( \cos^{2}{\left( c_j \Delta t \right)} \, \rho_S - \sin^{2}{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\rho_S\sigma_{z}^{j} \\
+	  	& \qquad + i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \rho_S \sigma_{z}^{j} + i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \sigma_{z}^{j} \rho_S \Big) \otimes \ket{1_a}\bra{0_a} \Big\} \\
+	  	& = \frac{1}{2} \Big\{ \Big( \cos^{2}{\left( c_j \Delta t \right)} \, \rho_S + \sin^{2}{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\rho_S\sigma_{z}^{j} 
+	  	+i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \left[ \rho_S, \sigma_{z}^{j} \right] \Big) \otimes \ket{0_a}\bra{0_a} \\
+	  	& \qquad  + \Big( \cos^{2}{\left( c_j \Delta t \right)} \, \rho_S + \sin^{2}{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\rho_S\sigma_{z}^{j} 
+	  	-i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \left[ \rho_S, \sigma_{z}^{j} \right] \Big) \otimes \ket{1_a}\bra{1_a} \\
+	  	& \qquad  + \Big( \cos^{2}{\left( c_j \Delta t \right)} \, \rho_S - \sin^{2}{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\rho_S\sigma_{z}^{j} 
+	  	-i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \left[ \rho_S, \sigma_{z}^{j} \right]_{+} \Big) \otimes \ket{0_a}\bra{1_a} \\
+	  	& \qquad  + \Big( \cos^{2}{\left( c_j \Delta t \right)} \, \rho_S - \sin^{2}{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\rho_S\sigma_{z}^{j} 
+	  	+i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \left[ \rho_S, \sigma_{z}^{j} \right]_{+} \Big) \otimes \ket{1_a}\bra{0_a} \Big\}
+	  \end{align*}
+	  
+	  \begin{flushleft}
+	  	If we now operate the partial Trace over our total density matrix we obtain the System Density Matrix:
+	  \end{flushleft}
+	  
+	  \begin{align}
+	  	\rho_S & = Tr_a(\rho') = \sum_{k=1}^{N_{anc}}{\bra{\phi_k}\rho'\ket{\phi_k}} \notag \\
+	  	&= \frac{1}{2} \Big\{ \Big( \cos^{2}{\left( c_j \Delta t \right)} \, \rho_S + \sin^{2}{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\rho_S\sigma_{z}^{j} 
+	  	+i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \left[ \rho_S, \sigma_{z}^{j} \right] \Big) \notag \\
+	  	& \qquad  + \Big( \cos^{2}{\left( c_j \Delta t \right)} \, \rho_S + \sin^{2}{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\rho_S\sigma_{z}^{j} 
+	  	-i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \left[ \rho_S, \sigma_{z}^{j} \right] \Big) \notag \\
+	  	& =	\cos^{2}{\left( c_j \Delta t \right)} \, \rho_S + \sin^{2}{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\rho_S\sigma_{z}^{j} 
+	  \end{align}	
 	  
 \end{document}	
