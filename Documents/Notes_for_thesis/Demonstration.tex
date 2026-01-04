@@ -80,6 +80,14 @@
 		&= \cos \left(c_j \Delta t \right) \ket{\Psi_S} \otimes \ket{0_a} - i \sin \left(c_j \Delta t \right) \sigma_{z}^{j} \ket{\Psi_S} \otimes \sigma_{x}^{a} \ket{0_a} \\
 		&= \cos \left(c_j \Delta t \right) \ket{\Psi_S} \otimes \ket{0_a} - i \sin \left(c_j \Delta t \right) \sigma_{z}^{j} \ket{\Psi_S} \otimes \ket{1_a}
 	\end{align}
+	
+	\subsubsection{Reconstruction of the Density Matrix}
+	Comp
+	
+	\subsubsection{Recovery of Lindblad form}
+	Comp
+	
+	\subsubsection{Algorithm for Trajectories}
 	By measuring the Ancilla's state we can deduce if we had an avoided collision $ \ket{0_a} $ or an occurred collision $ \ket{1_a} $, which imples the application to the system of $ \sigma_{z}^{j} \ket{\Psi_S} $ which introduce a flip in the phase of the interacting site, with a probability of $ \left| {\sin \left(c_j \Delta t \right)} \right|^2  $, which contributes to the site dephasing process, helping the excitonic tranport (ENAQT - Enviroment Assisted Quantum Transport). \\
 	Measuring repeted time $ s $ the Ancilla states correspond on tracing its states out, so that we could rebuild the density matrix as :
 	\begin{equation}
@@ -479,9 +487,9 @@
 	  			\node[below] at (0,-2) {$-z$};
 	  			\filldraw (0,0) circle (1.5pt);
 .
-	  			\draw[->, very thick, olive] (0,0) -- (45:2.5) node[right] {$\vec{a}$};
+	  			\draw[->, very thick, olive] (0,0) -- (-45:2.5) node[right] {$\vec{a}$};
 
-	  			\draw[->, red, thick] (0,1.5) arc (90:45:1.5);
+	  			\draw[->, red, thick] (0,1.5) arc (90:-45:1.5);
 
 	  			\node[red] at (67.5:1.8) {$\phi$};
 	  		\end{tikzpicture}
@@ -503,9 +511,19 @@
 	  	\theta - \phi = \frac{\pi}{2} \quad \rightarrow \quad \theta = \frac{\pi}{2} + \phi
 	  \end{gather}
 	  
-	  Geometrically, this signifies that purely dissipative dynamics, in the Lindblad form, emerge only when the direction of the Collisional Interaction vector is perpendicular to the Ancilla's polarization vector on the Bloch sphere. \\
+	  Geometrically, this signifies that purely dissipative dynamics, in the Lindblad form, emerge only when the direction of the Collisional Interaction vector is perpendicular to the Ancilla's polarization vector on the Bloch sphere.
 	  
-	  It is worth noting that the resulting Master Equation that lead to the Lindblad form with $ \mathcal{L}_k = \sigma_{z} $ describes a Pure Dephasing dynamic, where the Collsional environment destroys the quantum Coherence of the system, without inducing population transfer (energy relaxation).
+	  \clearpage
+	  \newpage
+	  
+	  To recover the two limits we have to set: 
+	  
+	  \begin{itemize}
+	  	\item Quantum Jump limit : $ g_z = 0 , g_x = 1 \, ; \, g_0 = 1 , g_1 = 0 \, ; \, \theta = 90° , \phi = 0° $
+	  	\item Diffusive limit : $ g_z = 1 , g_x = 0 \, ; \, g_0 = 1/\sqrt{2} , g_1 = 1/\sqrt{2} \, ; \, \theta = 0° , \phi = 90° $
+	  \end{itemize}
+	  
+	  It is worth noting that the resulting Master Equation that lead to the Lindblad form with $ \mathcal{L}_k = \sigma_{z} $ describes a Pure Dephasing dynamic, where the Collisional environment destroys the quantum Coherence of the system, without inducing population transfer (energy relaxation).
 
 	  \begin{equation}
 	  	\dot{\rho_S} = \Gamma \left(\sigma_{z} \rho_S \sigma_{z} - \rho_S \right) \quad \text{Pure Dephasing}
