@@ -1,6 +1,7 @@
 \documentclass[a4paper,12pt]{article}
 
 \usepackage{titlesec}
+\usepackage{hyperref}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{braket}
@@ -15,7 +16,7 @@
 \allowdisplaybreaks
 
 \titleformat{\section}
-{\normalfont\small\bfseries}
+{\normalfont\normalsize\bfseries}
 {\thesection}{1em}{}
 \titleformat{\subsection}
 {\normalfont\small\bfseries}
@@ -24,41 +25,40 @@
 {\normalfont\small\bfseries}
 {\thesubsubsection}{1em}{}
 
+\title{
+	\vspace{2cm}
+	\Huge \textbf{Collisional Methods by Francesco} \\[0.5cm]
+	\large Collection of notes, formulas and demonstrations in the field of dynamics of open quantum systems and Collisional Methods
+	\vspace{5cm}
+}
+
+\author{\Large Francesco Ciavarella - University of Padua \\[10pt] \href{mailto:francesco.ciavarella@studenti.unipd.it}{francesco.ciavarella@studenti.unipd.it}}
+
 \begin{document}
-
-	\title{\textbf{Notes for Thesis}}
+	
 	\maketitle
-
-	\begin{center}
-		Collection of notes, formulas and demonstrations in the field of dynamics of open quantum systems and Collisional Methods
-	\end{center}
-
+	\thispagestyle{empty} 
+	\newpage
+	
+	\tableofcontents
+	\newpage
+	
 	\section{Case of study : Excitonic Dimer}
 	Description of the excitonic dimer
 	
 	\subsection{Lindblad Evolution}
-	We will study the dynamic rappresented with a Lindblad equation of the density matrix of an excitonic dimer.We'll use an initial density matrix which only has population in the first site: 
+	We will study the dynamic represented with a Lindblad equation of the density matrix of an excitonic dimer.We'll use an initial Density Matrix which only has population in the first site: 
 	\begin{equation}
 		\rho (0)  = \begin{bmatrix}1 & 0 \\ 0 & 0 \\\end{bmatrix}
 	\end{equation}
 	The Lindblad equation reads:
 	\begin{equation}
-		\frac{d}{dt} \rho (t) = 	-\frac{i}{\hbar} \left[ \hat{H}, \rho (t) \right] + \sum_{j}^{N^2} {\gamma_j \left( \mathcal{L}_j \rho (t) \mathcal{L}_j^\dagger - \frac{1}{2} \left[ \mathcal{L}_j^\dagger \mathcal{L}_j, \rho (t) \right]_+ \right) }
+		\frac{d}{dt} \rho (t) = 	-\frac{i}{\hbar} \left[ \hat{H}, \rho (t) \right] + \sum_{j}{\gamma_j \left( \mathcal{L}_j \rho (t) \mathcal{L}_j^\dagger - \frac{1}{2} \left[ \mathcal{L}_j^\dagger \mathcal{L}_j, \rho (t) \right]_+ \right) }
 	\end{equation}
-	First of all we will focus only on the exciton tranfer between the two dimers, so the Jump Operator has this form:
-	\begin{equation}
-		\mathcal{L}_{1\rightarrow2} = \ket{e_2}\bra{e_1} \; ; \; \mathcal{L}_{2\rightarrow1} = \ket{e_1}\bra{e_2}
-	\end{equation}
-	So that the Dissipator gives:
-	\begin{align}
-		&\mathcal{L}_{1\rightarrow2}\rho_{11}\mathcal{L}_{1\rightarrow2}^\dagger = \ket{e_2}\bra{e_1}\ket{e_1}\bra{e_1}\ket{e_1}\bra{e_2} = \ket{e_2}\bra{e_2} = \rho_{22} \\
-		&\frac{1}{2} \mathcal{L}_{1\rightarrow2}^\dagger\mathcal{L}_{1\rightarrow2}\rho_{11} = \frac{1}{2} \ket{e_1}\bra{e_2}\ket{e_2}\bra{e_1}\ket{e_1}\bra{e_1} 
-		= \frac{1}{2} \ket{e_1}\bra{e_1} = \frac{1}{2}\rho_{11} \\
-		&\frac{1}{2} \rho_{11}
-		\mathcal{L}_{1\rightarrow2}^\dagger\mathcal{L}_{1\rightarrow2} = \frac{1}{2} \ket{e_1}\bra{e_1}\ket{e_1}\bra{e_2}\ket{e_2}\bra{e_1} = \frac{1}{2} \ket{e_1}\bra{e_1} = \frac{1}{2}\rho_{11}  
-	\end{align}
-	and the same for the evolution of $ \rho_{22} $
 	
+	At first we'll study the \textit{Pure Dephasing} effect, obtained with $ \mathcal{L}_{k} = \sigma_{z} $
+	
+	complete ...
 	\section{Collisional Methods}
 	Description of collisional methods
 	
@@ -84,10 +84,7 @@
 		&= \cos \left(c_j \Delta t \right) \ket{\Psi_S} \otimes \ket{0_a} - i \sin \left(c_j \Delta t \right) \sigma_{z}^{j} \ket{\Psi_S} \otimes \sigma_{x}^{a} \ket{0_a} \notag \\
 		&= \cos \left(c_j \Delta t \right) \ket{\Psi_S} \otimes \ket{0_a} - i \sin \left(c_j \Delta t \right) \sigma_{z}^{j} \ket{\Psi_S} \otimes \ket{1_a}
 	\end{align}
-	
-	\clearpage
-	\newpage
-	
+		
 	\subsubsection{Reconstruction of the Density Matrix}
 	Now we can rebuild the Density Matrix as :
 	\begin{align}
@@ -162,9 +159,6 @@
 		\rho_S' = \cos^{2}{\left(c_{j} \Delta t\right)} \rho_S + \sin^{2}{\left(c_{j} \Delta t\right)} \, \sigma_{z} \rho_S \sigma_{z} 
 	\end{equation}
 
-	\clearpage
-	\newpage
-
 	Now we can proceed in two different ways:
 	\begin{itemize}
 		\item Evolution of the $ \rho (t) $ with $ U(t) $ and $ U(t)^{\dagger} $; than we trace out the ancilla subsystem with a partial trace over its degree of freedom, in order to get back the average evolution of the system, which gaves a trajectory that reproduces the Lindblad ME. This proves that the Collisional Method gives the same evolution of a Lindblad ME.
@@ -224,9 +218,6 @@
 	\end{aligned}
 	\end{equation}
 
-	\clearpage
-	\newpage
-
 	\begin{flushleft}
 		So we can rewrite the summation and make evident the \textit{cos} and \textit{sin} expansion:
 	\end{flushleft}
@@ -237,6 +228,8 @@
 		\notag \\	
 		&= \cos{\left(c_j \Delta t\right)} \mathbb{I}^{j} \otimes \mathbb{I}^{a_j} \, - \sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \otimes \sigma_{z}^{a_j}
 	\end{align}
+	
+	\newpage
 	
 	\begin{flushleft}
 		Now we can apply the evolution operator to the two different initial state which are :
@@ -277,12 +270,10 @@
 		\mathcal{K}_1 = \cos{\left( c_j \Delta t \right)} + i \sin{\left( c_j \Delta t \right)} \, \sigma_{z}^{j} = e^{+i c_j \Delta t \sigma_z^j} = \mathcal{K}_0^\dagger
 	\end{equation}
 	
-	Note that $\mathcal{K}_1$ is simply the Hermitian conjugate (and inverse) of $\mathcal{K}_0$. \\
+	Note that $\mathcal{K}_1$ is simply the Hermitian conjugate (and inverse) of $\mathcal{K}_0$. 
 	
-	\begin{flushleft}
 		Let's now calculate the evolution of the completely mixed Density Matrix, reconstructing it's term from the wave function defined above:
-	\end{flushleft}
-	 
+
 	\begin{align}
 		\rho'_{0} &= \ket{\Psi'_{0}}\bra{\Psi'_{0}} = \mathcal{K}_{0} \ket{\psi_S}\bra{\psi_S} \mathcal{K}_{0}^{\dagger} \otimes \ket{0_a}\bra{0_a} = \mathcal{K}_{0} \ket{\psi_S}\bra{\psi_S} \mathcal{K}_{1} \otimes \ket{0_a}\bra{0_a} \notag \\ 
 		& = \Big [ \left(\cos{\left( c_j \Delta t \right)} - i \sin{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\right) \, \ket{\psi_S}\bra{\psi_S} \, \left(\cos{\left( c_j \Delta t \right)} + i \sin{\left( c_j \Delta t \right)} \, \sigma_{z}^{j}\right) \Big]    \otimes \ket{0_a}\bra{0_a} \notag \\
@@ -402,15 +393,11 @@
 	  \end{align}
 	  
 	  To be more clear we divide the calculation in two part for the different ancilla's states : 
-	  
+	  	  
 	  \begin{align}
 	  	\centerdot \, &g_{0} \, \mathcal{U} \left(\Delta t\right) \ket{\psi_S} \otimes \ket{0_a} = \notag \\
 	  	&= g_{0} \, \Big[\cos{\left(c_j \Delta t \right)} \ket{\psi_S} \otimes \ket{0_a} -i \sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \ket{\psi_S} \otimes \left(g_z \sigma_{z}^{a_j} \ket{0_a} + g_x \sigma_{x}^{a_j} \ket{0_a} \right) \Big] \notag \\
 	  	&=g_{0} \, \Big[\cos{\left(c_j \Delta t \right)} \ket{\psi_S} \otimes \ket{0_a} - g_z i \sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \ket{\psi_S} \otimes \ket{0_a} - g_x i \sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \ket{\psi_S} \otimes \ket{1_a}\Big] \notag \\
-	  	\notag \\
-	  	\notag \\
-	  	\notag \\
-	  	\notag \\
 	  	\centerdot \, &g_{1} \, \mathcal{U} \left(\Delta t\right) \ket{\psi_S} \otimes \ket{1_a} = \notag \\
 	  	&= g_{1} \, \Big[\cos{\left(c_j \Delta t \right)} \ket{\psi_S} \otimes \ket{1_a} -i \sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \ket{\psi_S} \otimes \left(g_z \sigma_{z}^{a_j} \ket{1_a} + g_x \sigma_{x}^{a_j} \ket{1_a} \right) \Big] \notag \\
 	  	&=g_{1} \, \Big[\cos{\left(c_j \Delta t \right)} \ket{\psi_S} \otimes \ket{1_a} + g_z i \sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \ket{\psi_S} \otimes \ket{1_a} - g_x i \sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \ket{\psi_S} \otimes \ket{0_a}\Big] \notag
@@ -540,9 +527,6 @@
 	  	\text{so that} \quad g_0^2 - g_1^2 = \cos{(\phi)} \quad ; \quad 2g_0g_1 = \sin{(\phi)} \notag
 	  \end{gather}
 	  
-	  \clearpage
-	  \newpage
-	  
 	  In this way we can reformulate :
 	  
 	  \begin{gather}
@@ -554,6 +538,8 @@
 	  
 	  Geometrically, this signifies that purely dissipative dynamics, in the Lindblad form, emerge only when the direction of the Collisional Interaction vector is perpendicular to the Ancilla's polarization vector on the Bloch sphere.
 
+	  \newpage
+	
 	  To recover the two limits we have to set: 
 	  
 	  \begin{itemize}
@@ -638,10 +624,7 @@
 	   \begin{equation}
 	   	\mathcal{H}_{Coll} = \sqrt{\Gamma_{j}} \, \sigma_{z}^{j} \otimes \left( \Gamma_{z} \sigma_{z}^{a_j} + \Gamma_{x} \sigma_{x}^{a_j} \right)
 	   \end{equation}
-	   
-	   \clearpage
-	   \newpage
-	   
+	   	   
 	   \subsubsection{Probability of measuring the Ancilla's states}
 	   
 	   After the collision the Ancilla could be either in state $ \ket{0_a} $ or $ \ket{1_a} $ with a finite probability which is generally given by:
@@ -650,6 +633,8 @@
 	   	P_{0_{a}} = Tr_{S} \left[\braket{0_a|\Psi'}\braket{\Psi'|0_a} \right] \\
 	   	P_{1_{a}} = Tr_{S} \left[\braket{1_a|\Psi'}\braket{\Psi'|1_a} \right]
 	   \end{align}
+	   
+	   \newpage
 	   
 	   To evaluate this values we first redefine the operators $ \mathcal{M}_{0} $ and $ \mathcal{M}_{1} $ using the value :
 	   
@@ -679,10 +664,7 @@
 	   	& + \Big[ a_{0} a_{1} \ket{\Psi_{S}}\bra{\Psi_{S}} + b_{0} b_{1}  \sigma_{z}^{j}\ket{\Psi_{S}}\bra{\Psi_{S}}\sigma_{z}^{j} + i a_{0}b_{1}\ket{\Psi_{S}}\bra{\Psi_{S}}\sigma_{z}^{j} -  i a_{1}b_{0} \sigma_{z}^{j} \ket{\Psi_{S}}\bra{\Psi_{S}} \Big] \otimes \ket{0_{a}} \bra{1_{a}} \notag \\
 	   	& + \Big[ a_{1} a_{0} \ket{\Psi_{S}}\bra{\Psi_{S}} + b_{1} b_{0}  \sigma_{z}^{j}\ket{\Psi_{S}}\bra{\Psi_{S}}\sigma_{z}^{j} + i a_{1}b_{0}\ket{\Psi_{S}}\bra{\Psi_{S}}\sigma_{z}^{j} -  i a_{0}b_{1} \sigma_{z}^{j} \ket{\Psi_{S}}\bra{\Psi_{S}} \Big] \otimes \ket{1_{a}} \bra{0_{a}}
 	   \end{align}
-	
-	   \clearpage
-	   \newpage
-		
+			
 	   Now we can calculate :
 		
 	   \begin{align}
@@ -703,21 +685,18 @@
 	   So setting the \textit{g} parameter directly defines the probability of measuring a different Ancilla's state; we could check if this definition lead back to the probability obtained in the Quantum Jump and Coherent limit:
 	  
 	   \begin{itemize}
-	  	\item QJ : $ g_z = 0 , g_x = 1 \, ; \, g_0 = 1 , g_1 = 0 \, ; \, \theta = 90° , \phi = 0° \rightarrow P_{0_{a}} = \cos^{2}{\left(c_{j}\Delta t\right)} \, ; \, P_{1_{a}} = \sin^{2}{\left(c_{j}\Delta t\right)} $
-	  	\item Diff : $ g_z = 1 , g_x = 0 \, ; \, g_0 = 1/\sqrt{2} , g_1 = 1/\sqrt{2} \, ; \, \theta = 0° , \phi = 90° \rightarrow P_{0_{a}} = \frac{1}{2} \, ; \, P_{1_{a}} = \frac{1}{2} $
+	  		\item QJ : $ g_z = 0 , g_x = 1 \, ; \, g_0 = 1 , g_1 = 0 \, ; \, \theta = 90° , \phi = 0° \rightarrow P_{0_{a}} = \cos^{2}{\left(c_{j}\Delta t\right)} \, ; \, P_{1_{a}} = \sin^{2}{\left(c_{j}\Delta t\right)} $
+	  		\item Diff : $ g_z = 1 , g_x = 0 \, ; \, g_0 = 1/\sqrt{2} , g_1 = 1/\sqrt{2} \, ; \, \theta = 0° , \phi = 90° \rightarrow P_{0_{a}} = \frac{1}{2} \, ; \, P_{1_{a}} = \frac{1}{2} $
 	   \end{itemize} 
-	
-	   \clearpage
-	   \newpage
-	   
+		   
 	   Now we could try to see how the probability of measuring the two different Ancilla's states changes varying the \textit{g} values, for example as function of the angle $ \theta $ (with $ \theta = \frac{\pi}{2} + \phi $) : 
 	
-	   \graphicspath{ {/home/francesco/Collisional_Methods/Codes/Results/Images/} }
+	   \graphicspath{ {/home/francesco/Collisional_Methods/Results/Plot/} }
 	   \begin{figure}[H]
 	   	\centering
-	   	\includegraphics[width=0.7\textwidth, height=0.5\textwidth]{Prob(theta).png} 
-	   	\caption{Probability of measuring the two different Ancilla's states $ \ket{0_{a}} $ and $ \ket{1_{a}} $, as function of the $ \theta $ angle, which defines the direction of the $ \mathcal{H}_{Coll} $ respect to z axis }
-	   	\label{Prob(theta)}
+	   	\includegraphics[width=0.7\textwidth]{{Prob(theta)}.png}
+	   	\caption{Probability of measuring the two different Ancilla's states $\ket{0_{a}}$ and $\ket{1_{a}}$, as function of the $\theta$ angle, which defines the direction of the $\mathcal{H}_{\text{Coll}}$ respect to z axis}
+	   	\label{fig:prob_theta}
 	   \end{figure}
 	
 	   As observed, for $\theta = 90^\circ$ (Quantum Jump limit), the probability of measuring $\ket{0_{a}}$ is $P_{0_{a}}\approx 1$. This corresponds to the application of the identity operator $\mathbb{I}^{j}$ on the system's wf; conversely, the probability of measuring $\ket{1_{a}}$ is $P_{1_{a}}\approx 0$, which corresponds to the application of $\sigma_{z}^{j}$. 
@@ -787,6 +766,8 @@
 	  	&= \cos{\left(c_j \Delta t\right)} \mathbb{I}^{j} \otimes \mathbb{I}^{a_j} \, - \sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \otimes \sigma_{z}^{a_j}
 	  \end{align}
 	  
+	  \newpage
+	  
 	  Now we can apply the evolution operator to the initial product state: 
 	  
 	  \begin{align}
@@ -843,9 +824,7 @@
 	  	+i \sin{\left( c_j \Delta t \right)}\cos{\left( c_j \Delta t \right)} \, \left[ \rho_S, \sigma_{z}^{j} \right]_{+} \Big) \otimes \ket{1_a}\bra{0_a} \Big\}
 	  \end{align*}
 	  
-	  \begin{flushleft}
-	  	If we now operate the partial Trace over our total density matrix we obtain the System Density Matrix:
-	  \end{flushleft}
+	  If we now operate the partial Trace over our total density matrix we obtain the System Density Matrix:
 	  
 	  \begin{align}
 	  	\rho_S' & = Tr_a(\rho') = \sum_{k=1}^{N_{anc}}{\bra{\phi_k}\rho'\ket{\phi_k}} \notag \\
