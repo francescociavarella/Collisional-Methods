@@ -1186,7 +1186,17 @@
 	  	nome da inventare = 1 - \left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{1}} \right|^2
 	  \end{align}
 	  As we could see this quantities depends on the form of the \textit{wf}, for different time steps and different trajectories.
-	  So we need to evaluate this for different values os expectation value of sigma z in different unraveling scheme. it's important to calculate quanto spesso uno stato e quindi un valore del valore di aspettazione di sigma z viene campionato con diversi unravleing scheme (cosa degli istogrammi).
+	  So we need to evaluate this for different values os expectation value of $ \left| \braket{\sigma_{z}^{j}} \right|^2 $ in different unraveling scheme. For this purpose it might be useful to rephrase Eq.\eqref{eq:fidelity_M0} and Eq.\eqref{eq:fidelity_M0} as follows:
+	  
+	  \begin{equation}
+		  	c = \cos^{2} \left( c_{j} \Delta t \right) \quad ; \quad s_{z} = \left| \braket{\sigma_{z}^{j}} \right|^2 = \left| \bra{\Psi_{S}} \sigma_{z}^{j} \ket{\Psi_{S}} \right|^2
+	  \end{equation}
+	  \begin{align}
+	  	\left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{0}} \right|^2 = g_{0}^{2} \left[ c - s_{z} \left(1 - c \right) \right] + s_{z} \left(1 - c \right) \label{eq:fidelity_M0_ref} \\ 
+	  	\left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{1}} \right|^2 = g_{0}^{2} \left[ s_{z} \left(1 - c \right) - c \right] + c \label{eq:fidelity_M1_ref}
+	  \end{align}
+	  
+	  it's important to calculate quanto spesso uno stato e quindi un valore del valore di aspettazione di sigma z viene campionato con diversi unravleing scheme (cosa degli istogrammi).
 	  
 	  valutare con diversi valori di aspettazione di sigma z come cambia l'andamento delle quantià che determinano l'intensità della variazione con diversi ssitemi di unraveling. Qui si può fare un plot 3D o diversi plot selezionando o metodi diversi di unraveling o diversi valori di aspettazione.
 	  
