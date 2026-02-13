@@ -832,12 +832,12 @@
 	  \end{align}
 	  	
 	  If we define two new operators for every ancilla's states:
-	  \begin{align*}
-	  	\mathcal{M}_0 &= g_0 \cos{\left(c_j \Delta t \right)} \mathbb{I}^{j} - i \left(g_0 g_z + g_1 g_x \right) \sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \\
-	  	\mathcal{M}_{0}^{\dagger} &= g_0 \cos{\left(c_j \Delta t \right)} \mathbb{I}^{j} + i \left(g_0 g_z + g_1 g_x \right) \sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \\
-	  	\mathcal{M}_1 &= g_1 \cos{\left(c_j \Delta t \right)} \mathbb{I}^{j} - i \left(g_0 g_x - g_1 g_z \right) \sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \\
-	  	\mathcal{M}_{1}^{\dagger} &= g_1 \cos{\left(c_j \Delta t \right)} \mathbb{I}^{j} + i \left(g_0 g_x - g_1 g_z \right) \sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \notag \\
-	  \end{align*}
+	  \begin{align}
+	  	\mathcal{M}_0 &= g_0 \cos{\left(c_j \Delta t \right)} \mathbb{I}^{j} - i \left(g_0 g_z + g_1 g_x \right) \sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \label{eq:M0_definition} \\
+	  	\mathcal{M}_{0}^{\dagger} &= g_0 \cos{\left(c_j \Delta t \right)} \mathbb{I}^{j} + i \left(g_0 g_z + g_1 g_x \right) \sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \notag\\
+	  	\mathcal{M}_1 &= g_1 \cos{\left(c_j \Delta t \right)} \mathbb{I}^{j} - i \left(g_0 g_x - g_1 g_z \right) \sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \label{eq:M1_definition} \\
+	  	\mathcal{M}_{1}^{\dagger} &= g_1 \cos{\left(c_j \Delta t \right)} \mathbb{I}^{j} + i \left(g_0 g_x - g_1 g_z \right) \sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \notag
+	  \end{align}
 	  we now obtain : 
 	  \begin{align}
 	  	\ket{\Psi'} &= \mathcal{M}_0 \ket{\psi_S} \otimes \ket{0_a} + \mathcal{M}_1 \ket{\psi_S} \otimes \ket{1_a}
@@ -902,6 +902,12 @@
 	  	\frac{g_z}{g_x} = - \frac{2 g_1 g_0}{\left(g_0^2 - g_1^2\right)} \quad \text{and} \quad \frac{g_1}{g_0} = \frac{g_x \pm 1}{g_z}
 	  	\label{eq:g_equivalnce_alg_sol}
 	  \end{equation}
+	  And taking into account the Normalization condition for both $ g_z , g_x $ and $ g_0 , g_1 $, its' possible to rewrite:
+	  \begin{align}
+	  	g_z = -2 g_{0} g_{1} \\
+	  	g_x = g_{0}^{2} - g_{1}^{2}
+	  \end{align}
+	  
 	  \textbf{Geometric solution} \\
 	  We can reinterpret the \textit{g} factors as components of vectors in the Bloch's Sphere and so rewriting them as function of two angle $ \theta $ and $ \phi $ :
 	  
@@ -971,6 +977,18 @@
 	  	\label{eq:lindblad_pure_deph_recover}
 	  \end{equation}
 	  
+	  It's possible to redefine the $ \mathcal{M} $ operators using the relations between the \textit{g} parameters :
+	  \begin{align}
+	  	\mathcal{M}_0 &= g_0 \cos(c_j \Delta t) \mathbb{I}^{j} + i g_1 \sin(c_j \Delta t) \sigma_{z}^{j} \label{eq:M0_simplified} \\
+	  	\mathcal{M}_1 &= g_1 \cos(c_j \Delta t) \mathbb{I}^{j} - i g_0 \sin(c_j \Delta t) \sigma_{z}^{j} \label{eq:M1_simplified}
+	  \end{align}
+	  
+	  and on the other way : 
+	  \begin{align}
+	  	\mathcal{M}_0 &= \sqrt{\frac{1+g_x}{2}} \cos(c_j \Delta t) \mathbb{I}^{j} + i \sqrt{\frac{1-g_x}{2}} \sin(c_j \Delta t) \sigma_{z}^{j} \\
+	  	\mathcal{M}_1 &= \sqrt{\frac{1-g_x}{2}} \cos(c_j \Delta t) \mathbb{I}^{j} - i \sqrt{\frac{1+g_x}{2}} \sin(c_j \Delta t) \sigma_{z}^{j}
+	  \end{align}	  
+	  	  
 	  \subsubsection{Focus on the $ 3^{rd} $ term}
 	  Let's check what happens if we don't erase the last term in Eq.46 
 	  
@@ -1059,8 +1077,6 @@
 	   	P_{1_{a}} = Tr_{S} \left[\braket{1_a|\Psi'}\braket{\Psi'|1_a} \right]
 	   \end{align}
 	   
-	   \newpage
-	   
 	   To evaluate this values we first redefine the operators $ \mathcal{M}_{0} $ and $ \mathcal{M}_{1} $ using the value :
 	   \begin{align}
 	   	a_{0} = g_{0} \cos{\left(c_{j}\Delta t\right)} \quad ; \quad b_{0} = \left(g_{0} g_{z} + g_{1}g_{x} \right) \sin{\left(c_{j}\Delta t\right)} \label{eq_a0_b0_def} \\
@@ -1101,7 +1117,13 @@
 	    \notag \\
 	  	P_{1_{a}} &= \left|a_{1}\right|^{2} + \left|b_{1}\right|^{2} = 	g_{1}^{2} \cos^{2}{\left(c_{j}\Delta t\right)} + \left(g_{0} g_{x} - g_{1}g_{z} \right)^{2} \sin^{2}{\left(c_{j}\Delta t\right)} \label{eq_P1_value}
 	   \end{align}
-	  
+	   
+	   Or in another formulation : 
+	   \begin{align}
+	   	P_{0_a} & = g_0^2 \cos^2(c_j \Delta t) + g_1^2 \sin^2(c_j \Delta t) \\
+	   	P_{1_a} & = g_1^2 \cos^2(c_j \Delta t) + g_0^2 \sin^2(c_j \Delta t)
+	   \end{align}
+	   
 	   So setting the \textit{g} parameter directly defines the probability of measuring a different Ancilla's state; we could check if this definition lead back to the probability obtained in the Quantum Jump and Coherent limit:
 	  
 	   \begin{itemize}
@@ -1122,7 +1144,9 @@
 	   As observed, for $\theta = 90^\circ$ (Quantum Jump limit), the probability of measuring $\ket{0_{a}}$ is $P_{0_{a}}\approx 1$. This corresponds to the application of the identity operator $\mathbb{I}^{j}$ on the system's wf; conversely, the probability of measuring $\ket{1_{a}}$ is $P_{1_{a}}\approx 0$, which corresponds to the application of $\sigma_{z}^{j}$. 
 	   
 	   On the other hand, for $\theta = 0^\circ$ (Diffusional limit), both probabilities are approximately $1/2$. In this regime, the system's wf undergoes a continuous modification regardless of the outcome ($\ket{0_{a}}$ or $\ket{1_{a}}$), with the modification weighted by a small factor and differing by a sign.\\
-	   \\
+	   
+	   \newpage
+	   
 	   Now the question that arises is, if both the two unraveling has to give back the same average dynamic, but 
 	   
 	   \begin{itemize}
@@ -1131,30 +1155,42 @@
 	   \end{itemize}
 	   
 	   Is it possible to quantify a quantity that defines the intensity of the variation applied to the System's wf after the collision? Is it possible to define it as a function of the \textit{g} parameters? And therefore, what would its behavior be with respect to the angle theta?
-	
-	  \clearpage
-	  \newpage
 	  
 	  \subsection{Focus on $\mathcal{M}_0$ and $\mathcal{M}_1$ operator}
 	  \label{sub:focus_on_M0_M1}
 	  Remember that:
 	  \begin{align*}
-	  	\mathcal{M}_0 &= g_0 \cos{\left(c_j \Delta t \right)} \mathbb{I}^{j} - i \left(g_0 g_z + g_1 g_x \right) \sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \\
-	  	\mathcal{M}_{0}^{\dagger} &= g_0 \cos{\left(c_j \Delta t \right)} \mathbb{I}^{j} + i \left(g_0 g_z + g_1 g_x \right) \sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \\
-	  	\mathcal{M}_1 &= g_1 \cos{\left(c_j \Delta t \right)} \mathbb{I}^{j} - i \left(g_0 g_x - g_1 g_z \right) \sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \\
-	  	\mathcal{M}_{1}^{\dagger} &= g_1 \cos{\left(c_j \Delta t \right)} \mathbb{I}^{j} + i \left(g_0 g_x - g_1 g_z \right) \sin{\left(c_j \Delta t \right)} \sigma_{z}^{j} \notag \\
+	  	\mathcal{M}_0 &= g_0 \cos(c_j \Delta t) \mathbb{I}^{j} + i g_1 \sin(c_j \Delta t) \sigma_{z}^{j} \\
+	  	\mathcal{M}_0^{\dagger} &= g_0 \cos(c_j \Delta t) \mathbb{I}^{j} - i g_1 \sin(c_j \Delta t) \sigma_{z}^{j} \\
+	  	\mathcal{M}_1 &= g_1 \cos(c_j \Delta t) \mathbb{I}^{j} - i g_0 \sin(c_j \Delta t) \sigma_{z}^{j} \\
+	  	\mathcal{M}_1^{\dagger} &= g_1 \cos(c_j \Delta t) \mathbb{I}^{j} + i g_0 \sin(c_j \Delta t) \sigma_{z}^{j} 
 	  \end{align*}
 	  Are this operators \textit{Unitary} ?
 	  \begin{align}
-	  	\mathcal{M}_0 \mathcal{M}_{0}^{\dagger} = \left[g_0^2 \cos^2{\left(c_j \Delta t \right)} + \left(g_0 g_z + g_1 g_x \right)^2 \sin^2{\left(c_j \Delta t \right)} \right]  \mathbb{I}^{j} \notag \\
-	  	\mathcal{M}_1 \mathcal{M}_{1}^{\dagger} = \left[g_1^2 \cos^2{\left(c_j \Delta t \right)} + \left(g_0 g_x - g_1 g_z \right)^2 \sin^2{\left(c_j \Delta t \right)} \right]  \mathbb{I}^{j} \notag
-	  \end{align}
-	  Calculation of those quantities related to the wvefunction Modification Intensity:
-	  \begin{align}
-	  	\left| \bra{\Psi_{S}}\mathcal{M}_0 \ket{\Psi_{S}} \right|^2 = g_0^2 \cos^2{\left(c_j \Delta t \right)} + \left(g_0 g_z + g_1 g_x \right)^2 \sin^2{\left(c_j \Delta t \right)} \left| \bra{\Psi_{S}}\sigma_{z}^{j}\ket{\Psi_{S}} \right|^2 \label{eq:exp_square_M0} \\
-	  	\left| \bra{\Psi_{S}}\mathcal{M}_1 \ket{\Psi_{S}} \right|^2 = g_1^2 \cos^2{\left(c_j \Delta t \right)} + \left(g_0 g_x - g_1 g_z \right)^2 \sin^2{\left(c_j \Delta t \right)} \left|\bra{\Psi_{S}}\sigma_{z}^{j}\ket{\Psi_{S}}\right|^2 \label{eq:exp_square_M1} 
+	  	\mathcal{M}_0^{\dagger}\mathcal{M}_0 = [g_0^2 \cos^2(c_j \Delta t) + g_1^2 \sin^2(c_j \Delta t)] \mathbb{I} \\
+	  	\mathcal{M}_1^{\dagger}\mathcal{M}_1 = [g_1^2 \cos^2(c_j \Delta t) + g_0^2 \sin^2(c_j \Delta t)] \mathbb{I}
 	  \end{align}
 	  
-
-	 
+	  Calculation of those quantities that defines how much the \textit{wf} is similar to itself after the evolution via $ \mathcal{M}_0 $ and $ \mathcal{M}_1 $ (related to the \textit{wf} Modification Intensity), defined by the overlap of the two \textit{wf}:
+	  \begin{align}
+	  	\left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{0}} \right|^2 = \left| \bra{\Psi_{S}}\mathcal{M}_0 \ket{\Psi_{S}} \right|^2 &= g_0^2 \cos^2{\left(c_j \Delta t \right)} + g_1^2 \sin^2{\left(c_j \Delta t \right)} \left| \braket{\sigma_{z}^{j}} \right|^2 \label{eq:fidelity_M0} \\
+	  	\left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{1}} \right|^2 = \left| \bra{\Psi_{S}}\mathcal{M}_1 \ket{\Psi_{S}} \right|^2 &= g_1^2 \cos^2{\left(c_j \Delta t \right)} + g_0^2 \sin^2{\left(c_j \Delta t \right)} \left| \braket{\sigma_{z}^{j}} \right|^2 \label{eq:fidelity_M1}
+	  \end{align}
+	  where 
+	  \begin{equation*}
+		\left| \braket{\sigma_{z}^{j}} \right|^2 = \left| \bra{\Psi_{S}} \sigma_{z}^{j} \ket{\Psi_{S}} \right|^2
+	  \end{equation*}
+	  So that the quantity related to the difference between the two \textit{wf} before and after the collision is :
+	  \begin{align}
+	  	nome da inventare = 1 - \left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{0}} \right|^2 \\
+	  	nome da inventare = 1 - \left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{1}} \right|^2
+	  \end{align}
+	  As we could see this quantities depends on the form of the \textit{wf}, for different time steps and different trajectories.
+	  So we need to evaluate this for different values os expectation value of sigma z in different unraveling scheme. it's important to calculate quanto spesso uno stato e quindi un valore del valore di aspettazione di sigma z viene campionato con diversi unravleing scheme (cosa degli istogrammi).
+	  
+	  valutare con diversi valori di aspettazione di sigma z come cambia l'andamento delle quantià che determinano l'intensità della variazione con diversi ssitemi di unraveling. Qui si può fare un plot 3D o diversi plot selezionando o metodi diversi di unraveling o diversi valori di aspettazione.
+	  
+	  altro plot da fare e quanto gli autostati o in generale i diversi possibili valori dei componenti della sferaa di bloch vengono "campionati durante la dinamica"; questo perchè l'intensità di transiiozne dipende dallo stato in cui si trova il sistema, ad esmepio se sono in autofunzione di sigma z ho cambiamento nullo anche in qj limit. misura su diverse dinamiche con stesso schema di unraveling, misura media su diverse traiettorie; misuro i valori di aspettazione di sigma z ?
+	  ciò che mi aspetto è che un andamento circa uguale per tutti gli shemi di unraveling dove tutti gli stai/valori di aspettazione hanno la stessa probabilità di essere campionati.
+	
 \end{document}	
