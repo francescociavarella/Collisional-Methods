@@ -1133,7 +1133,7 @@
 		   
 	   Now we could try to see how the probability of measuring the two different Ancilla's states changes varying the \textit{g} values, for example as function of the angle $ \theta $ (with $ \theta = \frac{\pi}{2} + \phi $) : 
 	
-	   \graphicspath{ {/home/francesco/Collisional_Methods/Results/Plot/} }
+	   \graphicspath{ {/home/francesco/Collisional_Methods/Results/Plot/Probability} }
 	   \begin{figure}[H]
 	   	\centering
 	   	\includegraphics[width=0.7\textwidth]{{Prob(theta)}.png}
@@ -1173,28 +1173,48 @@
 	  
 	  Calculation of those quantities that defines how much the \textit{wf} is similar to itself after the evolution via $ \mathcal{M}_0 $ and $ \mathcal{M}_1 $ (related to the \textit{wf} Modification Intensity), defined by the overlap of the two \textit{wf}:
 	  \begin{align}
-	  	\left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{0}} \right|^2 = \left| \bra{\Psi_{S}}\mathcal{M}_0 \ket{\Psi_{S}} \right|^2 &= g_0^2 \cos^2{\left(c_j \Delta t \right)} + g_1^2 \sin^2{\left(c_j \Delta t \right)} \left| \braket{\sigma_{z}^{j}} \right|^2 \label{eq:fidelity_M0} \\
-	  	\left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{1}} \right|^2 = \left| \bra{\Psi_{S}}\mathcal{M}_1 \ket{\Psi_{S}} \right|^2 &= g_1^2 \cos^2{\left(c_j \Delta t \right)} + g_0^2 \sin^2{\left(c_j \Delta t \right)} \left| \braket{\sigma_{z}^{j}} \right|^2 \label{eq:fidelity_M1}
+	  	\left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{0}} \right|^2 = \left| \bra{\Psi_{S}^{PRE}}\mathcal{M}_0 \ket{\Psi_{S}^{PRE}} \right|^2 &= g_0^2 \cos^2{\left(c_j \Delta t \right)} + g_1^2 \sin^2{\left(c_j \Delta t \right)} \left| \braket{\sigma_{z}} \right|^2 \label{eq:fidelity_M0} \\
+	  	\left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{1}} \right|^2 = \left| \bra{\Psi_{S}^{PRE}}\mathcal{M}_1 \ket{\Psi_{S}^{PRE}} \right|^2 &= g_1^2 \cos^2{\left(c_j \Delta t \right)} + g_0^2 \sin^2{\left(c_j \Delta t \right)} \left| \braket{\sigma_{z}} \right|^2 \label{eq:fidelity_M1}
 	  \end{align}
 	  where 
 	  \begin{equation*}
-		\left| \braket{\sigma_{z}^{j}} \right|^2 = \left| \bra{\Psi_{S}} \sigma_{z}^{j} \ket{\Psi_{S}} \right|^2
+		\left| \braket{\sigma_{z}} \right|^2 = \left| \bra{\Psi_{S}^{PRE}} \sigma_{z} \ket{\Psi_{S}^{PRE}} \right|^2
 	  \end{equation*}
+	  Those quantity corresponds exactly to the definition of \textit{Fidelity} in the case of Pure States : 
+	  \begin{gather}
+	  	\mathcal{F}_{0} = \left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{0}} \right|^2 \\
+	  	\mathcal{F}_{1} = \left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{1}} \right|^2 
+	  \end{gather}
 	  So that the quantity related to the difference between the two \textit{wf} before and after the collision is :
 	  \begin{align}
 	  	nome da inventare = 1 - \left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{0}} \right|^2 \\
 	  	nome da inventare = 1 - \left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{1}} \right|^2
 	  \end{align}
 	  As we could see this quantities depends on the form of the \textit{wf}, for different time steps and different trajectories.
-	  So we need to evaluate this for different values os expectation value of $ \left| \braket{\sigma_{z}^{j}} \right|^2 $ in different unraveling scheme. For this purpose it might be useful to rephrase Eq.\eqref{eq:fidelity_M0} and Eq.\eqref{eq:fidelity_M0} as follows:
+	  So we need to evaluate this for different values of $ \left| \braket{\sigma_{z}^{j}} \right|^2 $ in different unraveling schemes. For this purpose it might be useful to rephrase Eq.\eqref{eq:fidelity_M0} and Eq.\eqref{eq:fidelity_M0} as follows:
 	  
 	  \begin{equation}
-		  	c = \cos^{2} \left( c_{j} \Delta t \right) \quad ; \quad s_{z} = \left| \braket{\sigma_{z}^{j}} \right|^2 = \left| \bra{\Psi_{S}} \sigma_{z}^{j} \ket{\Psi_{S}} \right|^2
+		  	c = \cos^{2} \left( c_{j} \Delta t \right) \quad ; \quad s_{z} = \left| \braket{\sigma_{z}} \right|^2 = \left| \bra{\Psi_{S}} \sigma_{z} \ket{\Psi_{S}} \right|^2
 	  \end{equation}
 	  \begin{align}
 	  	\left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{0}} \right|^2 = g_{0}^{2} \left[ c - s_{z} \left(1 - c \right) \right] + s_{z} \left(1 - c \right) \label{eq:fidelity_M0_ref} \\ 
 	  	\left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{1}} \right|^2 = g_{0}^{2} \left[ s_{z} \left(1 - c \right) - c \right] + c \label{eq:fidelity_M1_ref}
 	  \end{align}
+	  It's important to point out that the value of $ c = \cos^{2} \left( c_{j} \Delta t \right) \approx 1 $ due to the chosen parameters $ c_j $ and $ dt $. This gives consequentially $ 1 - c = \sin^{2} \left( c_{j} \Delta t \right) \approx 10^{-7} \approx 0 $, which is the coefficient that weights $ \left| \braket{\sigma_{z}} \right|^2 $, that could essentially be considered irrelevant.
+	  Moreover it's important to specify what effectively we are calculating with $ \left| \braket{\sigma_{z}} \right|^2 = \left| \bra{\Psi_{S}} \sigma_{z} \ket{\Psi_{S}} \right|^2 $, where:
+	  \begin{gather}
+	  	\sigma_{z} = \sigma_{z}^{1} \otimes \mathbb{I} + \mathbb{I} \otimes \sigma_{z}^{2}
+	  \end{gather}
+	  so that
+	  \begin{align}
+		\left| \braket{\sigma_{z}} \right| = P_{01} - P_{10} - \left( P_{01} - P_{10} \right) = 0
+	  \end{align}
+	  so the second term of Eq.\ref{eq:fidelity_M0} and Eq.\ref{eq:fidelity_M1} vanishes definitely.
+	  
+	  Anyway it could be interesting to evaluate the values of $ \left| \braket{\sigma_{z}}^{j} \right|^2 = \left| \bra{\Psi_{S}} \sigma_{z}^{j} \ket{\Psi_{S}} \right|^2 $ for the single site, comparing it for different unraveling scheme, in order to see if this could give different frequency of "\textit{site visiting}", i.e. if for different unraveling one of the two site is more populated during the dynamic.
+	  First, since $ \left| \braket{\sigma_{z}} \right|^2 \in [0,1] $ it's possible to plot the value of Eq.\ref{eq:fidelity_M0} and Eq.\ref{eq:fidelity_M1} as a function of $ g_{0} $ and $ \left| \braket{\sigma_{z}}^{j} \right| $
+	  
+	  Da questo si vede che la curvatura della parabola è molto piccola in quanto il termine quadratico in sigma z è pesato dal sin cjdt che è circa $10^{-10}$, quindi di fatto trascurabile
 	  
 	  it's important to calculate quanto spesso uno stato e quindi un valore del valore di aspettazione di sigma z viene campionato con diversi unravleing scheme (cosa degli istogrammi).
 	  
@@ -1202,5 +1222,40 @@
 	  
 	  altro plot da fare e quanto gli autostati o in generale i diversi possibili valori dei componenti della sferaa di bloch vengono "campionati durante la dinamica"; questo perchè l'intensità di transiiozne dipende dallo stato in cui si trova il sistema, ad esmepio se sono in autofunzione di sigma z ho cambiamento nullo anche in qj limit. misura su diverse dinamiche con stesso schema di unraveling, misura media su diverse traiettorie; misuro i valori di aspettazione di sigma z ?
 	  ciò che mi aspetto è che un andamento circa uguale per tutti gli shemi di unraveling dove tutti gli stai/valori di aspettazione hanno la stessa probabilità di essere campionati.
-	
+	  
+	  Invece ciò che vediamo nei graficic seguenti sono delle sorte di lorentziane cetrate in 0 in quanto sto misurando sz otimes idensity e quindi solo sz per uno dei due siti, che mi da la diffeerenza di P10 - P01, mediata su più traiettorie che quidi è la lindbald, che tende a 0.5 per ogni P quindi sono + popolati gli stati la cui diffrenza tende a zero.
+	  occhio che Sz su entrambi i siti vuol dire Sz otime 1 - 1 otimes Sz che fa 0!!! quidni il secondo termine che era piccolo èperchè èesato dal seno va effettivamente a zero!!
+	  
+	  \graphicspath{ {/home/francesco/Collisional_Methods/Results/Plot/Probability/Sx_Sy_Sz} }
+	  \begin{figure}[H]
+	  	\centering
+	  	\includegraphics[width=0.7\textwidth]{Sz_distribution_intermediate.png}
+	  	\caption{Distribution of the $ \left| \braket{\sigma_{z}^{j}} \right| $, recorded during the dynamics and average over 10.000 Trajectories}
+	  	\label{fig:Sz_avg}
+	  \end{figure}
+	  
+	  \graphicspath{ {/home/francesco/Collisional_Methods/Results/Plot/Probability/Sx_Sy_Sz} }
+	  \begin{figure}[H]
+	  	\centering
+	  	\includegraphics[width=0.7\textwidth]{Sz_distribution_close_to_90_deg.png}
+	  	\caption{Distribution of the $ \left| \braket{\sigma_{z}^{j}} \right| $, recorded during the dynamics and average over 10.000 Trajectories, for $ \theta $ angle close to 90°}
+	  	\label{fig:Sz_avg_close_to_90}
+	  \end{figure}
+	  
+	  \graphicspath{ {/home/francesco/Collisional_Methods/Results/Plot/Probability/Sx_Sy_Sz} }
+	  \begin{figure}[H]
+	  	\centering
+	  	\includegraphics[width=0.7\textwidth]{Sz_square_distribution_intermediate.png}
+	  	\caption{Distribution of the $ \left| \braket{\sigma_{z}^{j}} \right|^2 $, recorded during the dynamics and average over 10.000 Trajectories}
+	  	\label{fig:Sz_square_avg}
+	  \end{figure}
+	  
+	  \graphicspath{ {/home/francesco/Collisional_Methods/Results/Plot/Probability/Sx_Sy_Sz} }
+	  \begin{figure}[H]
+	  	\centering
+	  	\includegraphics[width=0.7\textwidth]{Sz_square_distribution_close_to_90_deg.png}
+	  	\caption{Distribution of the $ \left| \braket{\sigma_{z}^{j}} \right|^2 $, recorded during the dynamics and average over 10.000 Trajectories, for $ \theta $ angle close to 90°}
+	  	\label{fig:Sz_square_avg_close_to_90}
+	  \end{figure}
+	  
 \end{document}	
