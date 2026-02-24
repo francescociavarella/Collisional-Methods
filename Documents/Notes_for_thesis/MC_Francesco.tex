@@ -10,6 +10,7 @@
 \usepackage{cancel}
 \usepackage[top=3cm, bottom=3cm, left=2cm, right=2cm]{geometry}
 \usepackage{graphicx}
+\usepackage{subcaption}
 \usepackage{float}
 \usetikzlibrary{arrows.meta, angles, quotes}
 
@@ -1182,8 +1183,8 @@
 	  \end{equation*}
 	  Those quantity corresponds exactly to the definition of \textit{Fidelity} in the case of Pure States : 
 	  \begin{gather}
-	  	\mathcal{F}_{0} = \left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{0}} \right|^2 \\
-	  	\mathcal{F}_{1} = \left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{1}} \right|^2 
+	  	\mathcal{F}_{\mathcal{M}_{0}} = \left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{0}} \right|^2 \\
+	  	\mathcal{F}_{\mathcal{M}_{1}} = \left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{1}} \right|^2 
 	  \end{gather}
 	  So that the quantity related to the difference between the two \textit{wf} before and after the collision is :
 	  \begin{align}
@@ -1200,7 +1201,7 @@
 	  	\left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{0}} \right|^2 = g_{0}^{2} \left[ c - s_{z} \left(1 - c \right) \right] + s_{z} \left(1 - c \right) \label{eq:fidelity_M0_ref} \\ 
 	  	\left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{1}} \right|^2 = g_{0}^{2} \left[ s_{z} \left(1 - c \right) - c \right] + c \label{eq:fidelity_M1_ref}
 	  \end{align}
-	  It's important to point out that the value of $ c = \cos^{2} \left( c_{j} \Delta t \right) \approx 1 $ due to the chosen parameters $ c_j $ and $ dt $. This gives consequentially $ 1 - c = \sin^{2} \left( c_{j} \Delta t \right) \approx 10^{-7} \approx 0 $, which is the coefficient that weights $ \left| \braket{\sigma_{z}} \right|^2 $, that could essentially be considered irrelevant.
+	  It's important to point out that the value of $ c = \cos^{2} \left( c_{j} \Delta t \right) \approx 1 $ due to the chosen parameters $ c_j $ and $ dt $. This gives consequentially $ 1 - c = \sin^{2} \left( c_{j} \Delta t \right) \approx 3.046 \times 10^{-10} \approx 0 $, which is the coefficient that weights $ \left| \braket{\sigma_{z}} \right|^2 $, that could essentially be considered irrelevant.
 	  Moreover it's important to specify what effectively we are calculating with $ \left| \braket{\sigma_{z}} \right|^2 = \left| \bra{\Psi_{S}} \sigma_{z} \ket{\Psi_{S}} \right|^2 $, where:
 	  \begin{gather}
 	  	\sigma_{z} = \sigma_{z}^{1} \otimes \mathbb{I} + \mathbb{I} \otimes \sigma_{z}^{2}
@@ -1212,50 +1213,110 @@
 	  so the second term of Eq.\ref{eq:fidelity_M0} and Eq.\ref{eq:fidelity_M1} vanishes definitely.
 	  
 	  Anyway it could be interesting to evaluate the values of $ \left| \braket{\sigma_{z}}^{j} \right|^2 = \left| \bra{\Psi_{S}} \sigma_{z}^{j} \ket{\Psi_{S}} \right|^2 $ for the single site, comparing it for different unraveling scheme, in order to see if this could give different frequency of "\textit{site visiting}", i.e. if for different unraveling one of the two site is more populated during the dynamic.
-	  First, since $ \left| \braket{\sigma_{z}} \right|^2 \in [0,1] $ it's possible to plot the value of Eq.\ref{eq:fidelity_M0} and Eq.\ref{eq:fidelity_M1} as a function of $ g_{0} $ and $ \left| \braket{\sigma_{z}}^{j} \right| $
 	  
-	  Da questo si vede che la curvatura della parabola è molto piccola in quanto il termine quadratico in sigma z è pesato dal sin cjdt che è circa $10^{-10}$, quindi di fatto trascurabile
-	  
-	  it's important to calculate quanto spesso uno stato e quindi un valore del valore di aspettazione di sigma z viene campionato con diversi unravleing scheme (cosa degli istogrammi).
-	  
-	  valutare con diversi valori di aspettazione di sigma z come cambia l'andamento delle quantià che determinano l'intensità della variazione con diversi ssitemi di unraveling. Qui si può fare un plot 3D o diversi plot selezionando o metodi diversi di unraveling o diversi valori di aspettazione.
-	  
-	  altro plot da fare e quanto gli autostati o in generale i diversi possibili valori dei componenti della sferaa di bloch vengono "campionati durante la dinamica"; questo perchè l'intensità di transiiozne dipende dallo stato in cui si trova il sistema, ad esmepio se sono in autofunzione di sigma z ho cambiamento nullo anche in qj limit. misura su diverse dinamiche con stesso schema di unraveling, misura media su diverse traiettorie; misuro i valori di aspettazione di sigma z ?
-	  ciò che mi aspetto è che un andamento circa uguale per tutti gli shemi di unraveling dove tutti gli stai/valori di aspettazione hanno la stessa probabilità di essere campionati.
-	  
-	  Invece ciò che vediamo nei graficic seguenti sono delle sorte di lorentziane cetrate in 0 in quanto sto misurando sz otimes idensity e quindi solo sz per uno dei due siti, che mi da la diffeerenza di P10 - P01, mediata su più traiettorie che quidi è la lindbald, che tende a 0.5 per ogni P quindi sono + popolati gli stati la cui diffrenza tende a zero.
-	  occhio che Sz su entrambi i siti vuol dire Sz otime 1 - 1 otimes Sz che fa 0!!! quidni il secondo termine che era piccolo èperchè èesato dal seno va effettivamente a zero!!
-	  
-	  \graphicspath{ {/home/francesco/Collisional_Methods/Results/Plot/Probability/Sx_Sy_Sz} }
+	  First, since $ \left| \braket{\sigma_{z}} \right| \in [-1,1] $ and $ g_{0} \in [0,1] $, it's possible to plot the value of Eq.\ref{eq:fidelity_M0} and Eq.\ref{eq:fidelity_M1} as a function of $ g_{0} $ and $ \left| \braket{\sigma_{z}}^{j} \right| $ : 
+	   \graphicspath{ {/home/francesco/Collisional_Methods/Results/Plot/Probability/Fidelity} }
 	  \begin{figure}[H]
 	  	\centering
-	  	\includegraphics[width=0.7\textwidth]{Sz_distribution_intermediate.png}
-	  	\caption{Distribution of the $ \left| \braket{\sigma_{z}^{j}} \right| $, recorded during the dynamics and average over 10.000 Trajectories}
-	  	\label{fig:Sz_avg}
+	  	\includegraphics[width=0.9\textwidth]{Fidelity_g0_Sz.png}
+	  	\caption{Fidelity as a function of $ \left| \braket{\sigma_{z}^{j}} \right| $ and $ g_0 $}
+	  	\label{fig:Fidelity_g0_Sz}
 	  \end{figure}
-	  
-	  \graphicspath{ {/home/francesco/Collisional_Methods/Results/Plot/Probability/Sx_Sy_Sz} }
+	  Taking some slices of the 3D plot we see that : 
+	  \graphicspath{ {/home/francesco/Collisional_Methods/Results/Plot/Probability/Fidelity} }
 	  \begin{figure}[H]
 	  	\centering
-	  	\includegraphics[width=0.7\textwidth]{Sz_distribution_close_to_90_deg.png}
-	  	\caption{Distribution of the $ \left| \braket{\sigma_{z}^{j}} \right| $, recorded during the dynamics and average over 10.000 Trajectories, for $ \theta $ angle close to 90°}
-	  	\label{fig:Sz_avg_close_to_90}
+	  	\includegraphics[width=0.6\textwidth]{Fidelity_g0.png}
+	  	\caption{Fidelity as a function of only $ g_0 $. This result is approximately the same for every different value of $ \left| \braket{\sigma_{z}^{j}} \right| $ }
+	  	\label{fig:Fidelity_g0}
 	  \end{figure}
-	  
-	  \graphicspath{ {/home/francesco/Collisional_Methods/Results/Plot/Probability/Sx_Sy_Sz} }
+	  \graphicspath{ {/home/francesco/Collisional_Methods/Results/Plot/Probability/Fidelity/} }
 	  \begin{figure}[H]
 	  	\centering
-	  	\includegraphics[width=0.7\textwidth]{Sz_square_distribution_intermediate.png}
-	  	\caption{Distribution of the $ \left| \braket{\sigma_{z}^{j}} \right|^2 $, recorded during the dynamics and average over 10.000 Trajectories}
-	  	\label{fig:Sz_square_avg}
+	  	% First Pannel(a)
+	  	\begin{subfigure}[b]{0.48\textwidth}
+	  		\centering
+	  		\includegraphics[width=\textwidth]{Fidelity_Sz_1.png}
+	  		\caption{}
+	  		\label{fig:Fidelity_Sz_1}
+	  	\end{subfigure}
+	  	\hfill
+	  	% Second Pannel (b)
+	  	\begin{subfigure}[b]{0.48\textwidth}
+	  		\centering
+	  		\includegraphics[width=\textwidth]{Fidelity_Sz_2.png}
+	  		\caption{}
+	  		\label{fig:Fidelity_Sz_2}
+	  	\end{subfigure}
+	  	
+	  	\caption{Fidelity as a function of only $\left| \braket{\sigma_{z}^{j}} \right|$ for different values of $g_0$. Panel (a) shows the results for $ g_{0} = 0.82 $, while panel (b) displays the outcome for $ g_{0} = 0.60 $.}
+	  	\label{fig:Fidelity_Sz}
 	  \end{figure}
 	  
-	  \graphicspath{ {/home/francesco/Collisional_Methods/Results/Plot/Probability/Sx_Sy_Sz} }
+	  This plots gives confirmation of the fact that the second term proportional to $\left| \braket{\sigma_{z}^{j}} \right|$ it's negligible, in fact we have the same results for different value of $\left| \braket{\sigma_{z}^{j}} \right|$ in Fig.\ref{fig:Fidelity_g0} and there's no quadratic dependence on $\left| \braket{\sigma_{z}^{j}} \right|$ in Fig.\ref{fig:Fidelity_Sz}, where the Fidelity essentially are constants equal to :
+	  \begin{gather}
+	  	\mathcal{F}_{\mathcal{M}_{0}} \approx g_{0}^{2} \cos^{2}\left(c_{j} \Delta t \right) \\
+	  	\mathcal{F}_{\mathcal{M}_{1}} \approx \left(1 - g_{0}^{2}\right) \cos^{2}\left(c_{j} \Delta t \right)
+	  \end{gather}
+	  
+	  Another important thing to check is the distribution of $\left| \braket{\sigma_{z}^{j}} \right|$ and $\left| \braket{\sigma_{z}^{j}} \right|^2$ recorded during the dynamics for different \textit{Unraveling Scheme}. With this results we should see if different unraveling gives different values of the quantities described above, i.e. some states are more visited or one site is more populated during the trajectories. This could directly affect the fidelity, which also depends, and in a practically irrelevant way, on $\left| \braket{\sigma_{z}^{j}} \right|$ which in turn depends on the sampled state at each time step (for example, eigenstates of $ \sigma_{z} $ would have $ \mathcal{F} = 1 $, i.e. rotation around the z-axis is irrelevant).
+	  
+	  At this purpose for every Trajectory and at every time step th values of $\left| \braket{\sigma_{z}^{1}} \right|$ and $\left| \braket{\sigma_{z}^{2}} \right|$ were calculated and stored in two matrices \texttt{Sz\_matrix\_1(n\_times, N\_traj)} and \texttt{Sz\_matrix\_2(n\_times, N\_traj)}; notice that :
+	  \begin{gather}
+			\left| \braket{\sigma_{z}^{1}} \right| = \left| \bra{\Psi_{S}} \sigma_{z}^{1} \ket{\Psi_{S}} \right| \quad \text{where} \quad \sigma_{z}^{1} = \sigma_{z} \otimes \mathbb{I} \\
+			\left| \braket{\sigma_{z}^{2}} \right| = \left| \bra{\Psi_{S}} \sigma_{z}^{2} \ket{\Psi_{S}} \right| \quad \text{where} \quad \sigma_{z}^{2} = \mathbb{I} \otimes \sigma_{z}
+	  \end{gather}
+	  Once we've obtained \texttt{Sz\_matrix\_1(n\_times, N\_traj)} and \texttt{Sz\_matrix\_2(n\_times, N\_traj)}, it's possible to calculate the average value over the trajectories and then the square values, that enter in Eq.\ref{eq:fidelity_M0} and Eq.\ref{eq:fidelity_M1}. Finally, the temporal distribution of these results was visualized using histograms : 
+	  
+	  \graphicspath{ {/home/francesco/Collisional_Methods/Results/Plot/Probability/Sx_Sy_Sz/} }
+	  
 	  \begin{figure}[H]
 	  	\centering
-	  	\includegraphics[width=0.7\textwidth]{Sz_square_distribution_close_to_90_deg.png}
-	  	\caption{Distribution of the $ \left| \braket{\sigma_{z}^{j}} \right|^2 $, recorded during the dynamics and average over 10.000 Trajectories, for $ \theta $ angle close to 90°}
-	  	\label{fig:Sz_square_avg_close_to_90}
+	  	% First Panel(a)
+	  	\begin{subfigure}[b]{0.48\textwidth}
+	  		\centering
+	  		\includegraphics[width=\textwidth]{Sz_distribution_intermediate.png}
+	  		\caption{}
+	  		\label{fig:Sz_avg}
+	  	\end{subfigure}
+	  	\hfill
+	  	% Second Panel(b)
+	  	\begin{subfigure}[b]{0.48\textwidth}
+	  		\centering
+	  		\includegraphics[width=\textwidth]{Sz_square_distribution_intermediate.png}
+	  		\caption{}
+	  		\label{fig:Sz_square_avg}
+	  	\end{subfigure}
+	  	\caption{Distribution of $\left| \braket{\sigma_{z}^{1}} \right|$ in panel (a), and $\left| \braket{\sigma_{z}^{1}} \right|^2$ in panel (b), recorded during the dynamics and averaged over 10,000 trajectories.}
+	  	\label{fig:Sz_distributions}
 	  \end{figure}
+	  
+	  \begin{figure}[H]
+	  	\centering
+	  	% First Panel(a)
+	  	\begin{subfigure}[b]{0.48\textwidth}
+	  		\centering
+	  		\includegraphics[width=\textwidth]{Sz_distribution_close_to_90_deg.png}
+	  		\caption{}
+	  		\label{fig:Sz_avg_close_to_90}
+	  	\end{subfigure}
+	  	\hfill
+	  	% Second Panel(b)
+	  	\begin{subfigure}[b]{0.48\textwidth}
+	  		\centering
+	  		\includegraphics[width=\textwidth]{Sz_square_distribution_close_to_90_deg.png}
+	  		\caption{}
+	  		\label{fig:Sz_square_avg_close_to_90}
+	  	\end{subfigure}
+	  	\caption{Distribution of $\left| \braket{\sigma_{z}^{1}} \right|$ in panel (a), and $\left| \braket{\sigma_{z}^{1}} \right|^2$ in panel (b), recorded during the dynamics and averaged over 10,000 trajectories, for angles close to 90°.}
+	  	\label{fig:Sz_distributions_close_to_90_deg}
+	  \end{figure}
+	  
+	  As expected the histograms give the same distribution for different unraveling scheme, which is centered in 0.0, since the \textit{Ensamble Average}, over the trajectories, reproduces the Lindblad distribution of $ \braket{\sigma_{z}^{j}} $, so since the dynamics of the site populatin is a dumped oscillation towards the value 0.5 and $ \braket{\sigma_{z}^{j}} \propto P_{10} - P_{01} $, values close to 0.0 should be sampled more often. Consequentially the squared values are just the squared positive part of the $ \braket{\sigma_{z}^{j}} $ distribution. 
+	  
+	  Notice that only $ \braket{\sigma_{z}^{j}} $ is calculated since this value i related to the single site, where in the \textit{Dephasing Dynamics} where only the excited states are populated, $ \braket{\sigma_{x}^{j}} = \braket{\sigma_{y}^{j}} = 0 $.
+	  
+	  plot istogrammi non mediati per singola traiettoria e calcolo varianza
+	  
 	  
 \end{document}	
