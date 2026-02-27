@@ -1269,7 +1269,6 @@
 	  Once we've obtained \texttt{Sz\_matrix\_1(n\_times, N\_traj)} and \texttt{Sz\_matrix\_2(n\_times, N\_traj)}, it's possible to calculate the average value over the trajectories and then the square values, that enter in Eq.\ref{eq:fidelity_M0} and Eq.\ref{eq:fidelity_M1}. Finally, the temporal distribution of these results was visualized using histograms : 
 	  
 	  \graphicspath{ {/home/francesco/Collisional_Methods/Results/Plot/Probability/Sx_Sy_Sz/} }
-	  
 	  \begin{figure}[H]
 	  	\centering
 	  	% First Panel(a)
@@ -1317,6 +1316,15 @@
 	  Notice that only $ \braket{\sigma_{z}^{j}} $ is calculated since this value i related to the single site, where in the \textit{Dephasing Dynamics} where only the excited states are populated, $ \braket{\sigma_{x}^{j}} = \braket{\sigma_{y}^{j}} = 0 $.
 	  
 	  plot istogrammi non mediati per singola traiettoria e calcolo varianza
+	  
+	  \graphicspath{ {/home/francesco/Collisional_Methods/Results/Plot/Probability/Fidelity/} }
+	  \begin{figure}[H]
+	  	\centering
+	  	\includegraphics[width=\textwidth]{comparison_Coherence_Lindblad_Avg_traj.png}
+	  	\caption{}
+	  	\label{fig:comparison_Coherence_Lindblad_Avg_traj}
+	  \end{figure}
+	  The 
 	  
 	  
 \end{document}	
