@@ -1230,7 +1230,130 @@ so that :
 \begin{equation}
 	\ket{\psi_{S}^{Post}} = \frac{\mathcal{M}_{0}^{j}}{\sqrt{P_{0_{a}}}} \ket{\psi_{S}}
 \end{equation}
-since the bare \textit{Kraus Operators} inherently include the event probability, we must divide by $ \sqrt{P_{0_{a}}} $ to correctly normalize the post-collision state
+since the bare \textit{Kraus Operators} inherently include the event probability, we must divide by $ \sqrt{P_{0_{a}}} $ to correctly normalize the post-collision state.
+ 
+\newpage 
+So far we've seen only the \textbf{Single Site Kraus Operators}, i.e. the operators acting only on one of the two site. In an analogous way we can derive the \textit{Kraus Operators} acting on both the site, i.e. on the total wave function of the system. It's important to specify that, since we're analyzing only the Collisional evolution, one has to remember that before this one there's the coherent evolution via the excitonic Hamiltonian, which can generate entanglement between the wave functions of the single site, so in this case the Total System wave function becomes :
+\begin{gather}
+	\ket{\Psi_{S}} = c_{00} \ket{0_{1}0_{2}} + c_{10} \ket{1_{1}0_{2}} + c_{01} \ket{0_{1}1_{2}} + c_{11} \ket{1_{1}1_{2}} \\
+	\left(\text{where}  \ket{0_{1}0_{2}} = \ket{0_{1}} \otimes \ket{0_{2}}\right) \notag
+\end{gather}
+For the Ancilla instead, since every site has and independent reservoir of ancillas and before the collision the ancilla is always taken in its initial state, i.e. without any entanglement, the total ancilla \textit{wf} reads :
+\begin{gather}
+	\ket{\Phi_{A}} = \ket{\phi_{a}^{1}} \otimes \ket{\phi_{a}^{2}} \\
+	\text{where} \ket{\phi_{a}^{1}} = g_{0} \ket{0_{a}} + g_{1} \ket{1_{a}} =  \ket{\phi_{a}^{2}} \notag
+\end{gather}
+As already done for the single site, to obtain the Total \textit{Kraus Operators} we can start from the evolution of the total wf via :
+\begin{gather}
+	\mathcal{U}_{Coll}^{Tot} \left(\Delta t\right) = \exp{ -i \sum_{j}{\mathcal{H}_{Coll}^{j}} \Delta t } = \exp{-i \sum_{j}{c_{j} \sigma_{z}^{j} \otimes \left( g_{x} \sigma_{x}^{a_{j}} + g_{z} \sigma_{z}^{a_{j}} \right) \Delta t}} \notag \\
+	\exp{ \left(-i \mathcal{H}_{Coll}^{1} \Delta t\right) } \exp{ \left(-i \mathcal{H}_{Coll}^{2} \Delta t\right) } = \mathcal{U}_{Coll}^{1} \otimes \mathcal{U}_{Coll}^{2}
+\end{gather}
+where it's important to remember that :
+\begin{gather}
+	\sigma_{z}^{1} = \sigma_{z} \otimes \mathbb{I} \quad ; \quad 	\sigma_{z}^{2} = \mathbb{I} \otimes \sigma_{z} \notag \\
+	\left[ \mathcal{H}_{Coll}^{1}, \mathcal{H}_{Coll}^{2} \right] = 0
+\end{gather}
+this allows to define the evolution pf the total wave function as it follows : 
+\begin{align}
+	\ket{\Psi \left(t + \Delta t\right)} &= \mathcal{U}_{Coll}^{Tot} \ket{\Psi \left(t\right)} = \mathcal{U}_{Coll}^{1} \otimes \mathcal{U}_{Coll}^{2} \Big[ \left( c_{00} \ket{0_{1}0_{2}} + c_{10} \ket{1_{1}0_{2}} + c_{01} \ket{0_{1}1_{2}} + c_{11} \ket{1_{1}1_{2}} \right) \otimes \ket{\phi_{a}^{1}} \otimes \ket{\phi_{a}^{2}} \Big] \notag \\
+	& = \mathcal{U}_{Coll}^{1} \otimes \mathcal{U}_{Coll}^{2} \Big[ c_{00} \left(\ket{0_{1}} \otimes \ket{\phi_{a}^{1}} \right) \otimes \left(\ket{0_{2}} \otimes \ket{\phi_{a}^{2}} \right) + c_{10} \left(\ket{1_{1}} \otimes \ket{\phi_{a}^{1}} \right) \otimes \left(\ket{0_{2}} \otimes \ket{\phi_{a}^{2}} \right) \notag \\
+	& + c_{01} \left(\ket{0_{1}} \otimes \ket{\phi_{a}^{1}} \right) \otimes \left(\ket{1_{2}} \otimes \ket{\phi_{a}^{2}} \right) + c_{11} \left(\ket{1_{1}} \otimes \ket{\phi_{a}^{1}} \right) \otimes \left(\ket{1_{2}} \otimes \ket{\phi_{a}^{2}} \right) \Big]
+	\label{eq:total_kraus_op_derivation_first_part}
+\end{align}
+let's focus on the first term in the square bracket, that reads:
+\begin{align}
+	& \mathcal{U}_{Coll}^{1} \otimes \mathcal{U}_{Coll}^{2} \left[ c_{00} \left(\ket{0_{1}} \otimes \ket{\phi_{a}^{1}} \right) \otimes \left(\ket{0_{2}} \otimes \ket{\phi_{a}^{2}} \right) \right] \notag \\
+	& = c_{00} \left\{ \left[ \mathcal{U}_{Coll}^{1} \left(\ket{0_{1}} \otimes \ket{\phi_{a}^{1}} \right)\right] \otimes \left[ \mathcal{U}_{Coll}^{2}  \left(\ket{0_{2}} \otimes \ket{\phi_{a}^{2}} \right) \right] \right\} 
+	\label{eq:first_term_complete_derivation}
+\end{align}
+and again on the first term in the curly brackets : 
+\begin{align}
+	&\mathcal{U}_{Coll}^{1} \left(\ket{0_{1}} \otimes \ket{\phi_{a}^{1}} \right) = \mathcal{U}_{Coll}^{1} \left(\ket{0_{1}} \otimes \left(  g_{0} \ket{0_{a}} + g_{1} \ket{1_{a}}  \right) \right) \notag \\ 
+	&= g_{0} \mathcal{U}_{Coll}^{1} \ket{0_{1}} \otimes \ket{0_{a}} + g_{1} \mathcal{U}_{Coll}^{1} \ket{0_{1}} \otimes \ket{1_{a}} \notag \\ 
+	& = \mathcal{M}_{0}^{1} \ket{0_{1}} \otimes \ket{0_{a}} + \mathcal{M}_{1}^{1} \ket{0_{1}} \otimes \ket{1_{a}}
+	\label{eq:first_first_term_complete_derivation}
+\end{align}
+where the last equation is based on what was calculated in Eq.\ref{eq:MO_M1_psi_evo}. 
+
+\newpage
+
+This is valid for the second term of Eq.\ref{eq:first_term_complete_derivation} so that we obtain :
+\begin{align}
+	& \mathcal{U}_{Coll}^{1} \otimes \mathcal{U}_{Coll}^{2} \left[ c_{00} \left(\ket{0_{1}} \otimes \ket{\phi_{a}^{1}} \right) \otimes \left(\ket{0_{2}} \otimes \ket{\phi_{a}^{2}} \right) \right] = c_{00} \left\{ \left[ \mathcal{U}_{Coll}^{1} \left(\ket{0_{1}} \otimes \ket{\phi_{a}^{1}} \right)\right] \otimes \left[ \mathcal{U}_{Coll}^{2} \left(\ket{0_{2}} \otimes \ket{\phi_{a}^{2}} \right) \right] \right\} \notag \\
+	& = c_{00} \left[ \mathcal{M}_{0}^{1} \ket{0_{1}} \otimes \ket{0_{a}} + \mathcal{M}_{1}^{1} \ket{0_{1}} \otimes \ket{1_{a}} \right] \otimes \left[ \mathcal{M}_{0}^{2} \ket{0_{2}} \otimes \ket{0_{a}} + \mathcal{M}_{1}^{2} \ket{0_{2}} \otimes \ket{1_{a}} \right] \notag \\
+	& = c_{00} \Big[ \mathcal{M}_{0}^{1} \mathcal{M}_{0}^{2} \ket{0_{1}0_{2}} \ket{0_{a}^{1}0_{a}^{2}} + \mathcal{M}_{0}^{1} \mathcal{M}_{1}^{2} \ket{0_{1}0_{2}} \ket{0_{a}^{1}1_{a}^{2}} + \mathcal{M}_{1}^{1} \mathcal{M}_{0}^{2} \ket{0_{1}0_{2}} \ket{1_{a}^{1}0_{a}^{2}} + \mathcal{M}_{1}^{1} \mathcal{M}_{1}^{2} \ket{0_{1}0_{2}} \ket{1_{a}^{1}1_{a}^{2}} \Big] \notag
+\end{align}
+if we redefine :
+\begin{gather*}
+	\mathcal{M}_{00} = \mathcal{M}_{0}^{1} \otimes \mathcal{M}_{0}^{2} \\
+	\mathcal{M}_{10} = \mathcal{M}_{1}^{1} \otimes \mathcal{M}_{0}^{2} \\
+	\mathcal{M}_{01} = \mathcal{M}_{0}^{1} \otimes \mathcal{M}_{1}^{2} \\
+	\mathcal{M}_{11} = \mathcal{M}_{1}^{1} \otimes \mathcal{M}_{1}^{2} 
+\end{gather*}
+
+This derivation, i.e. Eq.\ref{eq:first_term_complete_derivation}, is valid for every different term of the expansion of the Total System wave function : $ \ket{0_{1}0_{2}}, \ket{1_{1}0_{2}}, \ket{0_{1}1_{2}}, \ket{1_{1}1_{2}}  $. This because effectively $ \mathcal{M}_{\alpha, \beta} $ are \textit{Kraus Operators}, i.e. their form depends only on the Bath states. So Eq.\ref{eq:total_kraus_op_derivation_first_part} becomes :
+\begin{align}
+	\ket{\Psi \left( t + \Delta t\right)} &= c_{00} \Big[ \mathcal{M}_{0}^{1} \mathcal{M}_{0}^{2} \ket{0_{1}0_{2}} \otimes \ket{0_{a}^{1}0_{a}^{2}} + \mathcal{M}_{0}^{1} \mathcal{M}_{1}^{2} \ket{0_{1}0_{2}} \otimes \ket{0_{a}^{1}1_{a}^{2}} \notag \\
+	& + \mathcal{M}_{1}^{1} \mathcal{M}_{0}^{2} \ket{0_{1}0_{2}} \otimes \ket{1_{a}^{1}0_{a}^{2}} + \mathcal{M}_{1}^{1} \mathcal{M}_{1}^{2} \ket{0_{1}0_{2}} \otimes \ket{1_{a}^{1}1_{a}^{2}} \Big] \notag \\
+	&+ c_{10} \Big[ \mathcal{M}_{0}^{1} \mathcal{M}_{0}^{2} \ket{1_{1}0_{2}} \otimes \ket{0_{a}^{1}0_{a}^{2}} + \mathcal{M}_{0}^{1} \mathcal{M}_{1}^{2} \ket{1_{1}0_{2}} \otimes \ket{0_{a}^{1}1_{a}^{2}} \notag \\
+	& + \mathcal{M}_{1}^{1} \mathcal{M}_{0}^{2} \ket{1_{1}0_{2}} \otimes \ket{1_{a}^{1}0_{a}^{2}} + \mathcal{M}_{1}^{1} \mathcal{M}_{1}^{2} \ket{1_{1}0_{2}} \otimes \ket{1_{a}^{1}1_{a}^{2}} \Big] \notag \\
+	&+ c_{01} \Big[ \mathcal{M}_{0}^{1} \mathcal{M}_{0}^{2} \ket{0_{1}1_{2}} \otimes \ket{0_{a}^{1}0_{a}^{2}} + \mathcal{M}_{0}^{1} \mathcal{M}_{1}^{2} \ket{0_{1}1_{2}} \otimes \ket{0_{a}^{1}1_{a}^{2}} \notag \\
+	& + \mathcal{M}_{1}^{1} \mathcal{M}_{0}^{2} \ket{0_{1}1_{2}} \otimes \ket{1_{a}^{1}0_{a}^{2}} + \mathcal{M}_{1}^{1} \mathcal{M}_{1}^{2} \ket{0_{1}1_{2}} \otimes \ket{1_{a}^{1}1_{a}^{2}} \Big] \notag \\
+	&+ c_{11} \Big[ \mathcal{M}_{0}^{1} \mathcal{M}_{0}^{2} \ket{1_{1}1_{2}} \otimes \ket{0_{a}^{1}0_{a}^{2}} + \mathcal{M}_{0}^{1} \mathcal{M}_{1}^{2} \ket{1_{1}1_{2}} \otimes \ket{0_{a}^{1}1_{a}^{2}} \notag \\
+	& + \mathcal{M}_{1}^{1} \mathcal{M}_{0}^{2} \ket{1_{1}1_{2}} \otimes \ket{1_{a}^{1}0_{a}^{2}} + \mathcal{M}_{1}^{1} \mathcal{M}_{1}^{2} \ket{1_{1}1_{2}} \otimes \ket{1_{a}^{1}1_{a}^{2}} \Big] \notag
+\end{align}
+that can be reformulated as :
+\begin{align}
+	\ket{\Psi \left( t + \Delta t\right)} &= \mathcal{M}_{00} \ket{\Psi_{S}} \otimes \ket{0_{a}^{1}0_{a}^{2}} + \mathcal{M}_{01} \ket{\Psi_{S}} \otimes \ket{0_{a}^{1}1_{a}^{2}} + \mathcal{M}_{10} \ket{\Psi_{S}} \otimes \ket{1_{a}^{1}0_{a}^{2}} + \mathcal{M}_{11} \ket{\Psi_{S}} \otimes \ket{1_{a}^{1}1_{a}^{2}} \notag \\
+	& = \sum_{\alpha,\beta = 0,1}{\mathcal{M}_{\alpha, \beta} \ket{\Psi_{S}} \otimes \ket{\alpha_{a}^{1}\beta_{a}^{2}} }
+	\label{eq:final_evo_via_total_kraus_op}
+\end{align}
+We can now explicit the form of $ \mathcal{M}_{\alpha, \beta} $ we obtain :
+\begin{align}
+	\mathcal{M}_{00} &= g_0^2 \cos(c_1 \Delta t) \cos(c_2 \Delta t) \mathbb{I} - g_1^2 \sin(c_1 \Delta t) \sin(c_2 \Delta t) \sigma_z \otimes \sigma_z \notag \\
+	&+ i g_0 g_1 \sin(c_1 \Delta t) \cos(c_2 \Delta t) \sigma_z^1 + i g_0 g_1 \cos(c_1 \Delta t) \sin(c_2 \Delta t) \sigma_z^2\\
+	\mathcal{M}_{01} &= g_0 g_1 \cos(c_1 \Delta t) \cos(c_2 \Delta t) \mathbb{I} + g_0 g_1 \sin(c_1 \Delta t) \sin(c_2 \Delta t) \sigma_z \otimes \sigma_z \notag \\
+	& + i g_1^2 \sin(c_1 \Delta t) \cos(c_2 \Delta t) \sigma_z^1 - i g_0^2 \cos(c_1 \Delta t) \sin(c_2 \Delta t) \sigma_z^2 \\
+	\mathcal{M}_{10} &= g_0 g_1 \cos(c_1 \Delta t) \cos(c_2 \Delta t) \mathbb{I} + g_0 g_1 \sin(c_1 \Delta t) \sin(c_2 \Delta t) \sigma_z \otimes \sigma_z \notag \\
+	& - i g_0^2 \sin(c_1 \Delta t) \cos(c_2 \Delta t) \sigma_z^1 + i g_1^2 \cos(c_1 \Delta t) \sin(c_2 \Delta t) \sigma_z^2 \\
+	\mathcal{M}_{11} &= g_1^2 \cos(c_1 \Delta t) \cos(c_2 \Delta t) \mathbb{I} - g_0^2 \sin(c_1 \Delta t) \sin(c_2 \Delta t) \sigma_z \otimes \sigma_z \notag \\
+	& - i g_0 g_1 \sin(c_1 \Delta t) \cos(c_2 \Delta t) \sigma_z^1 - i g_0 g_1 \cos(c_1 \Delta t) \sin(c_2 \Delta t) \sigma_z^2
+\end{align}
+since $ \sigma_z \otimes \mathbb{I} \, \mathbb{I} \otimes \sigma_z = \sigma_z \otimes \sigma_z $. Considering $ c_1 = c_2 $, which is the case needed to reproduce the dephasing Lindblad effect it simplifies as :
+\begin{align}
+	\mathcal{M}_{00} &= g_0^2 \cos^2(c \Delta t) (\mathbb{I} \otimes \mathbb{I}) - g_1^2 \sin^2(c \Delta t) (\sigma_z \otimes \sigma_z) \notag \\ 
+	& + i g_0 g_1 \sin(c \Delta t) \cos(c \Delta t) (\sigma_z \otimes \mathbb{I} + \mathbb{I} \otimes \sigma_z ) \\
+	\mathcal{M}_{01} &= g_0 g_1 \cos^2(c \Delta t) (\mathbb{I} \otimes \mathbb{I}) + g_0 g_1 \sin^2(c \Delta t) (\sigma_z \otimes \sigma_z) \notag \\
+	& + i g_1^2 \sin(c \Delta t) \cos(c \Delta t) (\sigma_z \otimes \mathbb{I}) - i g_0^2 \sin(c \Delta t) \cos(c \Delta t) (\mathbb{I} \otimes \sigma_z) \\
+	\mathcal{M}_{10} &= g_0 g_1 \cos^2(c \Delta t) (\mathbb{I} \otimes \mathbb{I})  + g_0 g_1 \sin^2(c \Delta t) (\sigma_z \otimes \sigma_z) \notag \\
+	& - i g_0^2 \sin(c \Delta t) \cos(c \Delta t) (\sigma_z \otimes \mathbb{I}) + i g_1^2 \sin(c \Delta t) \cos(c \Delta t) (\mathbb{I} \otimes \sigma_z) \\
+	\mathcal{M}_{11} &= g_1^2 \cos^2(c \Delta t) (\mathbb{I} \otimes \mathbb{I}) - g_0^2 \sin^2(c \Delta t) (\sigma_z \otimes \sigma_z) \notag \\
+	& - i g_0 g_1 \sin(c \Delta t) \cos(c \Delta t) (\sigma_z \otimes \mathbb{I} + \mathbb{I} \otimes \sigma_z)
+\end{align}
+Another simplification can be made in the specific case of the \textit{Exciton Dimer}, where we always have $ c_{00} = c_{11} = 0 $; in this case :
+\begin{gather}
+	\sigma_z \otimes \mathbb{I} + \mathbb{I} \otimes \sigma_z = 0 \notag \\
+	\text{and} \notag \\
+	\sigma_{z}^{1} = - \sigma_{z}^{2} \left( \sigma_{z} \otimes \mathbb{I} = - \mathbb{I} \otimes \sigma_z  \right) \notag \\
+	\text{so that} \notag \\
+	\sigma_{z}^{1} \sigma_{z}^{2} = - \mathbb{I} \otimes \mathbb{I} \notag
+\end{gather}
+so in this case the \textit{Kraus Operators} become : 
+\begin{align}
+	\mathcal{M}_{00} &= \left[ g_0^2 \cos^2(c \Delta t) + g_1^2 \sin^2(c \Delta t) \right] \mathbb{I} \\
+	\mathcal{M}_{01} &= g_0 g_1 \left[ \cos^2(c \Delta t) - \sin^2(c \Delta t) \right] \mathbb{I} + i \sin(c \Delta t) \cos(c \Delta t) (\sigma_z \otimes \mathbb{I}) \\
+	\mathcal{M}_{10} &= g_0 g_1 \left[ \cos^2(c \Delta t) - \sin^2(c \Delta t) \right] \mathbb{I} - i \sin(c \Delta t) \cos(c \Delta t) (\sigma_z \otimes \mathbb{I}) \\
+	\mathcal{M}_{11} &= \left[ g_1^2 \cos^2(c \Delta t) + g_0^2 \sin^2(c \Delta t) \right] \mathbb{I}
+\end{align}
+
+The completeness relation is confirmed also in the general case, without any restrictions on the single-excitation subspace or the local interaction frequencies ($c_1 \neq c_2$). Thanks to the separability of the global Kraus operators, the proof naturally unfolds from the algebraic properties of the tensor product:
+\begin{align}
+	\sum_{a,b} \mathcal{M}_{ab}^{tot \dagger} \mathcal{M}_{ab}^{tot} &= \sum_{a,b} \left( \mathcal{M}_a^{1} \otimes \mathcal{M}_b^{2} \right)^\dagger \left( \mathcal{M}_a^{1} \otimes \mathcal{M}_b^{2} \right) \notag \\
+	&= \sum_{a,b} \left( \mathcal{M}_a^{1 \dagger} \mathcal{M}_a^{1} \right) \otimes \left( \mathcal{M}_b^{2 \dagger} \mathcal{M}_b^{2} \right) \notag \\
+	&= \left( \sum_{a=0}^{1} \mathcal{M}_a^{1 \dagger} \mathcal{M}_a^{1} \right) \otimes \left( \sum_{b=0}^{1} \mathcal{M}_b^{2 \dagger} \mathcal{M}_b^{2} \right) \notag \\
+	&= \mathbb{I}_1 \otimes \mathbb{I}_2 \notag \\
+	&= \mathbb{I}_{tot}
+\end{align}
 
 \newpage
 
