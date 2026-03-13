@@ -143,4 +143,6 @@ dependencies:
       - pillow==12.0.0
       - pytz==2025.2
       - tzdata==2025.2
+      - ipywidgets
+      - ipympl
 prefix: /home/francesco/miniconda3/envs/mc
