@@ -1120,8 +1120,8 @@ Now we can calculate :
 
 Or in another formulation :
 \begin{align}
-	P_{0_a} & = g_0^2 \cos^2(c_j \Delta t) + g_1^2 \sin^2(c_j \Delta t) \\
-	P_{1_a} & = g_1^2 \cos^2(c_j \Delta t) + g_0^2 \sin^2(c_j \Delta t)
+	P_{0_a} & = g_0^2 \cos^2(c_j \Delta t) + g_1^2 \sin^2(c_j \Delta t) \label{eq:P0a_final} \\
+	P_{1_a} & = g_1^2 \cos^2(c_j \Delta t) + g_0^2 \sin^2(c_j \Delta t) \label{eq:P1a_final}
 \end{align}
 
 So setting the \textit{g} parameter directly defines the probability of measuring a different Ancilla's state; we could check if this definition lead back to the probability obtained in the Quantum Jump and Coherent limit:
@@ -1222,8 +1222,8 @@ In our case we get:
 \end{gather}
 Note that : 
 \begin{gather}
-	\mathcal{M}_{0}^{j \dagger}\mathcal{M}_{0}^{j}  = P_{0_{a}} \mathbb{I}^{j} \notag \\
-	\mathcal{M}_{1}^{j \dagger}\mathcal{M}_{1}^{j}  = P_{1_{a}} \mathbb{I}^{j} \notag
+	\mathcal{M}_{0}^{j \dagger}\mathcal{M}_{0}^{j}  = P_{0_{a}} \mathbb{I} \notag \\
+	\mathcal{M}_{1}^{j \dagger}\mathcal{M}_{1}^{j}  = P_{1_{a}} \mathbb{I} \notag
 \end{gather}
 When we apply $ \mathcal{M}_{0}^{j} \ket{\psi_{S}} $ we're reducing the norm of the state vector; the square of the norm is given by $ \bra{\psi_{S}} \mathcal{M}_0^{\dagger}\mathcal{M}_{0}^{j} \ket{\psi_{S}} = P_{0_{a}} $
 so that :
@@ -1238,7 +1238,7 @@ So far we've seen only the \textbf{Single Site Kraus Operators}, i.e. the operat
 	\ket{\Psi_{S}} = c_{00} \ket{0_{1}0_{2}} + c_{10} \ket{1_{1}0_{2}} + c_{01} \ket{0_{1}1_{2}} + c_{11} \ket{1_{1}1_{2}} \\
 	\left(\text{where}  \ket{0_{1}0_{2}} = \ket{0_{1}} \otimes \ket{0_{2}}\right) \notag
 \end{gather}
-For the Ancilla instead, since every site has and independent reservoir of ancillas and before the collision the ancilla is always taken in its initial state, i.e. without any entanglement, the total ancilla \textit{wf} reads :
+For the Ancilla instead, since every site has and independent reservoir of Ancillas and before the collision the ancilla is always taken in its initial state, i.e. without any entanglement, the total ancilla \textit{wf} reads :
 \begin{gather}
 	\ket{\Phi_{A}} = \ket{\phi_{a}^{1}} \otimes \ket{\phi_{a}^{2}} \\
 	\text{where} \ket{\phi_{a}^{1}} = g_{0} \ket{0_{a}} + g_{1} \ket{1_{a}} =  \ket{\phi_{a}^{2}} \notag
@@ -1357,6 +1357,35 @@ The completeness relation is confirmed also in the general case, without any res
 
 \newpage
 
+From the general formulation of the \textit{Kraus Operators} it's possible to calculate the combined Probability of measuring the two Ancilla's states $ \ket{i} = \left\{ \ket{0_{a}^{1}0_{a}^{2}}, \ket{1_{a}^{1}0_{a}^{2}}, \ket{0_{a}^{1}1_{a}^{2}}, \ket{1_{a}^{1}1_{a}^{2}} \right\} $ ; given :
+\begin{equation}
+		\ket{\Psi_{\mathcal{S}} \left( t + \Delta t\right)} = \sum_{i}{\ket{\beta_{i} \left( t \right)} \otimes \ket{i}} = \sum_{i}{\mathcal{K}_{i} \ket{\Psi_{S} \left( t \right)} \otimes \ket{i} }
+\end{equation}
+the Probability reads : 
+\begin{equation}
+	P_{i} = \braket{\beta_{i} | \beta_{i}} = \bra{\Psi_{S} \left( t \right)} \mathcal{K}_{i}^{\dagger} \mathcal{K}_{i} \ket{\Psi_{S} \left( t \right)} \\
+\end{equation}
+and in particular with this specific \textit{Kraus Operators} the following properties apply : 
+\begin{itemize}
+	\item $ \mathcal{M}_{\alpha,\beta}^{\dagger} = \mathcal{M}_{\alpha,\beta}^{*}  $ since $ \mathcal{M}_{\alpha,\beta} $ is diagonal
+	\item $ \mathcal{M}_{\alpha,\beta}^{*} \mathcal{M}_{\alpha,\beta} = \mathcal{R} \left\{ \mathcal{M}_{\alpha,\beta} \right\}^{2} + \mathcal{I} \left\{ \mathcal{M}_{\alpha,\beta} \right\}^{2} $ 
+	\item $ \left(\mathcal{R} \left\{ \mathcal{M}_{\alpha,\beta} \right\}^{2} + \mathcal{I} \left\{ \mathcal{M}_{\alpha,\beta} \right\}^{2} \right)\propto \mathbb{I} $ 
+\end{itemize} 
+so that we obtain : 
+\begin{align}
+	P_{00} &= \bra{\Psi_{S}} \mathcal{M}_{00}^{\dagger} \mathcal{M}_{00} \ket{\Psi_{S}} = \left( \mathcal{R}\{ \mathcal{M}_{00} \}^2 + \mathcal{I}\{ \mathcal{M}_{00} \}^2 \right) \braket{\Psi_{S} | \Psi_{S}} \notag \\
+	&= \left(g_{0}^{2} \cos^{2}(c_{1} \Delta t) + g_{1}^{2} \sin^{2}(c_{1} \Delta t) \right) \left(g_{0}^{2} \cos^{2}(c_{2} \Delta t) + g_{1}^{2} \sin^{2}(c_{2} \Delta t) \right) = P_{0_{a}}^{1} P_{0_{a}}^{2}  \label{eq:P00_complete} \\
+	P_{01} &= \bra{\Psi_{S}} \mathcal{M}_{01}^{\dagger} \mathcal{M}_{01} \ket{\Psi_{S}} = \left( \mathcal{R}\{ \mathcal{M}_{01} \}^2 + \mathcal{I}\{ \mathcal{M}_{01} \}^2 \right) \braket{\Psi_{S} | \Psi_{S}} \notag \\
+	&= \left(g_{0}^{2} \cos^{2}(c_{1} \Delta t) + g_{1}^{2} \sin^{2}(c_{1} \Delta t) \right) \left(g_{1}^{2} \cos^{2}(c_{2} \Delta t) + g_{0}^{2} \sin^{2}(c_{2} \Delta t) \right) = P_{0_{a}}^{1} P_{1_{a}}^{2}  \label{eq:P01_complete} \\
+	P_{10} &= \bra{\Psi_{S}} \mathcal{M}_{10}^{\dagger} \mathcal{M}_{10} \ket{\Psi_{S}} = \left( \mathcal{R}\{ \mathcal{M}_{10} \}^2 + \mathcal{I}\{ \mathcal{M}_{10} \}^2 \right) \braket{\Psi_{S} | \Psi_{S}} \notag \\
+	&= \left(g_{1}^{2} \cos^{2}(c_{1} \Delta t) + g_{0}^{2} \sin^{2}(c_{1} \Delta t) \right) \left(g_{0}^{2} \cos^{2}(c_{2} \Delta t) + g_{1}^{2} \sin^{2}(c_{2} \Delta t) \right) = P_{1_{a}}^{1} P_{0_{a}}^{2}  \label{eq:P10_complete} \\
+	P_{11} &= \bra{\Psi_{S}} \mathcal{M}_{11}^{\dagger} \mathcal{M}_{11} \ket{\Psi_{S}} = \left( \mathcal{R}\{ \mathcal{M}_{11} \}^2 + \mathcal{I}\{ \mathcal{M}_{11} \}^2 \right) \braket{\Psi_{S} | \Psi_{S}} \notag \\
+	&= \left(g_{1}^{2} \cos^{2}(c_{1} \Delta t) + g_{0}^{2} \sin^{2}(c_{1} \Delta t) \right) \left(g_{1}^{2} \cos^{2}(c_{2} \Delta t) + g_{0}^{2} \sin^{2}(c_{2} \Delta t) \right) = P_{1_{a}}^{1} P_{1_{a}}^{2}  \label{eq:P11_complete}
+\end{align}
+where $ P_{0_{a}}^{j} $ is referred to Eq.\ref{eq:P0a_final} and Eq.\ref{eq:P1a_final}. Since the two collisions are independent event the conditional probability is given by the product of the single independent probabilities.
+
+\newpage
+
 \subsubsection{Fidelity and Intensity of Variation}
 \label{subsub:Fidelity_and_Intensity_of_Variation}
 To quantify the \textit{Intensity} of the Variation induced by $ \mathcal{M}_{0} $ and $ \mathcal{M}_{1} $ it's possible to evaluate the \textit{Fidelity} of the state after and before the transformation. The \textit{Fidelity} reads :
@@ -1381,10 +1410,10 @@ where
 	\left| \braket{\sigma_{z}^{j}} \right|^2 = \left| \bra{\Psi_{S}^{PRE}} \sigma_{z}^{j} \ket{\Psi_{S}^{PRE}} \right|^2
 \end{equation*}
 
-So that the quantity related to the difference between the two \textit{wf} before and after the collision is :
+So that the quantity related to the difference between the two \textit{wf} before and after the collision, defined as \textit{Infidelity} $ \mathcal{I} = 1 - \mathcal{F} $ :
 \begin{align}
-	nome da inventare = 1 - \left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{0}^{j}} \right|^2 \\
-	nome da inventare = 1 - \left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{1}^{j}} \right|^2
+	\mathcal{I} = 1 - \left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{0}^{j}} \right|^2 \\
+	\mathcal{I} = 1 - \left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{1}^{j}} \right|^2
 \end{align}
 \textbf{Remark}: the \textit{Fidelity} calculated in this case is refered to the variation induced by the application of $ \mathcal{M}_{0}^{j} $ and $ \mathcal{M}_{1}^{j} $ \\
 
@@ -1515,72 +1544,32 @@ Notice that only $ \braket{\sigma_{z}^{j}} $ is calculated since this value i re
 
 \newpage
 
-As seen before the fidelity calculated in Eq.\ref{eq:fidelity_M0} and Eq.\ref{eq:fidelity_M1} are referred to the variation induced by the collision with a single site. If we want to calculate the fidelity referred to the total variation of the system ( $ \ket{\Psi} = \alpha  \ket{\psi_{S}^{1}} + \beta \ket{\psi_{S}^{2}} $ )
-
-To demonstrate rigorously why the global Kraus operator for the outcome $(0,0)$ is the tensor product of the single local operators, namely $\mathcal{M}_{00}^{tot} = \mathcal{M}_0^{(1)} \otimes \mathcal{M}_0^{(2)}$, we must start from the fundamental definition of the physical interaction in our two-site model.
-
-The total system is composed of three distinct entities: the dimer (which lives in its Hilbert space $\mathcal{H}_S = \mathcal{H}_1 \otimes \mathcal{H}_2$), the first ancilla (space $\mathcal{H}_{a_1}$), and the second ancilla (space $\mathcal{H}_{a_2}$).
-
-The total collisional Hamiltonian is the sum of the independent interactions on the two sites:
-\begin{equation}
-	\mathcal{H}_{Coll}^{tot} = \mathcal{H}_{Coll}^{(1)} + \mathcal{H}_{Coll}^{(2)}
-\end{equation}
-
-Since the interaction $\mathcal{H}_{Coll}^{(1)}$ acts only on site 1 and ancilla 1, while $\mathcal{H}_{Coll}^{(2)}$ acts only on site 2 and ancilla 2, these two operators commute, meaning $[\mathcal{H}_{Coll}^{(1)}, \mathcal{H}_{Coll}^{(2)}] = 0$. This property is crucial because it allows us to factorize the total unitary evolution operator of the entire composite system:
-\begin{equation}
-	\mathcal{U}_{tot} = \exp[-i (\mathcal{H}_{Coll}^{(1)} + \mathcal{H}_{Coll}^{(2)}) \Delta t] = \exp[-i \mathcal{H}_{Coll}^{(1)} \Delta t] \otimes \exp[-i \mathcal{H}_{Coll}^{(2)} \Delta t] = \mathcal{U}^{(1)} \otimes \mathcal{U}^{(2)}
-\end{equation}
-Now we apply the formal definition of the Kraus operator. The initial state of the bath (the two ancillas) is a factorized state $|\Phi_B\rangle = |\phi_{a_1}\rangle \otimes |\phi_{a_2}\rangle$.
-
-The global Kraus operator for measuring ancilla 1 in state $|0_{a_1}\rangle$ and ancilla 2 in state $|0_{a_2}\rangle$ is obtained by projecting the total evolution operator $\mathcal{U}_{tot}$ onto the initial and final states of the bath:
-\begin{equation}
-	\mathcal{M}_{00}^{tot} = (\bra{0_{a_1}} \otimes  \bra{0_{a_2}}) \mathcal{U}_{tot} (\ket{\phi_{a_1}}\otimes \ket{\phi_{a_2}})
-\end{equation}
-
-Substituting $\mathcal{U}_{tot} = \mathcal{U}^{(1)} \otimes \mathcal{U}^{(2)}$ into this expression, the terms naturally separate to act on their respective subspaces:
-\begin{equation}
-	\mathcal{M}_{00}^{tot} = (\langle 0_{a_1}| \mathcal{U}^{(1)} |\phi_{a_1}\rangle) \otimes (\langle 0_{a_2}| \mathcal{U}^{(2)} |\phi_{a_2}\rangle)
-\end{equation}
-
-The terms in parentheses are exactly the definitions of our local Kraus operators for the single sites. Specifically, $\langle 0_{a_1}| \mathcal{U}^{(1)} |\phi_{a_1}\rangle = \mathcal{M}_0^{(1)}$ (acting on site 1) and $\langle 0_{a_2}| \mathcal{U}^{(2)} |\phi_{a_2}\rangle = \mathcal{M}_0^{(2)}$ (acting on site 2). 
-
-Consequently, the global map for this specific trajectory step is precisely:
-\begin{equation}
-	\mathcal{M}_{00}^{tot} = \mathcal{M}_0^{(1)} \otimes \mathcal{M}_0^{(2)}
-\end{equation}
-Like this we can calculate all the four total operators, defining before :
-\begin{gather}
-	a_{0} = g_{0} \cos \left(c_{j} \Delta t\right) \quad ; \quad b_{0} = - g_{1} \sin \left(c_{j} \Delta t\right) \notag \\
-	a_{1} = g_{1} \cos \left(c_{j} \Delta t\right) \quad ; \quad b_{1} = g_{0} \sin \left(c_{j} \Delta t\right) \notag \\
-	\mathcal{M}_{00}^{tot} = a_0^2 \mathbb{I} - i a_0 b_0 (\sigma_z^1 + \sigma_z^2) - b_0^2 \sigma_z^1 \sigma_z^2 \\
-	\mathcal{M}_{01}^{tot} = a_0 a_1 \mathbb{I} - i a_1 b_0 \sigma_z^1 - i a_0 b_1 \sigma_z^2 - b_0 b_1 \sigma_z^1 \sigma_z^2 \\
-	\mathcal{M}_{10}^{tot} = a_0 a_1 \mathbb{I} - i a_0 b_1 \sigma_z^1 - i a_1 b_0 \sigma_z^2 - b_0 b_1 \sigma_z^1 \sigma_z^2 \\
-	\mathcal{M}_{11}^{tot} = a_1^2 \mathbb{I} - i a_1 b_1 (\sigma_z^1 + \sigma_z^2) - b_1^2 \sigma_z^1 \sigma_z^2
-\end{gather}
-remember that : 
-\begin{gather}
-	\sigma_{z} = \sigma_{z}^{1} \otimes \mathbb{I} + \mathbb{I} \otimes \sigma_{z}^{2}
-\end{gather}
-so that
+As seen before the fidelity calculated in Eq.\ref{eq:fidelity_M0} and Eq.\ref{eq:fidelity_M1} are referred to the variation induced by the collision with a single site. If we want to calculate the fidelity referred to the total variation of the system $ \ket{\Psi}_{S} = c_{00} \ket{0_{1}0_{2}} + c_{10} \ket{1_{1}0_{2}} + c_{01} \ket{0_{1}1_{2}} + c_{11} \ket{1_{1}1_{2}} $ (considering the \textit{entanglement}) we have to work with $ \mathcal{M}_{\alpha, \beta} $, so that, since we are always working with pure states, the \textit{Fidelity} becomes:
 \begin{align}
-	\left| \braket{\sigma_{z}} \right| = P_{01} - P_{10} - \left( P_{01} - P_{10} \right) = 0
+	\mathcal{F}_{\mathcal{M}_{00}} &= \left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{00}} \right|^2 = \left| \bra{\Psi_{S}^{PRE}}\mathcal{M}_{00} \ket{\Psi_{S}^{PRE}} \right|^2 \notag \\
+	&= \left[ g_0^2 \cos(c_1 \Delta t) \cos(c_2 \Delta t) - g_1^2 \sin(c_1 \Delta t) \sin(c_2 \Delta t) \braket{\sigma_z \otimes \sigma_z} \right]^2 \notag \\
+	&\quad + g_0^2 g_1^2 \left[ \sin(c_1 \Delta t) \cos(c_2 \Delta t) \braket{\sigma_z^1} + \cos(c_1 \Delta t) \sin(c_2 \Delta t) \braket{\sigma_z^2} \right]^2 \label{eq:fidelity_M00_general} \\
+	\mathcal{F}_{\mathcal{M}_{10}} &= \left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{10}} \right|^2 = \left| \bra{\Psi_{S}^{PRE}}\mathcal{M}_{10} \ket{\Psi_{S}^{PRE}} \right|^2 \notag \\
+	&= g_0^2 g_1^2 \left[ \cos(c_1 \Delta t) \cos(c_2 \Delta t) + \sin(c_1 \Delta t) \sin(c_2 \Delta t) \braket{\sigma_z \otimes \sigma_z} \right]^2 \notag \\
+	&\quad + \left[ g_0^2 \sin(c_1 \Delta t) \cos(c_2 \Delta t) \braket{\sigma_z^1} - g_1^2 \cos(c_1 \Delta t) \sin(c_2 \Delta t) \braket{\sigma_z^2} \right]^2 \label{eq:fidelity_M10_general} \\
+	\mathcal{F}_{\mathcal{M}_{01}} &= \left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{01}} \right|^2 = \left| \bra{\Psi_{S}^{PRE}}\mathcal{M}_{01} \ket{\Psi_{S}^{PRE}} \right|^2 \notag \\
+	&= g_0^2 g_1^2 \left[ \cos(c_1 \Delta t) \cos(c_2 \Delta t) + \sin(c_1 \Delta t) \sin(c_2 \Delta t) \braket{\sigma_z \otimes \sigma_z} \right]^2 \notag \\
+	&\quad + \left[ g_1^2 \sin(c_1 \Delta t) \cos(c_2 \Delta t) \braket{\sigma_z^1} - g_0^2 \cos(c_1 \Delta t) \sin(c_2 \Delta t) \braket{\sigma_z^2} \right]^2 \label{eq:fidelity_M01_general} \\
+	\mathcal{F}_{\mathcal{M}_{11}} &= \left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{11}} \right|^2 = \left| \bra{\Psi_{S}^{PRE}}\mathcal{M}_{11} \ket{\Psi_{S}^{PRE}} \right|^2 \notag \\
+	&= \left[ g_1^2 \cos(c_1 \Delta t) \cos(c_2 \Delta t) - g_0^2 \sin(c_1 \Delta t) \sin(c_2 \Delta t) \braket{\sigma_z \otimes \sigma_z} \right]^2 \notag \\
+	&\quad + g_0^2 g_1^2 \left[ \sin(c_1 \Delta t) \cos(c_2 \Delta t) \braket{\sigma_z^1} + \cos(c_1 \Delta t) \sin(c_2 \Delta t) \braket{\sigma_z^2} \right]^2 \label{eq:fidelity_M11_general}
 \end{align}
-and in the specific case of our system, where only the excited state are non zero, i.e. $ \ket{01} $ and $ \ket{10} $ we obtain that : 
-\begin{equation}
-	\sigma_{z}^{1}\sigma_{z}^{2} = - \mathbb{I}
-\end{equation}
-so $ M^{tot} $ simplifies as :\begin{gather}
-	\mathcal{M}_{00}^{tot} = (a_0^2 + b_0^2) \mathbb{I} \\
-	\mathcal{M}_{01}^{tot} = (a_0 a_1 + b_0 b_1) \mathbb{I} - i (a_1 b_0 - a_0 b_1) \sigma_z^1 \\
-	\mathcal{M}_{10}^{tot} = (a_0 a_1 + b_0 b_1) \mathbb{I} - i (a_0 b_1 - a_1 b_0) \sigma_z^1 \\
-	\mathcal{M}_{11}^{tot} = (a_1^2 + b_1^2) \mathbb{I}
-\end{gather}
-replacing \textit{a} and \textit{b} coefficient : 
-\begin{gather}
-	\mathcal{M}_{00}^{tot} = \left[ g_0^2 \cos^2(c_j \Delta t) + g_1^2 \sin^2(c_j \Delta t) \right] \mathbb{I} \\
-	\mathcal{M}_{01}^{tot} = g_0 g_1 \left[ \cos^2(c_j \Delta t) - \sin^2(c_j \Delta t) \right] \mathbb{I} + i \sin(c_j \Delta t) \cos(c_j \Delta t) \sigma_z^1 \\
-	\mathcal{M}_{10}^{tot} = g_0 g_1 \left[ \cos^2(c_j \Delta t) - \sin^2(c_j \Delta t) \right] \mathbb{I} - i \sin(c_j \Delta t) \cos(c_j \Delta t) \sigma_z^1 \\
-	\mathcal{M}_{11}^{tot} = \left[ g_1^2 \cos^2(c_j \Delta t) + g_0^2 \sin^2(c_j \Delta t) \right] \mathbb{I}
-\end{gather}
+Assuming $ c_1 = c_2 $ and in the \textit{Single Exciton Subspace}:
+\begin{align}
+	\mathcal{F}_{\mathcal{M}_{00}} &= \left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{00}} \right|^2 = \left| \bra{\Psi_{S}^{PRE}}\mathcal{M}_{00} \ket{\Psi_{S}^{PRE}} \right|^2 \notag \\
+	&= \left[g_0^2 \cos^2{\left(c \Delta t \right)} + g_1^2 \sin^2{\left(c \Delta t \right)}\right]^{2} \label{eq:fidelity_M00} \\
+	\mathcal{F}_{\mathcal{M}_{10}} &= \left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{10}} \right|^2 = \left| \bra{\Psi_{S}^{PRE}}\mathcal{M}_{10} \ket{\Psi_{S}^{PRE}} \right|^2 \notag \\
+	&= g_0^2 g_1^2 \left[ \cos^2(c \Delta t) - \sin^2(c \Delta t) \right]^2 + \sin^2(c \Delta t) \cos^2(c \Delta t) \left| \braket{\sigma_{z}^{1}} \right|^2 \label{eq:fidelity_M10} \\
+	\mathcal{F}_{\mathcal{M}_{01}} &= \left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{01}} \right|^2 = \left| \bra{\Psi_{S}^{PRE}}\mathcal{M}_{01} \ket{\Psi_{S}^{PRE}} \right|^2 \notag \\
+	&= g_0^2 g_1^2 \left[ \cos^2(c \Delta t) - \sin^2(c \Delta t) \right]^2 + \sin^2(c \Delta t) \cos^2(c \Delta t) \left| \braket{\sigma_{z}^{1}} \right|^2 \label{eq:fidelity_M01} \\
+	\mathcal{F}_{\mathcal{M}_{11}} &= \left| \braket{\Psi_{S}^{PRE} | \Psi_{S}^{POST}}_{\mathcal{M}_{11}} \right|^2 = \left| \bra{\Psi_{S}^{PRE}}\mathcal{M}_{11} \ket{\Psi_{S}^{PRE}} \right|^2 \notag \\
+	&= \left[g_1^2 \cos^2{\left(c \Delta t \right)} + g_0^2 \sin^2{\left(c \Delta t \right)} \right]^{2} \label{eq:fidelity_M11}
+\end{align}
+Notice that $ \mathcal{F}_{\mathcal{M}_{01}} = \mathcal{F}_{\mathcal{M}_{10}} $
 
 \end{document}
