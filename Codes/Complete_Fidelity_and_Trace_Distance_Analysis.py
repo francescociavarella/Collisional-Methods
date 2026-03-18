@@ -349,7 +349,7 @@ if theta_target_deg.is_integer():
 else:
     angle_folder = str(theta_target_deg)
 
-Output_dir = os.path.join("../Results/Plot/Fidelity", angle_folder)
+Output_dir = os.path.join("../Results/Plot/Fidelity/Complete", angle_folder)
 os.makedirs(Output_dir, exist_ok=True)
 
 # --- 2. Global Style Settings (Matplotlib rcParams) ---
