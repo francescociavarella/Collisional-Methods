@@ -995,8 +995,8 @@ save_fig(fig, filename)
 # 1. Define the subdirectory name
 subdir = "metrics"
 
-# 2. Create the full path to the 'metrics' directory
-metrics_dir = os.path.join(cfg['Input_dir'], subdir)
+# 2. Create the full path to the 'metrics' directory using the previously defined Input_dir
+metrics_dir = os.path.join(Input_dir, subdir)
 
 # 3. Check if the directory exists, if not, create it
 if not os.path.exists(metrics_dir):

@@ -1,29 +1,25 @@
 #!/bin/bash
 
 # ==========================================================
-# BASH SCRIPT TO AUTOMATE PYTHON ANALYSIS
+# PARALLEL BASH SCRIPT TO AUTOMATE PYTHON ANALYSIS
 # ==========================================================
 
 # Define the array of angles to process
-ANGLES=(0 15 30 45 60 75 90)
+ANGLES=(0 30 45 60 90)
 
-echo "Starting automated batch processing..."
+echo "Starting automated parallel batch processing..."
 
 # Loop through each angle in the array
 for THETA in "${ANGLES[@]}"
 do
-    echo "------------------------------------------------"
-    echo "Executing Python script for Theta = $THETA"
-    echo "------------------------------------------------"
+    echo "Launching Python script for Theta = $THETA in background..."
     
-    # Call the Python script and pass the angle as an argument
-    python process_single_theta.py $THETA
-    
-    # Optional: check if the Python script crashed and stop the loop if it did
-    if [ $? -ne 0 ]; then
-        echo "❌ Error detected during Theta = $THETA. Stopping the batch."
-        exit 1
-    fi
+    # Use python -u to force standard output to be unbuffered
+    # The '&' at the end pushes the job to the background (parallel execution)
+    python -u Complete_Fidelity_and_Trace_Distance_Analysis.py $THETA &
 done
 
-echo "🎉 ALL ANGLES PROCESSED SUCCESSFULLY!"
+# Wait for all background processes to finish before exiting
+wait
+
+echo "ALL PARALLEL CALCULATIONS COMPLETED SUCCESSFULLY"
