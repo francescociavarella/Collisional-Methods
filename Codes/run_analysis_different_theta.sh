@@ -27,7 +27,7 @@ do
     
     # Pass THETA as the first argument ($1) and MODE as the second argument ($2)
     # The '&' runs them concurrently in the background
-    python -u Complete_Fidelity_and_Trace_Distance_Analysis.py $THETA $MODE &
+    #python -u Complete_Fidelity_and_Trace_Distance_Analysis.py $THETA $MODE &
     python -u Complete_Sx_Sy_Sz_exp_value_analysis.py $THETA $MODE &
 done
 
