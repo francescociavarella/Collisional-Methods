@@ -773,7 +773,7 @@ MODE = "close_to_90_deg"  # change : "normal" or "close_to_90_deg"
 if MODE == "normal":
     theta_list = np.radians([90, 60, 45, 30, 0])
 elif MODE == "close_to_90_deg": 
-    theta_list = np.radians([90, 89.9, 89.5, 89, 88.5, 88])
+    theta_list = np.radians([0, 90, 89.9, 89.7, 89.5, 89, 88.5, 88, 87, 86])
 
 
 # In[18]:

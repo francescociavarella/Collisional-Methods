@@ -312,19 +312,23 @@ def compute_metrics_all_trajectories(pop_10, coh_1001, coh_0110, pop_01, rho_lin
 # ====================================
 # Theta angle in degrees, H_Coll Direction, given by .sh script
 
-# Check if an argument was passed
-if len(sys.argv) < 2:
-    print("Usage: python process_single_theta.py <theta_angle>")
-    sys.exit(1)
-
-# Read the angle from the command line and convert it to float/int
-theta_target_deg = float(sys.argv[1])
+# Argument 1: Theta (Angle)
+if len(sys.argv) > 1:
+    theta_target_deg = float(sys.argv[1])
+else:
+    theta_target_deg = 90.0  # Default angle fallback
 
 print("\n" + "="*50)
 print(f"🚀 STARTING COMPLETE ANALYSIS FOR THETA = {theta_target_deg}°")
 print("="*50 + "\n")
 
 theta_rad = np.radians(theta_target_deg)
+
+# Argument 2: Mode ('normal' or 'close_to_90')
+if len(sys.argv) > 2:
+    MODE = sys.argv[2]
+else:
+    MODE = 'normal'  # Default mode fallback
 
 # Site selector: 0 for |10>, 1 for |01>
 site_index = 0
@@ -386,7 +390,13 @@ def save_fig(fig, filename):
 # =================
 # Input Data Setup
 # =================
-Input_dir = "../Results/Data/Complete_rho/normal"  # <-- change here if needed
+# Set the input directory dynamically
+if MODE == 'normal':
+    Input_dir = "../Results/Data/Complete_rho/normal"
+elif MODE == 'close_to_90':
+    Input_dir = "../Results/Data/Complete_rho/close_90_deg"
+else:
+    raise ValueError(f"Unknown mode provided: {MODE}")
 
 # Format theta and dt for filename 
 theta_str = f"{theta_rad:.6f}".replace(".", "p")
