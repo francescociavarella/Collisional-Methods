@@ -328,7 +328,7 @@ pauli_bins = np.linspace(-1.0, 1.0, n_bins + 1)
 matrices = [all_sigma_x, all_sigma_y, all_sigma_z]
 labels = [r'\sigma_x', r'\sigma_y', r'\sigma_z']
 
-for sigma_matrix, label in zip(matrices, labels):
+for sigma_matrix, label, file_suffix in zip(matrices, labels, filenames)
     
     heatmap_complete = np.zeros((n_bins, n_times))
     
