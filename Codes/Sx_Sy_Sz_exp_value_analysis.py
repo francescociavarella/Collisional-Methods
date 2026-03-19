@@ -14,12 +14,13 @@ from numba import njit, prange
 import pickle
 import os
 import gc
+import time
+import sys
 
 
 # In[2]:
 
 
-get_ipython().run_line_magic('matplotlib', 'ipympl')
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 from IPython.display import Image, display, Math
@@ -78,8 +79,18 @@ def compute_pauli_expectations_all_trajectories(pop_10, coh_1001, coh_0110, pop_
 # ====================================
 # Physical & Simulation Parameters
 # ====================================
-# Theta angle in degrees, H_Coll Direction
-theta_target_deg = 60.0  # change angle here
+# Check if an argument was passed from the Bash script
+if len(sys.argv) < 2:
+    print("Usage: python Sx_Sy_Sz_exp_value_analysis.py <theta_angle>")
+    sys.exit(1)
+
+# Read the angle from the command line and convert it to float
+theta_target_deg = float(sys.argv[1])
+
+print("\n" + "="*50)
+print(f"🚀 STARTING PAULI ANALYSIS FOR THETA = {theta_target_deg}°")
+print("="*50 + "\n")
+
 theta_rad = np.radians(theta_target_deg)
 
 # Site selector: 0 for |10>, 1 for |01>
@@ -233,8 +244,6 @@ print(f"Calculation finished. Shape of arrays: {all_sigma_z.shape}")
 # ==============================================================
 # PLOT HEATMAP COMPLETE: PAULI EXPECTATION VALUES (Sx, Sy, Sz)
 # ==============================================================
-import matplotlib.pyplot as plt
-import numpy as np
 
 plt.close('all')
 
@@ -289,7 +298,7 @@ for sigma_matrix, label, file_suffix in zip(matrices, labels, filenames):
     ax.set_ylabel(f'Expectation Value $\\langle {label} \\rangle$')
     ax.set_title(f'Distribution of $\\langle {label} \\rangle$ over Time | $\\theta$ = {theta_target_deg}°')
 
-    plt.show()
+    # plt.show()
 
 
 # In[ ]:
@@ -344,7 +353,7 @@ for sigma_matrix, label in zip(matrices, labels):
     filename_heatmap = f"Heatmap_{file_suffix}_Complete_Theta_{theta_str}_dt_{dt_str}"
     save_fig(fig, filename_heatmap)
 
-    plt.show()
+    #plt.show()
 
 
 # In[ ]:
@@ -406,7 +415,7 @@ for traj_matrix, lind_array, label, file_suffix in zip(trajectory_matrices, lind
     filename_avg = f"Avg_{file_suffix}_Evolution_Theta_{theta_target_deg}deg"
     save_fig(fig, filename_avg)
     
-    plt.show()
+    #plt.show()
 
 
 # In[ ]:
@@ -446,7 +455,7 @@ fig.tight_layout()
 filename_var_pauli = f"Variance_Pauli_Theta_{theta_str}_dt_{dt_str}"
 save_fig(fig, filename_var_pauli)
 
-plt.show()
+# plt.show()
 
 
 # In[ ]:
