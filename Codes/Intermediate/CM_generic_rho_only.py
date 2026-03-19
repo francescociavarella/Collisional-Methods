@@ -3,7 +3,7 @@
 
 # ## Libraries & Function
 
-# In[1]:
+# In[ ]:
 
 
 import numpy as np
@@ -11,6 +11,8 @@ from scipy.linalg import expm
 from qutip import *
 import numba
 from numba import njit, prange
+import os
+import time
 
 
 # In[2]:
@@ -47,14 +49,14 @@ def array_to_latex(array, real = False, array_name = None):
 def system_Hamiltonian(N_site, E, V_array, mode="complete"):
     """
     Build up of the System's Hamiltonian for the complete basis (ground & excited states) or only excited states.
-    
+
     Method: - "complete"-> complete basis (ground & excited states)
             - "exc"-> excited basis (only excited states)
-    
+
     Parameters: - E: Float, System's Site Energies (randomly generated)
                 - V_array: Float, Hopping Potential
                 - N_site : Int, Number of Sites
-        
+
     Returns : System's Hamiltonian as Numpy array
     """
     # -----------------------------------------------------
@@ -67,7 +69,7 @@ def system_Hamiltonian(N_site, E, V_array, mode="complete"):
             V_matrix[i, j] = V_array[idx]
             V_matrix[j, i] = V_array[idx]  # Symmetric
             idx += 1
-    
+
     # -------------------------
     # Only Excited States Basis
     # -------------------------
@@ -75,27 +77,27 @@ def system_Hamiltonian(N_site, E, V_array, mode="complete"):
         H_sys = np.zeros((N_site, N_site), dtype=complex)
         for i in range(N_site):
             H_sys[i, i] = E[i]
- 
+
         for i in range(N_site):
             for j in range(N_site):
                 if i != j:
                     H_sys[i, j] = V_matrix[i, j]
         return H_sys
-        
+
     # --------------
     # Complete Basis 
     # --------------    
     elif mode == "complete":   
         H_sys = np.zeros((2**N_site, 2**N_site), dtype='complex')
-        
+
         for i in range(N_site):
             H_i = (E[i]/2) * (tensor(identity(2**i), identity(2)-sigmaz(), identity(2**(N_site-i-1))))
             H_sys += H_i.full()
-            
+
             for j in range(i+1, N_site):
                H_ij = V_matrix[i, j]/2 * (tensor(identity(2**i), sigmax(), identity(2**(j-i-1)), sigmax(), identity(2**(N_site-j-1))) + tensor(identity(2**i), sigmay(), identity(2**(j-i-1)), sigmay(), identity(2**(N_site-j-1))))
                H_sys += H_ij.full()
-        
+
         return H_sys
 
     else:
@@ -108,12 +110,12 @@ def system_Hamiltonian(N_site, E, V_array, mode="complete"):
 def interaction_Hamiltonian(N_site, c_CM, g_x, g_z):   
     """
     Build up of the Hamiltonian of Interaction for the Collision System - Ancilla in both Quantum Jump and Diffusive Limit
-       
+
     Parameters: - N_site : int, Number of Sites
                 - c_CM : list, Interaction Forces for the System - Ancilla intercation/collsion
                 - g_x : float, parametr for the sigma x interaction
                 - g_z : float, parametr for the sigma z interaction
-        
+
     Returns : Hamiltonian of Interaction as Qutip object
     """
     dim_tot = 2**(2 * N_site)
@@ -123,11 +125,11 @@ def interaction_Hamiltonian(N_site, c_CM, g_x, g_z):
         # Create fresh lists for Z and X terms
         op_list_z = [qeye(2) for _ in range(2 * N_site)]
         op_list_x = [qeye(2) for _ in range(2 * N_site)]  
-        
+
        # Z_sys tensor Z_anc
         op_list_z[j] = sigmaz()             # System j
         op_list_z[N_site + j] = sigmaz()    # Ancilla j
-        
+
         # Z_sys tensor X_anc
         op_list_x[j] = sigmaz()             # System j
         op_list_x[N_site + j] = sigmax()    # Ancilla j 
@@ -135,11 +137,11 @@ def interaction_Hamiltonian(N_site, c_CM, g_x, g_z):
         # Tensor product between the element of the list
         term_z = tensor(op_list_z)
         term_x = tensor(op_list_x)
-        
+
         H_term = c_CM[j] * (g_z * term_z + g_x * term_x)  
-            
+
         H_int += H_term.full()
-    
+
     return H_int
 
 
@@ -160,18 +162,18 @@ def hamiltonian_N_ancillas(N_site, E, V_array, c_CM, g_x, g_z):
 
     Returns : H_system, H_collision, H_tot
     """
-    
+
     H_collision = interaction_Hamiltonian(N_site, c_CM, g_x, g_z) 
-    
+
     H_system = system_Hamiltonian(N_site, E, V_array, mode="complete")
     H_system = H_system.full() if hasattr(H_system, "full") else H_system
-        
+
     dim_anc = 2**N_site
     Id_ancillas = np.eye(dim_anc, dtype=complex)
     H_system_expanded = np.kron(H_system, Id_ancillas)  #expand H_sys in the total space
-        
+
     H_tot = H_system_expanded + H_collision
-        
+
     return H_system, H_collision, H_tot
 
 
@@ -181,29 +183,29 @@ def hamiltonian_N_ancillas(N_site, E, V_array, c_CM, g_x, g_z):
 def evolution_operator(H, dt, method='expm', hermitian=True):
     """
     Build up of the evolution operator U = exp(-i H dt) using Expm or analytic diagonalization.
-   
+
     Parameters: - H : Qobj or nparray, System Hamiltonian
                 - dt : float, Timestep
-    
+
     Method : - "expm"-> build up of the Matrix Exponential with expm
              - "diagonalization"->  build up of the propagater U as V @(exp(-i W dt))@ V_dag with W eigenvalues and V eigenvector of the Hamiltonian 
 
     Returns : Evolution Operator U, 
     """
     H = H.full() if hasattr(H, "full") else np.array(H)
-    
+
     # -----------
     # Expm method
     # -----------
-    
+
     if method == 'expm':
         U = expm(-1j * H * dt)
         return U
-        
+
     # ---------------
     # Diagonalization
     # ---------------
-    
+
     elif method == 'diagonalization':
         if hermitian:
             w, V = np.linalg.eigh(H)
@@ -211,7 +213,7 @@ def evolution_operator(H, dt, method='expm', hermitian=True):
         else:
             w, V = np.linalg.eig(H) 
             V_inv = np.linalg.inv(V)
-                
+
         U_diag = np.diag(np.exp(-1j * w * dt))
         U = V @ U_diag @ V_inv
         return U, U_diag, w, V
@@ -228,26 +230,26 @@ def evolution_operator(H, dt, method='expm', hermitian=True):
 def Liouvillian(H, gamma_k, L_k):
     """
     Build the Liouvillian superoperator using row-major convention (NumPy).
-    
+
     Parameters: - H : nparray, Hamiltonian matrix
                 - gamma_k : list, Decay rates
                 - L_k : list, Jump Operators
-    
+
     Returns: - super_L : nparray, Liouvillian superoperator
     """    
     I = np.eye(H.shape[0], dtype=complex)
-    
+
     # Unitary evolution: -i * [H, rho]
     super_L = -1.j * (np.kron(H, I) - np.kron(I, H.T))
-    
+
     # Dissipator terms
     for k in range(len(gamma_k)):
         L = L_k[k]
         L_dag = np.conj(L).T
         L_dag_L = L_dag @ L
-        
+
         super_L += gamma_k[k] * (np.kron(L, np.conj(L)) - 0.5 * np.kron(L_dag_L, I) - 0.5 * np.kron(I, L_dag_L.T))
-    
+
     return super_L
 
 
@@ -262,10 +264,10 @@ def _evolve_expm_core(super_U, rho_vec_initial, n_times):
     rho_size = rho_vec_initial.shape[0]
     rho_vec_list = np.zeros((rho_size, n_times), dtype=np.complex128)
     rho_vec_list[:, 0] = rho_vec_initial
-    
+
     for i in range(1, n_times):
         rho_vec_list[:, i] = super_U @ rho_vec_list[:, i - 1]
-    
+
     return rho_vec_list
 
 
@@ -275,37 +277,37 @@ def _evolve_diagonal_core(V, V_inv, U_diag, rho_vec_initial, n_times):
     Core evolution loop with diagonal method (Numba JIT)
     """
     n_states = len(U_diag)
-    
+
     # Initial coefficients in eigenbasis
     coeff = V_inv @ rho_vec_initial
     coeff_list = np.zeros((n_states, n_times), dtype=np.complex128)
     coeff_list[:, 0] = coeff
-    
+
     # Evolution of coefficients
     for i in range(1, n_times):
         coeff_list[:, i] = U_diag * coeff_list[:, i - 1]
-    
+
     # Transform back to original basis
     rho_vec_list = V @ coeff_list
-    
+
     return rho_vec_list
 
 
 def Lindblad_evo(rho, H, gamma_k, L_k, times, method="expm", vectorized=True):
     """
     Evolution of the density matrix with the Lindblad Eq. (Optimized with Numba)
-    
+
     Method: - "expm" -> propagator = expm(super_L * dt)
             - "diagonal" -> diagonalization of the super-operator
-        
+
     Vectorized: True/False to choose the output format
-    
+
     Parameters: - H : nparray, System Hamiltonian
                 - rho : Qobj or nparray, Initial Density Matrix
                 - gamma_k : list, List of Decay Rates
                 - L_k : list, List of Jump Operators
                 - times : array, Time array
-        
+
     Returns : - if vectorized=True → array (N^2, Nt)
               - if vectorized=False → array (Nt, N_site, N_site)
               - if method="diagonal" also returns V, W
@@ -314,33 +316,33 @@ def Lindblad_evo(rho, H, gamma_k, L_k, times, method="expm", vectorized=True):
     L_k = [L.full() if hasattr(L, "full") else np.array(L, dtype=complex) for L in L_k]
     H = H.full() if hasattr(H, "full") else np.array(H, dtype=complex)
     rho = rho.full() if hasattr(rho, "full") else np.array(rho, dtype=complex)
-    
+
     rho_shape = H.shape[0]
     dt = times[1] - times[0]
     n_times = len(times)
-    
+
     # Build Liouvillian
     super_L = Liouvillian(H, gamma_k, L_k)
-    
+
     # Vectorize initial state
     rho_vec = rho.reshape(rho_shape * rho_shape)
-    
+
     # -------------
     # Expm method
     # -------------
     if method == "expm":
         # Compute propagator 
         super_U = expm(super_L * dt)
-        
+
         # evolution loop
         rho_vec_list = _evolve_expm_core(super_U, rho_vec, n_times)
-        
+
         # Output
         if vectorized:
             return rho_vec_list
         else:
             return rho_vec_list.T.reshape(n_times, rho_shape, rho_shape)
-    
+
     # ------------------
     # Diagonal method
     # ------------------
@@ -348,19 +350,19 @@ def Lindblad_evo(rho, H, gamma_k, L_k, times, method="expm", vectorized=True):
         # Diagonalize Liouvillian 
         W, V = np.linalg.eig(super_L)
         V_inv = np.linalg.inv(V)
-        
+
         # Diagonal evolution operator
         U_diag = np.exp(W * dt)
-        
+
         # evolution loop
         rho_vec_list = _evolve_diagonal_core(V, V_inv, U_diag, rho_vec, n_times)
-        
+
         # Output
         if vectorized:
             return rho_vec_list, V, W
         else:
             return rho_vec_list.T.reshape(n_times, rho_shape, rho_shape), V, W
-    
+
     else:
         raise ValueError("method must be 'expm' or 'diagonal'")
 
@@ -377,17 +379,17 @@ def _compute_trajectory_isolated_core_general(psi_initial, U_site, projectors, n
     """
     N_site = projectors.shape[0]
     pop_traj = np.zeros((N_site, n_times), dtype=np.float64)
-    
+
     # Initial populations
     for site in range(N_site):
         P_psi = projectors[site] @ psi_initial
         pop_traj[site, 0] = np.real(np.vdot(psi_initial, P_psi))
-    
+
     # Evolution
     psi = psi_initial.copy()
     for step in range(1, n_times):
         psi = U_site @ psi
-        
+
         for site in range(N_site):
             P_psi = projectors[site] @ psi
             pop_traj[site, step] = np.real(np.vdot(psi, P_psi))
@@ -401,14 +403,14 @@ def compute_trajectory_wf_isolated(N_site, times, projectors, psi_sys_initial, U
     # Convert to NumPy
     U_site_np = U_site.full() if hasattr(U_site, 'full') else np.array(U_site, dtype=complex)
     psi_initial_np = psi_sys_initial.full() if hasattr(psi_sys_initial, 'full') else np.array(psi_sys_initial, dtype=complex)
-    
+
     # Flatten if needed
     if psi_initial_np.ndim > 1:
         psi_initial_np = psi_initial_np.flatten()
 
     # Times 
     n_times = len(times)
-        
+
     # JIT-compiled evolution
     pop_traj_isolated = _compute_trajectory_isolated_core_general(psi_initial_np, U_site_np, projectors, n_times)
 
@@ -428,33 +430,33 @@ def _compute_trace_ancilla_core_general(rho_sys, rho_anc, U_step, U_step_dag, pr
     Core computation optimized with Numba - generalized for N sites
     """
     pops_complete = np.zeros((N_site, n_times), dtype=np.float64)
-    
+
     # Initial state - all sites
     for site in range(N_site):
         pops_complete[site, 0] = np.real(np.trace(projectors[site] @ rho_sys))
-    
+
     # Time Evolution
     for t in range(1, n_times):
         # 1: Expansion
         rho_tot = np.kron(rho_sys, rho_anc)
-        
+
         # 2: Evolution
         rho_tot = U_step @ rho_tot @ U_step_dag
-        
+
         # 3: Partial Trace
         rho_tot_reshaped = rho_tot.reshape(dim_sys, dim_anc, dim_sys, dim_anc)
-        
+
         # Manual trace
         rho_sys = np.zeros((dim_sys, dim_sys), dtype=np.complex128)
         for i in range(dim_sys):
             for j in range(dim_sys):
                 for k in range(dim_anc):
                     rho_sys[i, j] += rho_tot_reshaped[i, k, j, k]
-        
+
         # 4: Store populations - all sites
         for site in range(N_site):
             pops_complete[site, t] = np.real(np.trace(projectors[site] @ rho_sys))
-    
+
     return pops_complete
 
 
@@ -465,7 +467,7 @@ def compute_trace_ancilla(rho_sys_initial, rho_anc_single, U_diag, V, times, pro
     """
 
     rho_anc = (tensor([rho_anc_single for _ in range(N_site)])).full() #for N ancilla
-    
+
     # Convert to numpy
     rho_sys = rho_sys_initial.full() if hasattr(rho_sys_initial, 'full') else rho_sys_initial.copy()
 
@@ -475,17 +477,17 @@ def compute_trace_ancilla(rho_sys_initial, rho_anc_single, U_diag, V, times, pro
     # Dimensions
     dim_sys = rho_sys.shape[0]
     dim_anc = rho_anc.shape[0]
-    
+
     # Evolution operator
     V_np = V.full() if hasattr(V, 'full') else V
     U_diag_np = U_diag.full() if hasattr(U_diag, 'full') else U_diag
     U_step = V_np @ U_diag_np @ V_np.conj().T
     U_step_dag = U_step.conj().T
-    
+
     # Call JIT-compiled function
     pops_complete = _compute_trace_ancilla_core_general(rho_sys, rho_anc, U_step, U_step_dag, 
                                                   projectors, n_times, dim_sys, dim_anc, N_site )
-    
+
     return pops_complete
 
 
@@ -515,18 +517,18 @@ def sigma_xyz_expectation_value(psi, Sx_1, Sx_2, Sy_1, Sy_2, Sz_1, Sz_2):
               - S_z_site_2, float expectation value of <sigmaz> on site 2 at time t
     """
 
-    
+
     S_x_site_1 = np.real(np.vdot(psi, Sx_1 @ psi))
     S_x_site_2 = np.real(np.vdot(psi, Sx_2 @ psi))
 
     S_y_site_1 = np.real(np.vdot(psi, Sy_1 @ psi))
     S_y_site_2 = np.real(np.vdot(psi, Sy_2 @ psi))
-    
+
     S_z_site_1 = np.real(np.vdot(psi, Sz_1 @ psi))
     S_z_site_2 = np.real(np.vdot(psi, Sz_2 @ psi))
 
     return S_x_site_1, S_x_site_2, S_y_site_1, S_y_site_2, S_z_site_1, S_z_site_2
-    
+
 
 
 # In[13]:
@@ -551,13 +553,13 @@ def compute_Bloch_Sphere(psi):
 
     # Blochs components
     r_x_step = 2 * np.real(c_10 * c_01_conj)
-    
+
     r_y_step = -2 * np.imag(c_10 * c_01_conj)
 
     r_z_step = np.abs(c_01)**2 - np.abs(c_10)**2 
 
     return r_x_step, r_y_step, r_z_step
-    
+
 
 
 # In[14]:
@@ -566,13 +568,13 @@ def compute_Bloch_Sphere(psi):
 def M_operators_list(dt, c_CM, g_z, g_x, g_0, g_1, N_site):
     """
     Calculate the two generic M0 and M1 operatos for the WF evolution
-    
+
     Parameters: - dt : float, Time Step
                 - c_CM : array, Collisional model Coefficients
                 - N_site : int, Number of Sites
                 - times : array, Time array
                 - projectors : list/array, Projection Operators [P_10, P_01, ...]
-                       
+
     Returns: - M0_list: nparray, list of operators M0 for every site
              - M1_list: nparray, list of operators M1 for every site
     """
@@ -582,30 +584,30 @@ def M_operators_list(dt, c_CM, g_z, g_x, g_0, g_1, N_site):
 
     M0_list = []
     M1_list = []
-    
+
     for site_idx in range(N_site):
-        
+
         cos_cdt = np.cos(c_CM[site_idx] * dt)
         sin_cdt = np.sin(c_CM[site_idx] * dt)
 
         # M0
         m0_site = (g_0 * cos_cdt * qeye(2) - 1j * par_0 * sin_cdt * sigmaz())
-        
+
         # M1
         m1_site = (g_1 * cos_cdt * qeye(2) - 1j * par_1 * sin_cdt * sigmaz())
-        
+
         # Build up of single site operators
         op_0_list = [qeye(2) for _ in range(N_site) ]
         op_1_list = [qeye(2) for _ in range(N_site) ]
 
         op_0_list[site_idx] = m0_site 
         op_1_list[site_idx] = m1_site 
-        
+
         M0_list.append((tensor(op_0_list)).full())
         M1_list.append((tensor(op_1_list)).full())
 
     return np.array(M0_list, dtype=np.complex128), np.array(M1_list, dtype=np.complex128)
-    
+
 
 
 # In[15]:
@@ -620,7 +622,7 @@ def compute_trajectory_wf_core(psi_sys_initial, U_site, M0_list, M1_list, projec
     """
     pop_traj = np.zeros((N_site, n_times, N_traj), dtype=np.float64)
     coh_traj = np.zeros((N_site, n_times, N_traj), dtype=np.complex128)
-    
+
     # Inizializzazione al tempo t=0 per tutte le traiettorie
     for site in range(N_site):
         pop_0 = np.real(np.vdot(psi_sys_initial, projectors[site] @ psi_sys_initial))
@@ -639,7 +641,7 @@ def compute_trajectory_wf_core(psi_sys_initial, U_site, M0_list, M1_list, projec
                 M0 = M0_list[j]
                 M1 = M1_list[j]
                 Pr_0 = Pr_0_site[j]
-                
+
                 r = np.random.rand()
                 if r < Pr_0:
                     psi = M0 @ psi
@@ -651,7 +653,7 @@ def compute_trajectory_wf_core(psi_sys_initial, U_site, M0_list, M1_list, projec
             # Estrazione dei dati per la singola traiettoria al tempo corrente
             for site in range(N_site):
                 pop_traj[site, step, traj] = np.real(np.vdot(psi, projectors[site] @ psi))
-                
+
                 # Calcolo della coerenza complessa usando lo stato 'psi' evoluto
                 coh_traj[site, step, traj] = np.vdot(psi, projectors_cohe[site] @ psi)
 
@@ -660,12 +662,12 @@ def compute_trajectory_wf_core(psi_sys_initial, U_site, M0_list, M1_list, projec
 def compute_trajectory_wf(dt, c_CM, g_z, g_x, g_0, g_1, N_traj, N_site, times,
                            projectors, projectors_cohe, psi_sys_initial, U_site, Pr_0_site, Pr_1_site,
                            batch_size=1000):
-    
+
     U_site = U_site.full() if hasattr(U_site, 'full') else np.array(U_site, dtype=complex)
     psi_sys_initial = psi_sys_initial.full() if hasattr(psi_sys_initial, 'full') else np.array(psi_sys_initial, dtype=complex)
     if psi_sys_initial.ndim > 1:
         psi_sys_initial = psi_sys_initial.flatten()
-        
+
     # Conversione operatori in numpy array per Numba
     projectors = np.array([P.full() if hasattr(P, 'full') else np.array(P, dtype=complex) for P in projectors])
     projectors_cohe = np.array([P.full() if hasattr(P, 'full') else np.array(P, dtype=complex) for P in projectors_cohe])
@@ -697,13 +699,13 @@ def compute_trajectory_wf(dt, c_CM, g_z, g_x, g_0, g_1, N_traj, N_site, times,
         # 2. INSERIMENTO NEGLI ARRAY TRAMITE SLICING
         pop_00[:, N_done : N_done + N_batch] = pop_b[0, :, :]
         pop_11[:, N_done : N_done + N_batch] = pop_b[1, :, :]
-        
+
         # Salvataggio delle due coerenze complete (indice 0 per 01_10, indice 1 per 10_01)
         coh_01_10[:, N_done : N_done + N_batch] = coh_b[0, :, :]
         coh_10_01[:, N_done : N_done + N_batch] = coh_b[1, :, :]
 
         N_done += N_batch
-        
+
         # Pulizia memoria del batch
         del pop_b, coh_b
 
@@ -745,7 +747,7 @@ gamma_k = [g_deph, g_deph]
 c_CM_list = np.array([[np.sqrt(g_deph / (4 * dt_list[j])) for j in range(len(dt_list))] for _ in range(N_site)])  # same Coupling for the 2 sites
 
 
-# In[17]:
+# In[ ]:
 
 
 # ========================================
@@ -765,8 +767,13 @@ rho_sys_initial = (ket2dm(psi_sys_initial)).full()
 # -----------------
 # Angles definition
 # -----------------
-#theta_list = np.radians([90, 89.9, 89.5, 89, 88.5, 88]) # change : angles
-theta_list = np.radians([90, 60, 45, 30, 0]) 
+
+MODE = "close_to_90_deg"  # change : "normal" or "close_to_90_deg"
+
+if MODE == "normal":
+    theta_list = np.radians([90, 60, 45, 30, 0])
+elif MODE == "close_to_90_deg": 
+    theta_list = np.radians([90, 89.9, 89.5, 89, 88.5, 88])
 
 
 # In[18]:
@@ -798,17 +805,18 @@ L_k = [L_1, L_2]
 
 # ### Calculation
 
-# In[19]:
+# In[ ]:
 
-
-import time
-import os
-import numpy as np
 
 # ======================
 # Output directory setup
 # ======================
-results_dir = "../../Results/Data/Complete_rho"
+
+if MODE == "normal":
+    results_dir = "../../Results/Data/Complete_rho/normal/"
+elif MODE == "close_to_90_deg":
+    results_dir = "../../Results/Data/Complete_rho/close_90_deg/"
+
 os.makedirs(results_dir, exist_ok=True)
 
 # Traiettorie per batch nel wrapper
@@ -913,16 +921,16 @@ for theta_idx, theta in enumerate(theta_list):
                 pop_11=pop_11,
                 coh_01_10=coh_01_10, # Ora è un array complex128 completo
                 coh_10_01=coh_10_01, # Ora è un array complex128 completo
-                
+
                 # 2. Baseline Analitiche e Traccia
                 pops_trace=pops_trace,
                 rho_list_lindblad=rho_list_lindblad,
                 V_lindblad=V_lindblad,
                 W_lindblad=W_lindblad,
-                
+
                 # 3. Dati Sistema Isolato
                 pop_traj_isolated=pop_traj_isolated,
-                
+
                 # 4. Parametri
                 theta=theta, phi=phi, dt=dt, N_traj=N_traj,
                 times=times, steps=steps, c_CM=c_CM,

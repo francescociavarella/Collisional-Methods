@@ -461,34 +461,36 @@ save_fig(fig, filename_var_pauli)
 # In[ ]:
 
 
-# =============================
-# SAVE ALL STATISTICAL METRICS 
-# =============================
+# ==========================================================
+# SAVE COMPLETE PAULI MATRICES AND VARIANCES
+# ==========================================================
 
-# 1. Define the subdirectory name and create the path
-subdir = "metrics"
-metrics_dir = os.path.join(Input_dir, subdir)
+# 1. Define the main subdirectory and the specific ones for each observable
+main_subdir = "pauli_exp_value"
 
-# 2. Check if the directory exists, if not, create it
-if not os.path.exists(metrics_dir):
-    os.makedirs(metrics_dir)
-    print(f"Created directory: {metrics_dir}")
+dir_sx = os.path.join(Input_dir, main_subdir, "Sx")
+dir_sy = os.path.join(Input_dir, main_subdir, "Sy")
+dir_sz = os.path.join(Input_dir, main_subdir, "Sz")
 
-# 3. Define a UNIQUE output filepath to avoid overwriting Fidelity data
-output_filename = f"Metrics_Pauli_Theta_{theta_target_deg}deg.npz"
-output_filepath = os.path.join(metrics_dir, output_filename)
+# 2. Check and create directories if they do not exist
+for directory in [dir_sx, dir_sy, dir_sz]:
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+        print(f"Created directory: {directory}")
 
-# 4. Save everything into a compressed .npz file
-np.savez_compressed(
-    output_filepath,
-    times=times,               
-    var_sx=variance_sx,
-    var_sy=variance_sy,
-    var_sz=variance_sz,
-    mean_sx=mean_sx,
-    mean_sy=mean_sy,
-    mean_sz=mean_sz
-)
+# 3. Define the output filepaths for each observable
+# Using theta_target_deg to distinguish between different angles
+filepath_sx = os.path.join(dir_sx, f"Complete_Sx_Theta_{theta_target_deg}deg.npz")
+filepath_sy = os.path.join(dir_sy, f"Complete_Sy_Theta_{theta_target_deg}deg.npz")
+filepath_sz = os.path.join(dir_sz, f"Complete_Sz_Theta_{theta_target_deg}deg.npz")
 
-print(f"Pauli metrics successfully saved in: {output_filepath}")
+# 4. Save the full matrices and their calculated variances into separate compressed .npz files
+# Saving the time array alongside the complete matrices and variances
+np.savez_compressed(filepath_sx, times=times, all_sigma_x=all_sigma_x, var_sx=variance_sx)
+np.savez_compressed(filepath_sy, times=times, all_sigma_y=all_sigma_y, var_sy=variance_sy)
+np.savez_compressed(filepath_sz, times=times, all_sigma_z=all_sigma_z, var_sz=variance_sz)
+
+print(f"✅ Complete Sx data and variance successfully saved in: {filepath_sx}")
+print(f"✅ Complete Sy data and variance successfully saved in: {filepath_sy}")
+print(f"✅ Complete Sz data and variance successfully saved in: {filepath_sz}")
 
