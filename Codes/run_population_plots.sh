@@ -5,7 +5,7 @@
 # ==========================================================
 
 # Define the mode: 'normal' or 'close_to_90'
-MODE="normal"
+MODE="close_to_90"
 
 # Select the appropriate array of angles based on the chosen mode
 if [ "$MODE" == "normal" ]; then
@@ -27,9 +27,8 @@ do
     
     # Pass THETA as the first argument ($1) and MODE as the second argument ($2)
     # The '&' runs them concurrently in the background
-    #python -u Intermediate/Plot_rho_complete.py $THETA $MODE &
-    #python -u Complete_Fidelity_and_Trace_Distance_Analysis.py $THETA $MODE &
-    python -u Complete_Sx_Sy_Sz_exp_value_analysis.py $THETA $MODE &
+    python -u Intermediate/Plot_rho_complete.py $THETA $MODE &
+    
 done
 
 # Wait for all background processes to finish before exiting the script
