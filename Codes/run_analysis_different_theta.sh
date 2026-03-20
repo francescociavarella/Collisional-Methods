@@ -11,7 +11,7 @@ MODE="close_to_90"
 if [ "$MODE" == "normal" ]; then
     ANGLES=(0 30 45 60 90)
 elif [ "$MODE" == "close_to_90" ]; then
-    ANGLES=(90 89.9 89.7 89.5 89 88.5 88 87 86)
+    ANGLES=(0 90 89.9 89.7 89.5 89 88.5 88 87 86)
 else
     echo "Error: Unknown MODE = $MODE"
     exit 1

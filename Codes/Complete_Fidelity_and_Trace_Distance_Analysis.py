@@ -626,7 +626,7 @@ ax.legend()
 
 # Automatically save the figure using the global parameters defined at the top
 filename_avg = f"Avg_Fidelity_Evolution_Theta_{theta_str}_dt_{dt_str}"
-#save_fig(fig01, filename_avg)
+save_fig(fig01, filename_avg)
 
 #plt.show()
 
@@ -684,7 +684,7 @@ ax.set_title(f'Fidelity Distribution over Time | $\\theta$ = {theta_target_deg}�
 
 # Automatically save the heatmap figure
 filename_heatmap = f"Heatmap_Fidelity_Complete_Theta_{theta_str}_dt_{dt_str}"
-#save_fig(fig, filename_heatmap)
+save_fig(fig, filename_heatmap)
 
 #plt.show()
 
@@ -725,8 +725,8 @@ ax.set_xlabel("Time steps")
 ax.set_ylabel("Fidelity")
 
 # Automatically save the figure (PNG + PDF)
-#filename_heatmap_simplified = f"Heatmap_Fidelity_Simplified_Theta_{theta_target_deg}deg"
-#save_fig(fig, filename_heatmap_simplified)
+filename_heatmap_simplified = f"Heatmap_Fidelity_Simplified_Theta_{theta_target_deg}deg"
+save_fig(fig, filename_heatmap_simplified)
 
 #plt.show()
 
@@ -822,8 +822,8 @@ ax.set_title(f"Single Traj and Avg Fidelity Over Trajectories vs Lindblad | $\\t
 ax.legend()
 
 # Automatically save the figure dynamically
-# filename_single = f"Single Traj and Avg Fidelity Over Trajectories vs Lindblad | $\\theta$ = {theta_target_deg}°"
-# save_fig(fig, filename_single)
+#filename_single = f"Single Traj and Avg Fidelity Over Trajectories vs Lindblad | $\\theta$ = {theta_target_deg}°"
+#save_fig(fig, filename_single)
 
 #plt.show()
 
@@ -888,8 +888,8 @@ ax.set_ylabel(r'Trace Distance $\mathcal{T}(\rho_{traj}, \rho_L)$')
 ax.set_title(f'Trace Distance Probability Density over Time | $\\theta$ = {theta_target_deg}°')
 
 # Automatically save the heatmap figure (uncomment when needed)
-# filename_heatmap_td = f"Heatmap_Trace_Distance_Complete_Theta_{theta_str}_dt_{dt_str}"
-# save_fig(fig, filename_heatmap_td)
+filename_heatmap_td = f"Heatmap_Trace_Distance_Complete_Theta_{theta_str}_dt_{dt_str}"
+save_fig(fig, filename_heatmap_td)
 
 #plt.show()
 
