@@ -5,7 +5,7 @@
 # ==========================================================
 
 # Define the mode: 'normal' or 'close_to_90'
-MODE="normal"
+MODE="close_to_90"
 
 # Select the appropriate array of angles based on the chosen mode
 if [ "$MODE" == "normal" ]; then

@@ -362,7 +362,7 @@ for sigma_matrix, label, file_suffix in zip(matrices, labels, filenames):
 
     # Automatically save the heatmap figure (uncomment when needed)
     filename_heatmap = f"Heatmap_{file_suffix}_Complete_Theta_{theta_str}_dt_{dt_str}"
-    save_fig(fig, filename_heatmap)
+    #save_fig(fig, filename_heatmap)
 
     #plt.show()
 
@@ -424,7 +424,7 @@ for traj_matrix, lind_array, label, file_suffix in zip(trajectory_matrices, lind
     
     # Automatically save the figure (uncomment when you want to save)
     filename_avg = f"Avg_{file_suffix}_Evolution_Theta_{theta_target_deg}deg"
-    save_fig(fig, filename_avg)
+    #save_fig(fig, filename_avg)
     
     #plt.show()
 
@@ -436,35 +436,42 @@ for traj_matrix, lind_array, label, file_suffix in zip(trajectory_matrices, lind
 # VARIANCE CALCULATION AND PLOT FOR PAULI MATRICES
 # =================================================
 
-print("Calculating variances across all trajectories")
+print("Calculating variances across different numbers of trajectories")
 
-# 1. Calculate the variance for each time step across all trajectories (axis=1)
-variance_sx = np.var(all_sigma_x, axis=1)
-variance_sy = np.var(all_sigma_y, axis=1)
-variance_sz = np.var(all_sigma_z, axis=1)
+Var_N_traj = [100, 1000, 5000, 20000]
 
-# 2. Plotting the variances together for comparison
-plt.close('all')
+for N in Var_N_traj:
+    print(f"Processing variance for N = {N} trajectories")
 
-fig, ax = plt.subplots(figsize=(10, 6))
+    max_N = min(N, all_sigma_x.shape[1])  # Ensure we don't exceed available trajectories
 
-# Plot the three variances
-ax.plot(times, variance_sx, label=r'Variance of $\langle \sigma_x \rangle$', color='dodgerblue', linewidth=2)
-ax.plot(times, variance_sy, label=r'Variance of $\langle \sigma_y \rangle$', color='mediumseagreen', linewidth=2, alpha=0.8)
-ax.plot(times, variance_sz, label=r'Variance of $\langle \sigma_z \rangle$', color='crimson', linewidth=2)
+    # 1. Calculate the variance for each time step across N trajectories (axis=1)
+    variance_sx = np.var(all_sigma_x[:, :max_N], axis=1)
+    variance_sy = np.var(all_sigma_y[:, :max_N], axis=1)
+    variance_sz = np.var(all_sigma_z[:, :max_N], axis=1)
 
-# Set labels and dynamic titles
-ax.set_xlabel("Time steps")
-ax.set_ylabel("Variance")
-ax.set_title(f"Variance of Pauli Expectation Values over Time | $\\theta$ = {theta_target_deg}°")
-ax.legend()
-ax.grid(alpha=0.4, linestyle='--')
+    # 2. Plotting the variances together for comparison
+    plt.close('all')
 
-fig.tight_layout()
+    fig, ax = plt.subplots(figsize=(10, 6))
 
-# Automatically save the figure 
-filename_var_pauli = f"Variance_Pauli_Theta_{theta_str}_dt_{dt_str}"
-save_fig(fig, filename_var_pauli)
+    # Plot the three variances
+    ax.plot(times, variance_sx, label=r'Variance of $\langle \sigma_x \rangle$', color='dodgerblue', linewidth=2)
+    ax.plot(times, variance_sy, label=r'Variance of $\langle \sigma_y \rangle$', color='mediumseagreen', linewidth=2, alpha=0.8)
+    ax.plot(times, variance_sz, label=r'Variance of $\langle \sigma_z \rangle$', color='crimson', linewidth=2)
+
+    # Set labels and dynamic titles
+    ax.set_xlabel("Time steps")
+    ax.set_ylabel("Variance")
+    ax.set_title(f"Variance of Pauli Expectation Values over Time | $\\theta$ = {theta_target_deg}°, N_traj = {max_N}")
+    ax.legend()
+    ax.grid(alpha=0.4, linestyle='--')
+
+    fig.tight_layout()
+
+    # Automatically save the figure 
+    filename_var_pauli = f"Variance_Pauli_Theta_{theta_str}_dt_{dt_str}_N_traj_{max_N}"
+    save_fig(fig, filename_var_pauli)
 
 # plt.show()
 
@@ -476,32 +483,32 @@ save_fig(fig, filename_var_pauli)
 # SAVE COMPLETE PAULI MATRICES AND VARIANCES
 # ==========================================================
 
-# 1. Define the main subdirectory and the specific ones for each observable
-main_subdir = "pauli_exp_value"
+# # 1. Define the main subdirectory and the specific ones for each observable
+# main_subdir = "pauli_exp_value"
 
-dir_sx = os.path.join(Input_dir, main_subdir, "Sx")
-dir_sy = os.path.join(Input_dir, main_subdir, "Sy")
-dir_sz = os.path.join(Input_dir, main_subdir, "Sz")
+# dir_sx = os.path.join(Input_dir, main_subdir, "Sx")
+# dir_sy = os.path.join(Input_dir, main_subdir, "Sy")
+# dir_sz = os.path.join(Input_dir, main_subdir, "Sz")
 
-# 2. Check and create directories if they do not exist
-for directory in [dir_sx, dir_sy, dir_sz]:
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-        print(f"Created directory: {directory}")
+# # 2. Check and create directories if they do not exist
+# for directory in [dir_sx, dir_sy, dir_sz]:
+#     if not os.path.exists(directory):
+#         os.makedirs(directory)
+#         print(f"Created directory: {directory}")
 
-# 3. Define the output filepaths for each observable
-# Using theta_target_deg to distinguish between different angles
-filepath_sx = os.path.join(dir_sx, f"Complete_Sx_Theta_{theta_target_deg}deg.npz")
-filepath_sy = os.path.join(dir_sy, f"Complete_Sy_Theta_{theta_target_deg}deg.npz")
-filepath_sz = os.path.join(dir_sz, f"Complete_Sz_Theta_{theta_target_deg}deg.npz")
+# # 3. Define the output filepaths for each observable
+# # Using theta_target_deg to distinguish between different angles
+# filepath_sx = os.path.join(dir_sx, f"Complete_Sx_Theta_{theta_target_deg}deg.npz")
+# filepath_sy = os.path.join(dir_sy, f"Complete_Sy_Theta_{theta_target_deg}deg.npz")
+# filepath_sz = os.path.join(dir_sz, f"Complete_Sz_Theta_{theta_target_deg}deg.npz")
 
-# 4. Save the full matrices and their calculated variances into separate compressed .npz files
-# Saving the time array alongside the complete matrices and variances
-np.savez_compressed(filepath_sx, times=times, all_sigma_x=all_sigma_x, var_sx=variance_sx)
-np.savez_compressed(filepath_sy, times=times, all_sigma_y=all_sigma_y, var_sy=variance_sy)
-np.savez_compressed(filepath_sz, times=times, all_sigma_z=all_sigma_z, var_sz=variance_sz)
+# # 4. Save the full matrices and their calculated variances into separate compressed .npz files
+# # Saving the time array alongside the complete matrices and variances
+# np.savez_compressed(filepath_sx, times=times, all_sigma_x=all_sigma_x, var_sx=variance_sx)
+# np.savez_compressed(filepath_sy, times=times, all_sigma_y=all_sigma_y, var_sy=variance_sy)
+# np.savez_compressed(filepath_sz, times=times, all_sigma_z=all_sigma_z, var_sz=variance_sz)
 
-print(f"✅ Complete Sx data and variance successfully saved in: {filepath_sx}")
-print(f"✅ Complete Sy data and variance successfully saved in: {filepath_sy}")
-print(f"✅ Complete Sz data and variance successfully saved in: {filepath_sz}")
+# print(f"✅ Complete Sx data and variance successfully saved in: {filepath_sx}")
+# print(f"✅ Complete Sy data and variance successfully saved in: {filepath_sy}")
+# print(f"✅ Complete Sz data and variance successfully saved in: {filepath_sz}")
 
