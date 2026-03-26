@@ -8,7 +8,7 @@ import matplotlib.animation as animation
 from matplotlib import rcParams
 
 
-from descriptors.densification import bloch_coords
+from densification import NJIT_bloch_coords
 
 
 ### FIGURE UTILITIES
@@ -45,7 +45,7 @@ def plot_multiple_bloch_trajectories(arrays,
     print(len(np.array(arrays).shape))
     if len(np.array(arrays).shape) == 3:
         rho_list = arrays
-        bloch_vectors = np.array([bloch_coords(rho) for rho in rho_list])
+        bloch_vectors = np.array([NJIT_bloch_coords(rho) for rho in rho_list])
         xs, ys, zs = bloch_vectors.T
         # Path
         ax.plot(xs, ys, zs, color=colors[0], linewidth=lw, alpha=alp, label=labels[0] if labels else None)
@@ -56,7 +56,7 @@ def plot_multiple_bloch_trajectories(arrays,
             if arrow_len > 1e-6:  # avoid zero division
                 direction = arrow_vec / arrow_len
                 scale = 0.2  # fixed arrow length
-                ax.quiver(0, 0, 0, xs[-1], ys[-1], zs[-1], color=colors[i], arrow_length_ratio=0.1, linewidth=2)
+                ax.quiver(0, 0, 0, xs[-1], ys[-1], zs[-1], color=colors[0], arrow_length_ratio=0.1, linewidth=2)  # changed here colors[i] to colors[0]
             if quiv_init:
                 ax.quiver(0, 0, 0, xs[0], ys[0], zs[0], color='k', arrow_length_ratio=0.1, linewidth=2)
     
@@ -64,7 +64,7 @@ def plot_multiple_bloch_trajectories(arrays,
         if len(colors) < np.array(arrays).shape[0]:
             colors = cm.cool(np.linspace(0, 1, np.array(arrays).shape[0])) # plasma
         for i, rho_list in enumerate(arrays):
-            bloch_vectors = np.array([bloch_coords(rho) for rho in rho_list])
+            bloch_vectors = np.array([NJIT_bloch_coords(rho) for rho in rho_list])
             xs, ys, zs = bloch_vectors.T
             # Path
             ax.plot(xs, ys, zs, color=colors[i], linewidth=lw, alpha=alp, label=labels[i] if labels and len(labels)<=len(colors) else None)
@@ -179,7 +179,7 @@ def plot_onebloch_multipletrajectories(ax,
             else:
                 colors = cm.cool(np.linspace(0, 1, np.array(arrays).shape[0])) #cool #plasma #gist_rainbow
         rho_list = arrays
-        bloch_vectors = np.array([bloch_coords(rho) for rho in rho_list])
+        bloch_vectors = np.array([NJIT_bloch_coords(rho) for rho in rho_list])
         xs, ys, zs = bloch_vectors.T
         # Path
         ax.plot(xs, ys, zs, color=colors[0], linewidth=lw, alpha=alp, label=labels[0] if labels else None)
@@ -211,7 +211,7 @@ def plot_onebloch_multipletrajectories(ax,
             else:
                 colors = cm.cool(np.linspace(0, 1, np.array(arrays).shape[0])) #cool #plasma #gist_rainbow
         for i, rho_list in enumerate(arrays):
-            bloch_vectors = np.array([bloch_coords(rho) for rho in rho_list])
+            bloch_vectors = np.array([NJIT_bloch_coords(rho) for rho in rho_list])
             xs, ys, zs = bloch_vectors.T
             # Path
             ax.plot(xs, ys, zs, color=colors[i], linewidth=2, alpha=alp, label=labels[i] if labels and len(labels)<=len(colors) else None)
@@ -282,7 +282,7 @@ def generate_bloch_animation(array, filename="bloch_animation.mp4", color='royal
     - fps: frames per second
     """
     # Extract Bloch vector path
-    bloch_vectors = np.array([bloch_coords(rho) for rho in array])
+    bloch_vectors = np.array([NJIT_bloch_coords(rho) for rho in array])
     xs, ys, zs = bloch_vectors.T
 
     fig = plt.figure(figsize=(6, 6))
@@ -347,7 +347,7 @@ def WINDOWS_generate_bloch_animation(array, filename="bloch_animation.gif", colo
     - fps: frames per second for the animation
     """
     # Convert list of density matrices to Bloch vectors
-    coords = np.array([bloch_coords(r) for r in array])
+    coords = np.array([NJIT_bloch_coords(r) for r in array])
     xs, ys, zs = coords[:, 0], coords[:, 1], coords[:, 2]
 
     fig = plt.figure(figsize=(10,10))
@@ -415,7 +415,7 @@ def MULTI_FadingTrails_generate_bloch_animation(rho_list,
         colors = cm.cool(np.linspace(0, 1, num_traj))
     
     # EXTRACT BLOCH COORDINATES    
-    all_coords = [np.array([bloch_coords(rho) for rho in traj]) for traj in rho_list]
+    all_coords = [np.array([NJIT_bloch_coords(rho) for rho in traj]) for traj in rho_list]
     max_frames = max(len(coords) for coords in all_coords)
 
     # Downsample frame indices for animation
