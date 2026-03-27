@@ -3,10 +3,14 @@ import numpy as np
 from numba import jit, njit, prange
 from numba import complex128 as ncomplex
 
-from gutils import utils
-from sse import averages as sav
+#from gutils import utils
+#from sse import averages as sav
 
-from qme.pauli import sigma_0, sigma_x, sigma_y, sigma_z
+#from qme.pauli import sigma_0, sigma_x, sigma_y, sigma_z
+
+sigma_x = np.array([[0, 1], [1, 0]], dtype=complex)
+sigma_y = np.array([[0, -1j], [1j, 0]], dtype=complex)
+sigma_z = np.array([[1, 0], [0, -1]], dtype=complex)
 
 def bloch_coords(rho):
     """Compute Bloch vector from a 2x2 density matrix."""
@@ -74,40 +78,40 @@ def NJIT_angle_between_vectors(u, v):
         cos_theta = -1.0
     return np.arccos(cos_theta)
 
-@njit
-def NJIT_mean_angle_bruteforce(many_rho_trjs, t_idx, norm=np.pi):
-    """
-    Compute the mean angle between all pairs of Bloch vectors at time index t_idx.
 
-    Parameters
-    ----------
-    many_rho_trjs : np.ndarray
-        A 3D array of shape (n_traj, n_time, 2, 2) containing the density matrices.
-    t_idx : int
-        The time index at which to compute the mean angle.
-    norm : float
-        The normalization factor for the angles.
-
-    Returns
-    -------
-    float
-        The mean angle between all pairs of Bloch vectors at time index t_idx.
+@njit(parallel=True)
+def NJIT_mean_angle_parallel(many_rho_trjs, t_idx, norm=np.pi):
     """
-    av_angle = 0.0
-    c = 0
+    Compute the mean angle using multi-core parallelization.
+    This distributes the O(N^2) workload across all available CPU cores.
+    """
     n = many_rho_trjs.shape[0]
     vects = NJIT_vectors_inCartesian_coords(many_rho_trjs, t_idx)
-    for i in range(n):
+    
+    av_angle = 0.0
+    c = 0
+    
+    # Replace 'range' with 'prange' in the outer loop to parallelize
+    for i in prange(n):
+        local_angle = 0.0
+        local_c = 0
+        
+        # Inner loop remains standard 'range'
         for j in range(i + 1, n):
             vec1 = vects[:, i]
             vec2 = vects[:, j]
-            angle = NJIT_angle_between_vectors(vec1, vec2)
-            av_angle += angle
-            c += 1
+            local_angle += NJIT_angle_between_vectors(vec1, vec2)
+            local_c += 1
+            
+        # Numba automatically handles this reduction safely across threads
+        av_angle += local_angle
+        c += local_c
+        
     if c > 0:
         av_angle /= (c * norm)
     else:
         av_angle = 0.0
+        
     return av_angle
 
 @njit
@@ -142,16 +146,16 @@ def NJIT_syncr_measure_time(many_rho_trjs: np.ndarray,
     
     if minusone:
         try:
-            syncr_meas[0] = 1. - NJIT_mean_angle_bruteforce(many_rho_trjs=many_rho_trjs, t_idx=0, norm=norm)
+            syncr_meas[0] = 1. - NJIT_mean_angle_parallel(many_rho_trjs=many_rho_trjs, t_idx=0, norm=norm)
         except:
             syncr_meas[0] = 1.
         for i in range(1, ntime):
-            syncr_meas[i] = 1 - NJIT_mean_angle_bruteforce(many_rho_trjs=many_rho_trjs, t_idx=i, norm=norm)
+            syncr_meas[i] = 1 - NJIT_mean_angle_parallel(many_rho_trjs=many_rho_trjs, t_idx=i, norm=norm)
     else:
         try:
-            syncr_meas[0] = NJIT_mean_angle_bruteforce(many_rho_trjs=many_rho_trjs, t_idx=0, norm=norm)
+            syncr_meas[0] = NJIT_mean_angle_parallel(many_rho_trjs=many_rho_trjs, t_idx=0, norm=norm)
         except:
             syncr_meas[0] = 0.
         for i in range(1, ntime):
-            syncr_meas[i] = NJIT_mean_angle_bruteforce(many_rho_trjs=many_rho_trjs, t_idx=i, norm=norm)
+            syncr_meas[i] = NJIT_mean_angle_parallel(many_rho_trjs=many_rho_trjs, t_idx=i, norm=norm)
     return syncr_meas

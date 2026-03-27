@@ -153,9 +153,9 @@ def multi_figure_bloch_plot(n_subplots=2,
 
 def plot_onebloch_multipletrajectories(ax,
                                        arrays, 
-                                       colors=None,#['r','b','g'],
+                                       colors=['r','b','g'],
                                        colormap_plain=False,
-                                       plaincolor='grey',
+                                       plaincolor='white',
                                        lw=2, alp=0.75, 
                                        quiv=True, 
                                        quiv_init=False, 
@@ -192,11 +192,11 @@ def plot_onebloch_multipletrajectories(ax,
                 scale = 0.2  # fixed arrow length
                 ax.quiver(0, 0, 0,
                             xs[-1], ys[-1], zs[-1],
-                            color=quiv_color if quiv_color else colors[i], arrow_length_ratio=0.1, linewidth=2, alpha=quiv_alpha if quiv_alpha else 1.0)
+                            color=quiv_color if quiv_color else colors[0], arrow_length_ratio=0.1, linewidth=2, alpha=quiv_alpha if quiv_alpha else 1.0)
             if quiv_init:
                 ax.quiver(0, 0, 0,
                             xs[0], ys[0], zs[0],
-                            color='grey', arrow_length_ratio=0.1, linewidth=2)
+                            color='blue', arrow_length_ratio=0.1, linewidth=2)
     
     elif len(np.array(arrays).shape) == 4:
         if colors:
@@ -227,7 +227,7 @@ def plot_onebloch_multipletrajectories(ax,
                     if quiv_init:
                         ax.quiver(0, 0, 0,
                                     xs[0], ys[0], zs[0],
-                                    color='grey', arrow_length_ratio=0.1, linewidth=2)
+                                    color='blue', arrow_length_ratio=0.1, linewidth=2)
     # Labels
     if labels and showlegend:
         ax.legend(loc='upper right')
@@ -318,14 +318,18 @@ def generate_bloch_animation(array, filename="bloch_animation.mp4", color='royal
     arrow = ax.quiver(0, 0, 0, 0, 0, 0, color=color, arrow_length_ratio=0.1, linewidth=2)
 
     def update(frame):
+        nonlocal arrow 
+
         path_line.set_data(xs[:frame], ys[:frame])
         path_line.set_3d_properties(zs[:frame])
-        ax.collections.remove(arrow)
+        
+        arrow.remove()
 
-        new_arrow = ax.quiver(0, 0, 0,
-                              xs[frame], ys[frame], zs[frame],
-                              color=color, arrow_length_ratio=0.1, linewidth=2)
-        return path_line, new_arrow
+        arrow = ax.quiver(0, 0, 0,
+                          xs[frame], ys[frame], zs[frame],
+                          color=color, arrow_length_ratio=0.1, linewidth=2)
+                          
+        return path_line, arrow
 
     ani = animation.FuncAnimation(fig, update, frames=len(xs), blit=False)
     ani.save(filename, writer='ffmpeg', fps=fps) 
