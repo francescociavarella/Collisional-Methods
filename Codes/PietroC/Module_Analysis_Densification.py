@@ -58,12 +58,12 @@ theta_rad = np.radians(theta_target_deg)
 
 # Parse Argument 2: Mode (normal or close_to_90)
 if len(sys.argv) > 2:
-    simulation_mode = sys.argv[2]
+    MODE = sys.argv[2]
 else:
-    simulation_mode = "normal"
+    MODE = "normal"
 
 print("\n" + "="*50)
-print(f"🚀 STARTING ANALYSIS FOR THETA = {theta_target_deg}° (Mode: {simulation_mode})")
+print(f"🚀 STARTING ANALYSIS FOR THETA = {theta_target_deg}° (Mode: {MODE})")
 print("="*50 + "\n")
 
 # Site selector: 0 for |10>, 1 for |01>
@@ -80,9 +80,9 @@ N_traj_to_plot = 100
 # =================
 # Set the input directory dynamically
 if MODE == 'normal':
-    Input_dir = "../Results/Data/Complete_rho/normal"
+    Input_dir = "../../Results/Data/Complete_rho/normal"
 elif MODE == 'close_to_90':
-    Input_dir = "../Results/Data/Complete_rho/close_90_deg"
+    Input_dir = "../../Results/Data/Complete_rho/close_90_deg"
 else:
     raise ValueError(f"Unknown mode provided: {MODE}")
 
