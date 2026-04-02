@@ -32,15 +32,18 @@ def NJIT_bloch_coords(rho):
 def NJIT_vectors_inCartesian_coords(many_rho_trjs, t_idx):
     """
     Compute the Bloch vectors in Cartesian coordinates for a set of density matrices.
+    Returns an array of shape (N_traj, 3) to match the standard data matrix format.
     """
     n_traj = many_rho_trjs.shape[0]
-    vects = np.empty((3, n_traj))  # (3, N)
+    vects = np.empty((n_traj, 3))  # Shape is now (N_traj, 3)
+    
     for i in range(n_traj):
         rho = many_rho_trjs[i, t_idx]
-        bloch_vec = NJIT_bloch_coords(rho)
-        vects[0, i] = bloch_vec[0]
-        vects[1, i] = bloch_vec[1]
-        vects[2, i] = bloch_vec[2]
+        bloch_vec = NJIT_bloch_coords(rho)  # Assuming this returns [x, y, z]
+        vects[i, 0] = bloch_vec[0]
+        vects[i, 1] = bloch_vec[1]
+        vects[i, 2] = bloch_vec[2]
+        
     return vects
 
 @njit
