@@ -1,132 +1,120 @@
 import numpy as np
 from numba import njit
 import qutip as qt
+
+# --- Matplotlib Headless Backend Setup ---
+import matplotlib
+matplotlib.use('Agg')  # Use 'Agg' backend for non-interactive plotting (suitable for cluster environments)
+
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches  # Added for custom legend
 from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Line3D
 import matplotlib.animation as animation
 import imageio.v2 as imageio
 import os
+import sys 
 
 # ==========================================
 # Custom Modules Import
 # ==========================================
-
-from densification import NJIT_syncr_measure_time,  NJIT_bloch_coords, NJIT_vectors_inCartesian_coords
+from densification import NJIT_syncr_measure_time, NJIT_bloch_coords, NJIT_vectors_inCartesian_coords
 import visualization 
 
 # ====================================
-# Physical & Simulation Parameters
+# Argument Parsing & Setup
 # ====================================
-# Theta angle in degrees, H_Coll Direction
-theta_target_deg = 0.0  # change angle here
+if len(sys.argv) < 3:
+    print("Error: Missing arguments. Usage: python script.py <THETA> <MODE>")
+    sys.exit(1)
+
+try:
+    theta_target_deg = float(sys.argv[1])
+    theta_input_str = sys.argv[1]  # Keep the raw string for naming the GIF (e.g., "90.0")
+except ValueError:
+    print(f"ERROR: Cannot convert '{sys.argv[1]}' to float.")
+    sys.exit(1)
+
+MODE = sys.argv[2]
 theta_rad = np.radians(theta_target_deg)
 
-# Site selector: 0 for |10>, 1 for |01>
+print("\n" + "="*50)
+print(f"🚀 STARTING ANALYSIS FOR THETA = {theta_target_deg}° (Mode: {MODE})")
+print("="*50 + "\n")
+
+# Physical & Simulation Parameters
 site_index = 0
-
-# Time step
 dt = 0.01
-
-# Number of trajectories to analyze
-N_traj_to_plot = 100         
+N_traj_svd = 10000  # Number of trajectories to analyze with SVD
 
 # =================
 # Input Data Setup
 # =================
-Input_dir = "../../Results/Data/Complete_rho/normal"  # <-- change here if needed
+if MODE == 'normal':
+    Input_dir = "../../Results/Data/Complete_rho/normal"
+elif MODE == 'close_to_90':
+    Input_dir = "../../Results/Data/Complete_rho/close_90_deg"
+else:
+    raise ValueError(f"Unknown mode provided: {MODE}")
 
-# Format theta and dt for filename 
-theta_str = f"{theta_rad:.6f}".replace(".", "p")
+# Format theta and dt for .npz filename 
+theta_file_str = f"{theta_rad:.6f}".replace(".", "p")
 dt_str = f"{dt:.6f}".replace(".", "p")
 
-# File name
-filename = f"result_theta{theta_str}_dt{dt_str}_Ntraj20000.npz"
+filename = f"result_theta{theta_file_str}_dt{dt_str}_Ntraj20000.npz"
 filepath = os.path.join(Input_dir, filename)
 
-print(f"Analisi impostata per theta = {theta_target_deg}°")
-print(f"File target: {filename}")
+print(f"Target file: {filename}")
 
 if not os.path.exists(filepath):
-    print(f"ERRORE: The file {filepath} doesn't exist. Check file name.")
-else:
-    # Load .npz input containing data
-    data = np.load(filepath)
-    
-    times= data['times']
+    print(f"ERROR: The file {filepath} doesn't exist.")
+    sys.exit(1)
 
-    # Define a downsampling factor (e.g., take 1 every 10 time steps)
-    time_downsample_factor = 1
-    
-    # Downsample the time array
-    time_stepped = times[::time_downsample_factor]
-    N_time = len(time_stepped)
-    
-    print("Matrix extraction and downsampling in progress")
-    
-    # ================================
-    # Raw Trajectories Extraction
-    # ================================
-    
-    # Extract the full time array
-    full_times = data['times']
-    
-    # Extract and downsample the raw trajectories along the time axis (axis 0)
-    # Then transpose (.T) to get the expected (N_traj, N_time) shape
-    pop_traj_10 = data['pop_00'][::time_downsample_factor, :].T
-    pop_traj_01 = data['pop_11'][::time_downsample_factor, :].T
-    
-    cohe_traj_10_01 = data['coh_10_01'][::time_downsample_factor, :].T
-    cohe_traj_01_10 = data['coh_01_10'][::time_downsample_factor, :].T
+# ================================
+# Data Extraction & Downsampling
+# ================================
+data = np.load(filepath)
+times = data['times']
 
-    # Extract real and imaginary parts of the coherence
-    rho12_re = np.real(cohe_traj_10_01)
-    rho12_im = np.imag(cohe_traj_10_01)
-    
-    # Map populations to density matrix diagonal elements
-    rho11 = pop_traj_10
-    rho22 = pop_traj_01
+time_downsample_factor = 1 # Adjust this factor to reduce the number of time steps for SVD (e.g., 10, 100, etc.)
+time_stepped = times[::time_downsample_factor]
+N_time = len(time_stepped)
 
-    print("Data extraction completed")
+print("Matrix extraction and downsampling in progress...")
 
-# ── Ricostruzione delle matrici densità 2x2 ──────────────────────────────
-#
-#   rho = [[rho11,        rho12_re + i*rho12_im],
-#           [rho12_re - i*rho12_im, rho22       ]]
-#
-N_traj, N_time = rho11.shape
+pop_traj_10 = data['pop_00'][::time_downsample_factor, :].T
+pop_traj_01 = data['pop_11'][::time_downsample_factor, :].T
+cohe_traj_10_01 = data['coh_10_01'][::time_downsample_factor, :].T
 
+rho12_re = np.real(cohe_traj_10_01)
+rho12_im = np.imag(cohe_traj_10_01)
+rho11 = pop_traj_10
+rho22 = pop_traj_01
+
+# Reconstruct 2x2 density matrices
+N_traj, _ = rho11.shape
 many_rho = np.zeros((N_traj, N_time, 2, 2), dtype=complex)
-many_rho[:, :, 0, 0] =  rho11
-many_rho[:, :, 1, 1] =  rho22
-many_rho[:, :, 0, 1] =  rho12_re + 1j * rho12_im
-many_rho[:, :, 1, 0] =  rho12_re - 1j * rho12_im
+many_rho[:, :, 0, 0] = rho11
+many_rho[:, :, 1, 1] = rho22
+many_rho[:, :, 0, 1] = rho12_re + 1j * rho12_im
+many_rho[:, :, 1, 0] = rho12_re - 1j * rho12_im
 
-print(f"Shape many_rho: {many_rho.shape}")
-print(f"Esempio rho[traj=0, t=0]:\n{many_rho[0,0]}")
-print(f"Traccia (deve essere ~1): {np.real(np.trace(many_rho[0,0])):.4f}")
+print("Data extraction completed.")
 
+# ================================
+# Numba Optimized SVD
+# ================================
 @njit
 def fast_svd_evolution(many_rho_subset):
-    """
-    Computes the SVD of Bloch vectors over time using preallocated arrays
-    and compiling the entire time loop in C with Numba.
-    """
     n_traj = many_rho_subset.shape[0]
     n_time = many_rho_subset.shape[1]
     
-    # 1. Preallocate the final output arrays (much faster than list.append)
-    sing_vals = np.empty((n_time, 3), dtype=np.float64)
+    sing_vals_list = np.empty((n_time, 3), dtype=np.float64)
     V_list = np.empty((n_time, 3, 3), dtype=np.float64)
-    
-    # 2. Preallocate the Cartesian vector matrix ONCE.
-    # We will overwrite this memory at each time step, saving massive amounts of RAM and time.
     vects = np.empty((n_traj, 3), dtype=np.float64)
     
     for t in range(n_time):
-        
-        # Populate the vects array for the current time step
         for i in range(n_traj):
             rho = many_rho_subset[i, t]
             bloch_vec = NJIT_bloch_coords(rho) 
@@ -134,117 +122,100 @@ def fast_svd_evolution(many_rho_subset):
             vects[i, 1] = bloch_vec[1]
             vects[i, 2] = bloch_vec[2]
             
-        # Perform SVD (Numba supports np.linalg.svd natively!)
-        # Using full_matrices=False directly inside Numba
         _, S, Vh = np.linalg.svd(vects, full_matrices=False)
+        sing_vals_list[t, :] = S
         
-        # Store the singular values
-        sing_vals[t, :] = S
-        
-        # Store the transposed Vh (which is V)
-        # We manually transpose assigning elements to avoid memory copies in Numba
         for r in range(3):
             for c in range(3):
                 V_list[t, c, r] = Vh[r, c]
                 
-    return sing_vals, V_list
+    return sing_vals_list, V_list
 
-# --- Execution ---
-
-N_traj_svd = 10000
-
-# Slice the trajectory array ONCE before passing it to the Numba function
+print("Computing SVD evolution via Numba...")
 many_rho_subset = many_rho[:N_traj_svd]
-
-# Call the highly optimized function
 sing_vals_list, V_list = fast_svd_evolution(many_rho_subset)
+print("SVD computation finished.")
 
-def create_bloch_svd_gif(sing_vals, V_list, N_traj, N_time, filename="bloch_svd_evolution.gif", frame_step=100, frame_duration=0.2):
-    """
-    Generates an animated GIF showing the time evolution of the SVD principal axes
-    on the Bloch sphere.
-    """
+# ================================
+# GIF Generation Function
+# ================================
+def create_bloch_svd_gif(sing_vals_list, V_list, N_traj, N_time, theta_str, filename="bloch_svd_evolution.gif", frame_step=100, frame_duration=0.2):
     filenames = []
-    temp_dir = "temp_gif_frames"
+    temp_dir = f"temp_gif_frames_theta_{theta_str}"
     
-    # Create a temporary directory to store the individual frames
     if not os.path.exists(temp_dir):
-        os.makedirs(temp_dir)
+        os.makedirs(temp_dir, exist_ok=True)
         
-    print(f"Generating frames (1 every {frame_step} steps)...")
+    print(f"[Theta {theta_str}] Generating frames (1 every {frame_step} steps)...")
     
-    # Loop through the time steps using the specified frame step
     for t_idx in range(0, N_time, frame_step):
         b = qt.Bloch()
         
-        # Extract singular values and principal axes
-        S = sing_vals[t_idx]
+        S = sing_vals_list[t_idx]
         V = V_list[t_idx]
-        
-        # Normalize singular values to fit the Bloch sphere (radius = 1)
         S_norm = S / np.sqrt(N_traj)
         
-        # Scale the unit vectors by the normalized singular values
         vec_1 = V[:, 0] * S_norm[0]
         vec_2 = V[:, 1] * S_norm[1]
         vec_3 = V[:, 2] * S_norm[2]
         
-        # Add the vectors to the sphere
         b.add_vectors([vec_1, vec_2, vec_3])
         b.vector_color = ['#1f77b4', '#ff7f0e', '#2ca02c']
         
-        # Render the sphere
         b.render()
+        plt.title(f"SVD Axes | Theta: {theta_str}° | Step: {t_idx} / {N_time}")
         
-        # Add a dynamic title showing the current time step
-        plt.title(f"SVD Principal Axes | Time Step: {t_idx} / {N_time}")
+        # --- NEW LEGEND BLOCK ---
+        # Create custom legend handles matching the colors of the SVD vectors
+        patch1 = mpatches.Patch(color='#1f77b4', label='1st Axis (Max Spread)')
+        patch2 = mpatches.Patch(color='#ff7f0e', label='2nd Axis (Intermediate)')
+        patch3 = mpatches.Patch(color='#2ca02c', label='3rd Axis (Min Spread)')
+
+        # Add the legend to the current figure. 
+        # bbox_to_anchor places it slightly outside the sphere to prevent overlapping.
+        plt.legend(handles=[patch1, patch2, patch3], loc='center left', bbox_to_anchor=(1.15, 0.5), fontsize='small')
+        # ------------------------
         
-        # Save the current frame as a temporary PNG file
         frame_filename = os.path.join(temp_dir, f"frame_{t_idx:05d}.png")
         plt.savefig(frame_filename, bbox_inches='tight', dpi=150)
         filenames.append(frame_filename)
         
-        # Close the plot to free up memory
-        plt.close()
+        # Safely close QuTiP's figure to avoid memory leaks
+        plt.close(b.fig)
         b.clear()
 
-    print("Stitching frames into a GIF...")
+    print(f"[Theta {theta_str}] Stitching frames into a GIF...")
     
-    # Read the saved frames and compile them into an animated GIF
-    # The 'duration' parameter controls the time (in seconds) each frame is displayed
     with imageio.get_writer(filename, mode='I', duration=frame_duration) as writer:
-        for filename in filenames:
-            image = imageio.imread(filename)
+        for fname in filenames:
+            image = imageio.imread(fname)
             writer.append_data(image)
             
-    print(f"GIF successfully saved as {filename}!")
+    print(f"[Theta {theta_str}] GIF successfully saved as {filename}!")
     
-    # Clean up: delete the temporary image files and the directory
-    for filename in filenames:
-        os.remove(filename)
+    for fname in filenames:
+        os.remove(fname)
     os.rmdir(temp_dir)
 
-# --- Execution ---
-
-# Define the output directory
-output_dir = "../../Results/Bloch_Sphere/Densification/SVD_Analysis"
-
-# Create the target directory if it does not exist
-if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
-
-# Construct the full path for the GIF file
-gif_path = os.path.join(output_dir, f"bloch_svd_evolution_theta_{theta_str}.gif")
-
-# Generate the GIF:
-# frame_step=100 -> takes 1 frame every 100 time steps (results in 100 frames total for N_time=10000)
-# frame_duration=0.2 -> slows down the animation (0.2 seconds per frame = 5 FPS)
-create_bloch_svd_gif(
-    sing_vals=sing_vals, 
-    V_list=V_list, 
-    N_traj=10000, 
-    N_time=N_time, 
-    frame_step=10, 
-    frame_duration=0.5, 
-    filename=gif_path
-)
+# ================================
+# Main Execution Block
+# ================================
+if __name__ == "__main__":
+    
+    output_dir = "../../Results/Bloch_Sphere/Densification/SVD_Analysis"
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir, exist_ok=True)
+    
+    gif_path = os.path.join(output_dir, f"bloch_svd_evolution_theta_{theta_input_str}.gif")
+    
+    # Generate the GIF
+    create_bloch_svd_gif(
+        sing_vals_list=sing_vals_list, 
+        V_list=V_list, 
+        N_traj=N_traj_svd, 
+        N_time=N_time, 
+        theta_str=theta_input_str, 
+        frame_step=10,        # Adjust this if the script takes too long
+        frame_duration=0.5, 
+        filename=gif_path
+    )

@@ -43,12 +43,11 @@ This repository is organized in three main sections:
   * `Plot.ipynb`: for visualizing results via standard 2D plotting
   * `Bloch_Sphere.ipynb`: for 3D visualizations of the state's dynamics on the Bloch's Sphere.
 
-* **Results** : contains some example of simulation results. 
+* **Results** : contains some example of simulation results.
 
 * **Documentation** : provides the theoretical background.
   * `Report.pdf`: a brief introduction to *Collisional Methods*,  the physical basis of the main program and its structure.
   * `Demonstration.pdf`: mathematical derivation of some of the most important equations used.
-
 ---
 
 ## Future Goals
@@ -58,4 +57,5 @@ Currently the focus is on the investigation and validation of an hypothetical **
 Future work will be the investigation of a **more complex dynamics and system topology**, for example using more than two site or introducing other different Enviroment effects (beyond the pure Dephasing currently studied)
 
 ---
+
 
