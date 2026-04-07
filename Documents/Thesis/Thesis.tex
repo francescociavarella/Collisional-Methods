@@ -1,0 +1,114 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{braket}
+\usepackage[utf8]{inputenc}
+\usepackage{tikz}
+\usepackage{cancel}
+\usepackage[top=3cm, bottom=3cm, left=2cm, right=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{float}
+\usetikzlibrary{arrows.meta, angles, quotes}
+
+\allowdisplaybreaks
+
+\titleformat{\section}
+{\normalfont\normalsize\bfseries}
+{\thesection}{1em}{}
+\titleformat{\subsection}
+{\normalfont\small\bfseries}
+{\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+{\normalfont\small\bfseries}
+{\thesubsubsection}{1em}{}
+
+\title{
+	\vspace{2cm}
+	\Huge \textbf{Titolo ufficiale} \newline
+	\large frontespizio fatto bene
+}
+
+\author{\Large Francesco Ciavarella - University of Padua \\[10pt]}
+ 
+\begin{document}
+	
+	\maketitle
+	\thispagestyle{empty}
+	\newpage
+	
+	\tableofcontents
+	\newpage
+	
+	\section{Introduction}
+	\label{sec:intro}
+	Introduzione generale e filosofica sul lavoro di tesi; temi da toccare : importanza delle tecnologie quantistiche, formalismo della matrice densità, algoritmi per quantum computer, ...
+	deve dare l'impressione che serva a qualcosa di pratico
+	
+	\clearpage
+	\newpage
+	
+	\section{Open Quantum System and Quantum Master Equation}
+	\label{sec:Open_Quantum_System_and_Quantum_Master_Equation}
+	
+	subsection 1 : Formalismo matrice densità vs Schrodinger (parlare di alcune metriche importanti tipo norma $l_1$, entropia VN, ... ); evoluzione tramite QME, mappa dinamica eccetera 
+	subsection 2 : forma di riferimento Lindbald -> approfondisci.
+	subsection 3 : unraveling di QME : KRAUS OPERATORS; SSE breve trattazione e magari accenno all'algoritmo QJ; Collisonal Methods -> trattati meglio nella sezione 3 
+	
+	\section{Collisional Methods} 
+	\label{sec:Collisional_Methods}
+	Trattazione matematica generica, focus su interpretazione fisica, es ancilla come effetto del'ambiente, modellabile per rappresentare env divesi, metto qui i due limiti diffusivo e quantum jump; 	CAPIRE COME SONO LEGATI A MISURE DIVERSE !! 
+	subsection 1 :
+	sarebbe bello parlare della differenza intrinseca tra traiettorie originate con schemi di unraveling diversi, itroducendo alcune metriche utilizzate per carterizzare queste differenze : ad esempio la probabilità itrodotta nei kraus operators, la fidelity tra step precedente e successivo, quindi tra stati puri, come valore dell'intensità di cambiamento, ... 
+	(VERIFICA PROBABILITÀ BASSA PER EVENTI RARI COME QJ)
+	subsection 1 :
+	trattare i temi di convergenza finite sampling,
+	A parte le differenze intrinseche ci sono poi le importanti differnze di convergenza, quindi si deve parlare di TLC e varianza !!
+	\textbf{qui dividere in statoo dell'arte e obiettivo della mia tesi}.
+	\section{First Case of Study : the Exciton Dimer}
+	\label{sec:Exciton_Dimer}
+	Breve introduzione sul tipo di sistema, le caratteristiche, la dinamica di pure dephasing studiata (associata a ENAQT), la lindblad di riferimento con anche plot e perchè tende allo stato puramente misto.
+	\subsection{Quantum Jump Limit} 
+	\label{sub:QJ_limit_Exc}
+	trattazione completa con formule e derivazione, prese in modo selettivo da MC; risultati di convergenza, singole traiettorie, ...
+	(metto analisi della convergenza ache per dt diversi una volta per tutte in modo da decidere che userò dt = 0.1 sufficientemente piccolo)
+	\subsection{Diffusive Limit} 
+	\label{sub:Diffusive_limit_Exc}
+	trattazione completa con formule e derivazione, prese in modo selettivo da MC; risultati di convergenza, singole traiettorie, ...
+	
+	\subsection{Intermediate Regime} 
+	\label{sub:Intermediate_Regime_Exc}
+	trattazione completa con formule e derivazione, prese in modo selettivo da MC; risultati di convergenza, singole traiettorie, ...
+	
+	\subsection{Convergence Analysis}
+	\label{sub:Convergence_Analysis_Exc}
+	Tutti i risultati sull'analisi della convergenza : Trace Distance e Fidelity come parametri di misura dell'errore, plot del fitting e verica che rispetta il TLC. 
+	Analisi della varianza di un osservabile, in particolare i valro di aspettazioen delle componenti del vetore di bloch (caratterizzano completamente il nostro sistema = ricostruzione matrice densità)
+	
+	\section{Second Case of Study : the Photoemission Qubit}
+	\label{sec:Photoemission_Qubit}
+	capire che cazzo fare della mia vita (soluzione torre di archimede)
+	
+	Breve intro sul tipod di problema da affronatre adesso, lindbald associata, ... ci starebbe un piccolo excursus sul problema affrontato da Coccia tramite SSE e del fatto che non salta mai
+	
+	Poi stessa trattazione già vista precedentemente
+	\subsection{Quantum Jump Limit}
+	\label{sub:QJ_limit_Photo}
+	...
+	
+	\subsection{Diffusive Limit} 
+	\label{sub:Diffusive_limit_Photo}
+	...
+	
+	\subsection{Intermediate Regime} 
+	\label{sub:Intermediate_Regime_Photo}
+	...
+	
+	\subsection{Convergence Analysis}
+	\label{sub:Convergence_Analysis_Photo}
+	...
+	
+\end{document}

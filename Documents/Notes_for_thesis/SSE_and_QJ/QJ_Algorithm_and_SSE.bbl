@@ -1,0 +1,142 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.2 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{none/global//global/global}
+    \entry{cocciaProbingQuantumCoherence2018}{article}{}
+      \name{author}{3}{}{%
+        {{hash=6b2661f6f14a5dd4081ce6895d18779d}{%
+           family={Coccia},
+           familyi={C\bibinitperiod},
+           given={Emanuele},
+           giveni={E\bibinitperiod}}}%
+        {{hash=607fd68dc138d9a0cc8ee3772939eaca}{%
+           family={Troiani},
+           familyi={T\bibinitperiod},
+           given={Filippo},
+           giveni={F\bibinitperiod}}}%
+        {{hash=23a2c8d7de1117dbd2c85a3e3ff03155}{%
+           family={Corni},
+           familyi={C\bibinitperiod},
+           given={Stefano},
+           giveni={S\bibinitperiod}}}%
+      }
+      \strng{namehash}{2eeac700d680617e1c7b1b7f63d005a0}
+      \strng{fullhash}{f2e8862e0d1d41cdddfef35103027824}
+      \strng{bibnamehash}{f2e8862e0d1d41cdddfef35103027824}
+      \strng{authorbibnamehash}{f2e8862e0d1d41cdddfef35103027824}
+      \strng{authornamehash}{2eeac700d680617e1c7b1b7f63d005a0}
+      \strng{authorfullhash}{f2e8862e0d1d41cdddfef35103027824}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{shorttitle}
+      \field{abstract}{Revealing possible long-living coherence in ultrafast processes allows detecting genuine quantum mechanical effects in molecules. To investigate such effects from a quantum chemistry perspective, we have developed a method for simulating the time evolution of molecular systems based on ab initio calculations, which includes relaxation and environment-induced dephasing of the molecular wave function whose rates are external parameters. The proposed approach combines a quantum chemistry description of the molecular target with a real-time propagation scheme within the time-dependent stochastic Schrödinger equation. Moreover, it allows a quantitative characterization of the state and dynamics coherence through the l1-norm of coherence and the linear entropy, respectively. To test the approach, we have simulated femtosecond pulse-shaping ultrafast spectroscopy of terrylenediimide, a well-studied fluorophore in single-molecule spectroscopy. Our approach is able to reproduce the experimental findings [R. Hildner et al., Nat. Phys. 7, 172 (2011)], confirming the usefulness of the approach and the correctness of the implementation.}
+      \field{day}{28}
+      \field{issn}{0021-9606, 1089-7690}
+      \field{journaltitle}{The Journal of Chemical Physics}
+      \field{langid}{english}
+      \field{month}{5}
+      \field{number}{20}
+      \field{shorttitle}{Probing Quantum Coherence in Ultrafast Molecular Processes}
+      \field{title}{Probing Quantum Coherence in Ultrafast Molecular Processes: {{An}} {\mkbibemph{Ab Initio}} Approach to Open Quantum Systems}
+      \field{urlday}{18}
+      \field{urlmonth}{11}
+      \field{urlyear}{2025}
+      \field{volume}{148}
+      \field{year}{2018}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \field{pages}{204112}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.1063/1.5022976
+      \endverb
+      \verb{file}
+      \verb /home/francesco/Zotero/storage/KE6A5LMT/Coccia et al. - 2018 - Probing quantum coherence in ultrafast molecular processes An ab initio approach to open qua.pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://pubs.aip.org/jcp/article/148/20/204112/197052/Probing-quantum-coherence-in-ultrafast-molecular
+      \endverb
+      \verb{url}
+      \verb https://pubs.aip.org/jcp/article/148/20/204112/197052/Probing-quantum-coherence-in-ultrafast-molecular
+      \endverb
+    \endentry
+    \entry{molmerMonteCarloWavefunction1993a}{article}{}
+      \name{author}{3}{}{%
+        {{hash=2b26d4cb373cf8b92173704fb144ab5f}{%
+           family={Mølmer},
+           familyi={M\bibinitperiod},
+           given={Klaus},
+           giveni={K\bibinitperiod}}}%
+        {{hash=e30fd44a586ab91e958dbdc181bec4c6}{%
+           family={Castin},
+           familyi={C\bibinitperiod},
+           given={Yvan},
+           giveni={Y\bibinitperiod}}}%
+        {{hash=b9225759166c7a0a7cf7d85d74a2231d}{%
+           family={Dalibard},
+           familyi={D\bibinitperiod},
+           given={Jean},
+           giveni={J\bibinitperiod}}}%
+      }
+      \strng{namehash}{463e4bacac1466622aff51cc09d89010}
+      \strng{fullhash}{526d654d94082eeba129c36e0224bf2b}
+      \strng{bibnamehash}{526d654d94082eeba129c36e0224bf2b}
+      \strng{authorbibnamehash}{526d654d94082eeba129c36e0224bf2b}
+      \strng{authornamehash}{463e4bacac1466622aff51cc09d89010}
+      \strng{authorfullhash}{526d654d94082eeba129c36e0224bf2b}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{day}{1}
+      \field{issn}{0740-3224, 1520-8540}
+      \field{journaltitle}{Journal of the Optical Society of America B}
+      \field{langid}{english}
+      \field{month}{3}
+      \field{number}{3}
+      \field{shortjournal}{J. Opt. Soc. Am. B}
+      \field{title}{Monte {{Carlo}} Wave-Function Method in Quantum Optics}
+      \field{urlday}{28}
+      \field{urlmonth}{3}
+      \field{urlyear}{2026}
+      \field{volume}{10}
+      \field{year}{1993}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \field{pages}{524}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.1364/JOSAB.10.000524
+      \endverb
+      \verb{file}
+      \verb /home/francesco/Zotero/storage/4XP536B7/Mølmer et al. - 1993 - Monte Carlo wave-function method in quantum optics.pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://opg.optica.org/abstract.cfm?URI=josab-10-3-524
+      \endverb
+      \verb{url}
+      \verb https://opg.optica.org/abstract.cfm?URI=josab-10-3-524
+      \endverb
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

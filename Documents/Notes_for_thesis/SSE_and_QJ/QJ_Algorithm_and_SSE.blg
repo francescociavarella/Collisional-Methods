@@ -1,0 +1,15 @@
+[0] Config.pm:307> INFO - This is Biber 2.19
+[1] Config.pm:310> INFO - Logfile is 'QJ_Algorithm_and_SSE.blg'
+[126] biber:340> INFO - === dom mar 29, 2026, 22:50:15
+[147] Biber.pm:419> INFO - Reading 'QJ_Algorithm_and_SSE.bcf'
+[232] Biber.pm:979> INFO - Found 2 citekeys in bib section 0
+[250] Biber.pm:4419> INFO - Processing section 0
+[268] Biber.pm:4610> INFO - Looking for bibtex file 'SSE_and_QJ.bib' for section 0
+[270] bibtex.pm:1713> INFO - LaTeX decoding ...
+[278] bibtex.pm:1519> INFO - Found BibTeX data source 'SSE_and_QJ.bib'
+[346] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[346] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[346] Biber.pm:4239> INFO - Sorting list 'none/global//global/global' of type 'entry' with template 'none' and locale 'en-US'
+[346] Biber.pm:4245> INFO - No sort tailoring available for locale 'en-US'
+[355] bbl.pm:660> INFO - Writing 'QJ_Algorithm_and_SSE.bbl' with encoding 'UTF-8'
+[358] bbl.pm:763> INFO - Output to QJ_Algorithm_and_SSE.bbl

@@ -1,0 +1,274 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{braket}
+\usepackage[utf8]{inputenc}
+\usepackage{tikz}
+\usepackage{cancel}
+\usepackage[top=3cm, bottom=3cm, left=2cm, right=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{nicefrac}
+\usetikzlibrary{arrows.meta, angles, quotes}
+\usepackage[style=phys, backend=biber]{biblatex}
+\addbibresource{SSE_and_QJ.bib}
+
+\allowdisplaybreaks
+
+\titleformat{\section}
+{\normalfont\normalsize\bfseries}
+{\thesection}{1em}{}
+\titleformat{\subsection}
+{\normalfont\small\bfseries}
+{\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+{\normalfont\small\bfseries}
+{\thesubsubsection}{1em}{}
+
+\title{
+	\vspace{2cm}
+	\Huge \textbf{Notes on Quantum Jump Algorithm and SSE } \\[0.5cm]
+	\large Collection of notes, formulas and demonstrations in the field of dynamics of open quantum systems, \textit{Stochastic Schrodinger Equation} and \textit{Monte Carlo - Quantum Jump Algorithm}
+	\vspace{5cm}
+}
+
+\author{\Large Francesco Ciavarella - University of Padua \\[10pt] \href{mailto:francesco.ciavarella@studenti.unipd.it}{francesco.ciavarella@studenti.unipd.it}}
+
+\begin{document}
+	
+	\maketitle
+	\thispagestyle{empty}
+	\newpage
+	
+	\tableofcontents
+	\newpage
+	
+	\section{Stochastic Schrodinger Equation}
+	\label{sec:SSE}
+	\textit{Stochastic Schrodinger Equations} are an alternative formulation of the evolution of an Open Quantum System, based on the time-dependent Schrodinger Equation, i.e. on the System\textit{ wave function}; so that they offer a less computationally expensive alternative for the evolution of the system over time, taking into account the effects of the environment, compared to the methods based on the \textit{Density Matrix formalism}.
+	In the Markovian limit a generic SSE reads : 
+	\begin{equation}
+		i \frac{d}{dt} \ket{\Psi_{s}(t)} = \hat{H}_{S}(t)\ket{\Psi_{s}(t)} + \sum_{q}^{M}{\alpha_{q} \hat{S}_{q} \ket{\Psi_{S}(t)} dW_{t}} - \frac{i}{2} \sum_{q}^{M} {\alpha^{2}_{q} \hat{S}^{\dagger}_{q} \hat{S}_{q} \ket{\Psi_{S}(t)} }
+		\label{eq:generic_Diffusive_SSE}
+	\end{equation}
+	where $ \alpha $ is the coupling strength, describing the intensity of the system-bath interaction; $ \alpha^{2} $ is the dissipation rate instead. $ dW_{t} $ represent the stochastic fluctuation, i.e. the noise of a Wiener process.
+	Averaging over different Trajectories realization one can rebuild the \textit{Density Matrix} as follows : 
+	\begin{equation}
+		\rho_{S} (t) = \frac{1}{N_{Traj}} \sum^{N_{Traj}}_{j}{\ket{\Psi_{S,j}(t)} \bra{\Psi_{S,j}(t)}}
+	\end{equation}
+	where $ \ket{\Psi_{S,j}(t)} $ is the system wave function corresponding to j-th realization, and expanding $ \ket{\Psi_{S,j}(t)} $ to stationary eigenstates $ \ket{\phi_{m}} $ of the system : 
+	\begin{gather}
+		\ket{\Psi_{S,j}(t)} = \sum_{m}^{N_states}{C_{m,j}(t) \ket{\phi_{m}}}
+	\end{gather}
+	from where it's possible to calculate the single term of the \textit{Density Matrix} as :
+	\begin{align}
+		\text{population} \quad q = \left(\rho_{S}(t)\right)_{qq} = \frac{1}{N_{Taj}} \sum_{j}^{N_{Traj}}{\left|  C_{q,j}(t) \right|^{2}} \\
+		\text{coherence} \quad k = \left(\rho_{S}(t)\right)_{qk} = \frac{1}{N_{Taj}} \sum_{j}^{N_{Traj}}{ C^{*}_{q,j}(t)C_{k,j}(t)}
+	\end{align}
+	In the limit of large number of quantum trajectories, SSE reproduces the same $ \rho_{S}(t) $ coming out from the Lindblad master equation.
+	
+	The propagation of the \textit{coefficients} $ C (t) $ can be done with a second-order version of the Euler algorithm, leading to :
+	\begin{equation}
+		C (t + \delta t) = C (t - \delta t) - 2i \delta t H_{Eff} C (t)
+	\end{equation}
+	
+	\subsection{Relaxation Fluctuation Theorem}
+	\label{sub:Relaxation_Fluctuation_Theorem}
+	Non Hermitian operators are fundamental to describe the loss of norm, typical of open quantum system, due to the fact that a single \textit{wf} cannot include and represent the whole system probability. The Evolution Operator based on a Non-Hermitian Hamiltonian reads:
+	\begin{gather}
+		\hat{H}_{Eff} = \hat{H} -i\mathcal{D} \quad \text{so that} \quad \hat{H}_{Eff} \neq \hat{H}_{Eff}^{\dagger} \label{eq:Non_Hermitian_H} \\
+		\text{where} \quad \mathcal{D} = \frac{\alpha^{2}}{2} \sum_{q}^{M}{\hat{S}^{\dagger}_{q} \hat{S}_{q}} \\
+		\ket{\Psi (t +\delta t)} = \mathcal{U} \ket{\Psi(t)} = e^{-i \hat{H}_{Eff} \delta t} \ket{\Psi(t)}  = e^{-i \hat{H} \delta t - \mathcal{D} \Delta t} \ket{\Psi(t)} 
+	\end{gather}
+	where the hermitian part $ e^{-i \hat{H} \delta t} $ give rise to a simple rotation, where the non - hermitian part $ e^{- \mathcal{D} \delta t} $ gives an exponential decay instead, related to the loss of norm and so probability of the quantum state.
+	In the optic of the \textbf{Relaxation Fluctuation Theorem}, the loss of norm induced by $ \mathcal{D} $ gives rise to fluctuation on the System state. \\
+	\textit{SSE} are based on this idea and indeed we can distinguish three specific term from Eq.\eqref{eq:generic_SSE} : 
+	\begin{itemize}
+		\item $ \hat{H}_{S}(t)\ket{\Psi_{s}(t)} $ represent the hermitian evolution (related to the deterministic force);
+		\item $ - \alpha^{2} \frac{i}{2} \sum_{q}^{M} {\hat{S}^{\dagger}_{q} \hat{S}_{q} \ket{\Psi_{S}(t)} } $ represent the non hermitian evolution, interpretable as the dissipation due to the environment, that reduces the norm of the system vector (related to the deterministic damping force);
+		\item $ \alpha \sum_{q}^{M}W_{q}(t) \hat{S}_{q} \ket{\Psi_{S}(t)}  $ represent the fluctuation induced by the dissipation, modeled as a Wiener process $ dW_{q}(t) $ ( or white noise $ l_{q} (t) $  ,i.e. a  noise associated with the Markov approximation (related to the stochastic force induced by the environment dissipation)
+	\end{itemize}
+	
+	\subsection{Generic form of SSE}
+	\label{sub:generic_form_of_SSE}
+	
+	It's important to point out that the SSE are restricted only to \textit{Diffusive processes}, where the System is continuously modified by the environment effect, i.e. by a continuous Wiener noise; this corresponds to a \textit{Continuously Monitored System}.
+	
+	There is a general formulation to include quantum jump processes as well, which is called \textit{Quantum Trajectories} or \textit{Stochastic Unraveling} where the Wiener processes (\textit{dW}) are accompanied by the \textit{Poisson processes} (\textit{dN}); the equation reads:
+	\begin{equation}
+		\begin{aligned}
+			d\ket{\tilde{\Psi}(t)} &= \left[ -i \hat{H} 
+			- \frac{1}{2} \sum_{k} \hat{S}_{k}^{\dagger} \hat{S}_{k} 
+			- \frac{1}{2} \sum_{j} \hat{L}_{j}^{\dagger} \hat{L}_{j} \right] \ket{\tilde{\Psi}(t)} dt \\
+			&\quad + \sum_{k} \hat{S}_{k} \ket{\tilde{\Psi}(t)} dW_{k}(t) \\
+			&\quad + \sum_{j} \left( \hat{L}_{j} - \hat{I} \right) \ket{\tilde{\Psi}(t)} dN_{j}(t)
+		\end{aligned}
+	\end{equation}	
+	Using the \textit{Ito Corrections} to introduce the renormalization directly in the equation of the evolution one obtains : 
+	\begin{equation}
+		\begin{aligned}
+			d\ket{\Psi(t)} &= \Bigg[ -i \hat{H} 
+			- \frac{1}{2} \sum_{k} \left( \hat{S}_{k}^{\dagger} \hat{S}_{k} - 2\langle \hat{S}_{k}^{\dagger} \rangle_{t} \hat{S}_{k} + |\langle \hat{S}_{k} \rangle_{t}|^{2} \right) \\
+			&\quad - \frac{1}{2} \sum_{j} \left( \hat{L}_{j}^{\dagger} \hat{L}_{j} - \langle \hat{L}_{j}^{\dagger} \hat{L}_{j} \rangle_{t} \right) \Bigg] \ket{\Psi(t)} dt \\
+			&\quad + \sum_{k} \left( \hat{S}_{k} - \langle \hat{S}_{k} \rangle_{t} \right) \ket{\Psi(t)} dW_{k}(t) \\
+			&\quad + \sum_{j} \left( \frac{\hat{L}_{j}}{\sqrt{\langle \hat{L}_{j}^{\dagger} \hat{L}_{j} \rangle_{t}}} - \hat{I} \right) \ket{\Psi(t)} dN_{j}(t)
+		\end{aligned}
+	\end{equation}
+	
+	Where the mathematical terms are defined as follows:
+	\begin{itemize}
+		\item $\ket{\Psi(t)}$ and $\ket{\tilde{\Psi}(t)}$ represent the normalized and unnormalized quantum state vectors, respectively.
+		\item $\hat{H}$ is the system Hamiltonian, a Hermitian operator representing the internal energy.
+		\item $\hat{S}_k$ are the Lindblad operators for continuous measurement channels (diffusion processes).
+		\item $\hat{L}_j$ are the Lindblad operators for discrete measurement channels (quantum jumps or Poisson processes).
+		\item $\langle \hat{O} \rangle_t = \bra{\Psi(t)} \hat{O} \ket{\Psi(t)}$ denotes the quantum expectation value of a generic operator $\hat{O}$ at time $t$.
+		\item $dW_k(t)$ are independent Wiener increments representing continuous white noise, satisfying the Itô rule $dW_k^2 = dt$.
+		\item $dN_j(t)$ are independent Poisson increments representing discrete random jumps, satisfying $dN_j^2 = dN_j$ (taking values of 0 or 1).
+		\item $\hat{I}$ is the identity operator.
+	\end{itemize}
+	
+	\textit{Remark} : Trajectories obtained by the collision model algorithm are qualitatively different. In this case, the stochastic
+	nature of the evolution can be more easily understood as resulting from the quantum probabilities for the
+	outcomes of measurements performed on the ancilla environment.
+	
+	\subsection{Wiener Process}
+	\label{sub:Wiener_process}
+	The \textit{Wiener Process}, also called standard Brownian motion, is the mathematical model used to describe the stochastic time evolution driven by pure random continuous noise.
+	
+	The stochastic Wiener process has to satisfy 4 fundamental properties : 
+	\begin{itemize}
+		\item $ W (0) = 0 $ well known starting point;
+		\item Markovian process and evolution, i.e. loss of memory
+		\item the random trajectories are continuous in time, but since they are so incredibly jagged and chaotic that they are not derivable at any point;
+		\item Gaussian increment, i.e. the variation of the process at every time step, follows a Normal Distribution, with $ \langle W (t + \delta t) \rangle = 0 $ and $ \sigma_{dW}^{2} = Var\{ dW \} = dt $; so the average evolution is zero, while the uncertainty grows with \textit{dt}.
+	\end{itemize}
+	\textbf{(Brief connection with the \textit{Central Limit Theorem} (CLT)} : the average over a finite number of sampling obtained with a Wiener process is zero at every time step, but the statistic error of the convergence of the average depends on $ \frac{\sqrt{dt}}{\sqrt{N}} $, as defined by the CLT. The only difference is that in the CLT the distribution of the mean tends to become Gaussian as N increases, starting from any distribution, while in the Wiener process since the stochastic increment is already rigorously Gaussian by definition, the error follows this proportion in a mathematically exact way right from the start, without having to wait for N to tend to infinity\textbf{)}
+	
+	A Wiener process that describe a Quantum State evolution would be reflected in a random trajectory of the state vector; but since that $ \sigma_{W} = dt $ there will be a non zero term that contributes to the norm of the \textit{wf}, i.e. $ \braket{\Psi | \Psi} \approx 1 - dW^{2} = 1 - dt $. So the noise itself would produce a deterministic drift that would "inflate" or "deflate" the total probability of the system.
+	
+	For this reason, it is essential to renormalize the \textit{wf} after each time step of the evolution; another possibility is to include, preemptively, a correction for the effect of norm loss due to random noise. This solution turns into a introduction of a non linear dependence, of the evolution, from the System state at every time step. 
+
+	In this way you get the\textbf{ \textit{Quantum State Diffusion} (QSD)} formulation of the generic SSE : 	
+	\begin{equation}
+		\begin{aligned}
+			d\ket{\Psi_{S}(t)} &= \left[ -i \hat{H}_{S}(t) 
+			- \frac{\alpha^{2}}{2} \sum_{q}^{M} \left( \hat{S}^{\dagger}_{q} \hat{S}_{q} - 2\langle \hat{S}^{\dagger}_{q} \rangle_{t} \hat{S}_{q} + |\langle \hat{S}_{q} \rangle_{t}|^{2} \right) \right] \ket{\Psi_{S}(t)} dt \\
+			&\quad + \alpha \sum_{q}^{M} \left( \hat{S}_{q} - \langle \hat{S}_{q} \rangle_{t} \right) \ket{\Psi_{S}(t)} dW_{q}(t)
+		\end{aligned}
+	\end{equation}
+	where the expectation values are defined continuously for the current state: $ \langle \hat{S}_{q} \rangle_{t} = \bra{\Psi_{S}(t)} \hat{S}_{q} \ket{\Psi_{S}(t)} $ and the noise increment satisfies Ito's rule: $ dW_q^2 = dt $
+	
+	\section{SSE for Quantum Jump Algorithm}
+	\label{sec:SSE_for_Quantum_Jump_Algorithm}
+	This paragraph is based on the article \cite{cocciaProbingQuantumCoherence2018} and \cite{molmerMonteCarloWavefunction1993a}.
+	
+	The \textit{Quantum Jump} algorithm is based on the sequential evolution via a Non-Hermitian Deterministic Hamiltonian, followed by a random Jump Process, treated via a Monte Carlo scheme.
+	The Non-Hermitian evolution is performed with the following Hamiltonian (see Eq.\ref{eq:Non_Hermitian_H}) : 
+	\begin{equation}
+		\hat{H}_{nH}(t) = \hat{H}_{S}(t) - \frac{i}{2} \sum_{q}^{M}{\hat{S}^{\dagger}_{q}\hat{S}_{q}}
+		\label{eq:specific_Non_Hermitian_H}
+	\end{equation}
+	which, for sufficient small $ \delta t $ gives : 
+	\begin{equation}
+		\ket{\Psi_{S}' (t +\delta t)} = \left(1 - \frac{i\hat{H}_{nH}(t) \delta t}{\hbar} \right) \ket{\Psi_{S}(t)}
+		\label{eq:Non_Hermitian_evolution}
+	\end{equation}
+	Since H is not Hermitian, this new wave function clearly is not normalized. The square of its norm is:
+	\begin{align}
+		\braket{\Psi_{S}' (t +\delta t) | \Psi_{S}' (t +\delta t)} &= \bra{\Psi_{S} (t)} \left(1 + \frac{i\hat{H}_{nH}(t) \delta t}{\hbar} \right) \left(1 - \frac{i\hat{H}_{nH}(t) \delta t}{\hbar} \right) \ket{\Psi_{S}(t)} \notag \\
+		& = 1 - \delta p  \label{eq:norm_reduction}
+	\end{align}
+	where $ \delta p $ reads : 
+	\begin{gather}
+		\delta p = i \delta t \bra{\Psi_{S}(t)} \left( \hat{H}_{nH} - \hat{H}^{\dagger}_{nH} \right) \ket{\Psi_{S}(t)} = \sum_{q}^{M}{\delta p_{q}} \label{eq:delta_p_definition} \\
+		\delta p_{q} = \delta t \bra{\Psi_{S}(t)} S_{q}^{\dagger}S_{q} \ket{\Psi_{S}(t)} \label{eq:delta_p_m_definition}
+	\end{gather}
+	The quantity $ \delta p $ represents the probability that a generic quantum jump occurs, while $ \delta p_{q} $ defines the probability that the quantum jump involves the specific interaction channel q, of relaxation or dephasing type. \newline
+	It's important to notice that the norm loss $ \delta p $ is proportional to the time step $ \delta t $, which by definition is very small, so that $ \delta p << 1 $.
+	The second part of the evolution consist in a possible \textit{quantum jump}, define as the sudden change of the wave function, that can correspond to the projection of the latter associated with a \textit{gedanken measurement process}.\newline
+	A \textit{Monte Carlo Scheme} is used in order to decide wether the jump has occurred or not; in concrete terms, a quasi - random number $ \epsilon $,uniformly distributed between 0 and 1, is drawn and compared to $ \delta p $ : 
+	\begin{itemize}
+		\item if $ \epsilon > \delta p $, which happens most of the times (since $ \delta p << 1 $ ), no quantum jump occurs and the System \textit{wf} evolves via only the Non-Hermitian Hamiltonian, so that the state at $ t + \delta t $ reads : 
+		\begin{equation}
+			\ket{\Psi_{S} (t +\delta t)} = \frac{\ket{\Psi_{S}' (t +\delta t)}}{\left(1 - \delta p\right)^{\nicefrac{1}{2}}} \label{eq:no_qj_evo}
+		\end{equation}
+		\item if $ \epsilon \leq \delta p $ a quantum jump occurs, so that a new normalized state, defined by $ S_{q} \ket{\Psi_{S}(t)} $, is chosen according to the probability $ \Pi_{q} = \nicefrac{\delta p_{q}}{\delta p} $; \newline
+		the System's state after the quantum jump is :
+		\begin{gather}
+			\ket{\Psi_{S} (t +\delta t)} = \frac{S_{q} \ket{\Psi_{S}(t)}}{\left(\nicefrac{\delta p_{q}}{\delta t}\right)^{\nicefrac{1}{2}}} \label{eq:qj_evo} \\
+			\text{with probability} \quad \Pi_{q} = \frac{\delta p_{q}}{\delta p} 
+		\end{gather}
+	\end{itemize}
+	
+	\newpage
+	\subsection{Equivalence with the Master Equation}
+	\label{sub:Equivalence_with_the_Master_Equation}
+	 
+	The definition seen above can be used to build up a propagation algorithm of the System's wave function, that create different trajectories of evolution of the initial quantum states. \newline 
+	By definition the trajectories are random, so to obtain the effective Density Matrix at a certain time \textit{t}, one has to average over all the different realization : 
+	\begin{equation}
+	 	\overline{\rho (t)} = \overline{\ket{\Psi_{S} (t)}\bra{\Psi_{S} (t)}}
+	\end{equation}
+	It can be shown that
+	\begin{equation}
+		 \overline{\rho (t)} = \rho_{QME} (t)
+	\end{equation} where $ \rho_{QME} (t) $ 
+	represents the density matrix obtain via a \textit{Quantum Master Equation} like the \textit{Lindblad QME}. \newline
+	Consider a Monte Carlo wave function (MCWF) at a certain time \textit{t} $ \ket{\Psi_{S} (t)} $; at the time $ t + \delta t $ the average density matrix obtain for different random evolution reads:
+	\begin{align}
+		\overline{\rho (t + \delta t)} &= \left(1 - \delta p\right) \frac{\ket{\Psi_{S}' (t+ \delta t)}}{\left(1 - \delta p\right)^{\nicefrac{1}{2}}} \frac{\bra{\Psi_{S}' (t+ \delta t)}}{\left(1 - \delta p\right)^{\nicefrac{1}{2}}} \notag \\
+		&+ \delta p \sum_{q}{ \Pi_{q} \frac{S_{q} \ket{\Psi_{S} (t)}}{\left(\delta p_{q} / \delta t\right)^{\nicefrac{1}{2}}} \frac{ \bra{\Psi_{S} (t)} S_{q}^{\dagger}}{\left(\delta p_{q} / \delta t\right)^{\nicefrac{1}{2}}} }
+	\end{align}
+	introducing Eq.\ref{eq:Non_Hermitian_evolution} one obtains : 
+	\begin{equation}
+		\overline{\rho (t + \delta t)} = \rho (t) + i \delta t \left[ \rho (t), \hat{H}_{S} \right] + \delta t \mathcal{D} \left[\rho (t)\right]
+	\end{equation}
+	which in its differential form corresponds to the \textit{Lindblad QME} : 
+	\begin{equation}
+		\frac{d \overline{\rho (t)}}{dt} = i \left[ \overline{\rho (t)}, \hat{H}_{S} \right] + \mathcal{D} \left[\overline{\rho (t)}\right]
+	\end{equation}
+	
+	\subsection{Probability of a Quantum Jump}
+	Considering a generic two level system with wave function : 
+	\begin{equation}
+ 		\ket{\Psi_{S} (t)} = \alpha (t) \ket{0} + \beta (t) \ket{1}
+	\end{equation}
+	where the dynamic describes the relaxation from the excited state $ \ket{1} $ to the ground $ \ket{0} $ with the operator : 
+	\begin{equation}
+			\mathcal{D} \left(\rho_{S}\right) = - \frac{\Gamma}{2} \left(\sigma^{+} \sigma^{-} \rho_{S} + \rho_{S}\sigma^{+} \sigma^{-}\right) + \Gamma \sigma^{-} \rho_{S} \sigma^{+}
+	\end{equation}
+	
+	The probability of performing a \textit{Quantum Jump} that induce relaxation, from the excited state $ \ket{1} $ to the ground $ \ket{0} $ is proportional to the excited state's population : 
+	\begin{equation}
+		\delta p = \Gamma | \beta |^{2} \delta t
+	\end{equation}
+	where $ \Gamma $ is the relaxation rate, i.e. the spontaneous emission rate, corresponding to the inverse of the excited state lifetime. \newline
+	If no \textit{quantum jump} occurs, the evolution of the system is given by the Non-Hermitian Hamiltonian : 
+	\begin{align}
+		\ket{\Psi_{S} (t + \delta t)} &= \alpha \left( 1 + \frac{\Gamma \delta t}{2} | \beta |^{2} \right) \ket{0} \notag \\
+			&+ \beta \left(1 - \frac{\Gamma \delta t}{2} | \alpha |^{2} \right) \exp{\left( -i \omega_{S} \delta t \right)} \ket{1}
+	\end{align}
+	where $ \omega_{S} $ represents the evolution associated to the System frequency \textsuperscript{\hyperlink{noteI}{I}}. \newline 
+	It's important to notice that the intrinsic relaxation directly modifies the ground and excited populations, via a slight rotation of the wave function (i.e. the vector in the Bloch Sphere); this reduces the $ \ket{1} $ population and so gives a lower Jump Probability after every time step where the jump has not occurred. So The probability $ P(t) $ for having no quantum jumps between time 0 and \textit{t} is found to be : 
+	\begin{equation}
+		P (t) = |\alpha|^{2} + |\beta|^{2} \exp{\left( - \Gamma t \right)}
+	\end{equation}
+	where $ |\alpha|^{2} $ is the probability that the state was already in $ \ket{0} $, while $ |\beta|^{2} \exp{\left( - \Gamma t \right)} $ represents the probability of being in $ \ket{1} $ times the probability that the excitation survives, i.e. sum of the probabilities of the only two scenarios in which there is no relaxation.
+	\newline
+	\newline
+	\hypertarget{noteI}{\textbf{Note I:} \textit{MCWF Physical Interpretation}.} \newline
+	In the Monte Carlo wave-function (MCWF) formalism, the dissipative evolution of a system is understood through a continuous measurement perspective. It consists of two complementary mechanisms:
+	\begin{itemize}
+		\item \textbf{Quantum Jump (Photon Detection):} This simulates the exact moment a photon is emitted and detected by the environment. The detection abruptly projects the wave function into the ground state.
+		\item \textbf{Null Measurement (Continuous Evolution):} The absence of a detected photon (no jump) constitutes an active modification of the system's state. During this period, the system evolves under a non-Hermitian Hamiltonian. This continuous evolution smoothly rotates the state vector toward the ground state, decreasing the probability amplitude of the excited state. Physically, this reflects the increasing statistical certainty that, since no photon has been emitted over time, the system is less likely to jump in the future.
+	\end{itemize} 
+	
+	
+	\newpage
+	\printbibliography
+	
+\end{document}
