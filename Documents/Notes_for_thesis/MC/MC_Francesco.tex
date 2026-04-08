@@ -2009,10 +2009,12 @@ To simulate the direct photon counting (Quantum Jump limit), the trace is perfor
 \begin{align}
 	\mathcal{M}_{0}^{QJ} &\equiv \mathcal{W}_{0, 0} = 1 \cdot \bra{0_a} \mathcal{U}_{coll}(\Delta t) \ket{0_a} \notag \\
 	&= \frac{\mathbb{I} + \sigma_{z}}{2} + \cos{\left(c \Delta t \right)} \frac{\mathbb{I} - \sigma_{z}}{2} = 
-	\begin{pmatrix} 1 & 0 \\ 0 & \cos{\left(c \Delta t \right)} \end{pmatrix} \\
+	\begin{pmatrix} 1 & 0 \\ 0 & \cos{\left(c \Delta t \right)} \end{pmatrix} \notag \\
+	&= \ket{0}\bra{0} + \cos \left(c \Delta t\right) \ket{1} \bra{1} \\
 	\mathcal{M}_{1}^{QJ} &\equiv \mathcal{W}_{1, 0} = 1 \cdot \bra{1_a} \mathcal{U}_{coll}(\Delta t) \ket{0_a} \notag \\
 	&= - i \sin{\left(c \Delta t \right)} \sigma_{-} = 
-	\begin{pmatrix} 0 & -i \sin{\left(c \Delta t \right)} \\ 0 & 0 \end{pmatrix}
+	\begin{pmatrix} 0 & -i \sin{\left(c \Delta t \right)} \\ 0 & 0 \end{pmatrix} \notag \\
+	&= - i \sin{\left(c \Delta t \right)} \ket{0}\bra{1} 
 \end{align}
 
 \paragraph{State Diffusion Limit}
@@ -2020,10 +2022,12 @@ To simulate homodyne detection (State Diffusion limit), the trace is performed o
 \begin{align}
 	\mathcal{M}_{+}^{SD} &\equiv \mathcal{W}_{+, 0} = \bra{+_a} \mathcal{U}_{coll} \ket{0_a} = \frac{1}{\sqrt{2}} \left( \bra{0_a} + \bra{1_a} \right) \mathcal{U}_{coll} \ket{0_a} \notag \\
 	&= \frac{1}{\sqrt{2}} \left( \mathcal{M}_{0}^{QJ} + \mathcal{M}_{1}^{QJ} \right) = \frac{1}{\sqrt{2}} 
-	\begin{pmatrix} 1 & -i \sin{\left(c \Delta t \right)} \\ 0 & \cos{\left(c \Delta t \right)} \end{pmatrix} \\
+	\begin{pmatrix} 1 & -i \sin{\left(c \Delta t \right)} \\ 0 & \cos{\left(c \Delta t \right)} \end{pmatrix} \notag \\
+	&= \ket{0}\bra{0} + \cos \left(c \Delta t \right) \ket{1}\bra{1} -i \sin \left(c \Delta t \right) \ket{0}\bra{1} \\ 
 	\mathcal{M}_{-}^{SD} &\equiv \mathcal{W}_{-, 0} = \bra{-_a} \mathcal{U}_{coll} \ket{0_a} = \frac{1}{\sqrt{2}} \left( \bra{0_a} - \bra{1_a} \right) \mathcal{U}_{coll} \ket{0_a} \notag \\
 	&= \frac{1}{\sqrt{2}} \left( \mathcal{M}_{0}^{QJ} - \mathcal{M}_{1}^{QJ} \right) = \frac{1}{\sqrt{2}} 
-	\begin{pmatrix} 1 & i \sin{\left(c \Delta t \right)} \\ 0 & \cos{\left(c \Delta t \right)} \end{pmatrix}
+	\begin{pmatrix} 1 & i \sin{\left(c \Delta t \right)} \\ 0 & \cos{\left(c \Delta t \right)} \end{pmatrix} \notag \\
+	&= \ket{0}\bra{0} + \cos \left(c \Delta t \right) \ket{1}\bra{1} +i \sin \left(c \Delta t \right) \ket{0}\bra{1}
 \end{align}
 
 Regardless of the unraveling scheme chosen, the physical validity of the derived matrices as legitimate Kraus operators is guaranteed by the \textit{Completeness Relation}, which ensures the preservation of the total probability:
