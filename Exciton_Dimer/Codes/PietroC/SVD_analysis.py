@@ -102,6 +102,53 @@ many_rho[:, :, 1, 0] = rho12_re - 1j * rho12_im
 
 print("Data extraction completed.")
 
+# ======================
+# SVD Analysis Function
+# ======================
+
+def plot_svd_components_evolution(time, sing_vals, V_list, theta_str, output_path):
+    """
+    Creates 3 subplots (one for each principal axis) showing x, y, z components over time.
+    The line alpha is scaled by the relative intensity of the singular value.
+    """
+    fig, axes = plt.subplots(3, 1, figsize=(10, 12), sharex=True)
+    colors = ['#1f77b4', '#ff7f0e', '#2ca02c'] # Blue, Orange, Green
+    labels = ['x component', 'y component', 'z component']
+    axis_names = ['1st Principal Axis', '2nd Principal Axis', '3rd Principal Axis']
+
+    # Max singular value for alpha normalization
+    max_s = np.max(sing_vals)
+
+    for i in range(3): # Loop over the 3 principal axes
+        ax = axes[i]
+        # V_list shape: (N_time, 3_components, 3_axes)
+        # We extract components for the i-th axis: V_list[:, :, i]
+        x_comp = V_list[:, 0, i]
+        y_comp = V_list[:, 1, i]
+        z_comp = V_list[:, 2, i]
+        
+        # Current singular value for alpha (normalized to [0.1, 1.0])
+        # Using a base alpha so the line is always slightly visible
+        current_s = sing_vals[:, i]
+        alphas = 0.1 + 0.9 * (current_s / max_s)
+
+        ax.plot(time, x_comp, label='x', color='red', lw=1.5)
+        ax.plot(time, y_comp, label='y', color='green', lw=1.5)
+        ax.plot(time, z_comp, label='z', color='blue', lw=1.5)
+        
+        ax.set_title(f"{axis_names[i]} Evolution")
+        ax.set_ylabel("Component Value")
+        ax.set_ylim(-1.1, 1.1)
+        ax.grid(alpha=0.3)
+        if i == 0:
+            ax.legend(loc='upper right', ncol=3)
+
+    axes[2].set_xlabel("Time")
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=200)
+    plt.close()
+    print(f"[Analysis] Component plot saved: {output_path}")
+
 # ================================
 # Numba Optimized SVD
 # ================================
@@ -201,21 +248,59 @@ def create_bloch_svd_gif(sing_vals_list, V_list, N_traj, N_time, theta_str, file
 # Main Execution Block
 # ================================
 if __name__ == "__main__":
-    
+    # --- Arguments Setup --- (Come nel tuo codice)
+    if len(sys.argv) < 3:
+        sys.exit(1)
+    theta_input_str = sys.argv[1]
+    MODE = sys.argv[2]
+    # ... (Caricamento dati many_rho identico al tuo) ...
+
+    # --- Path Definition ---
     output_dir = "../../Results/Bloch_Sphere/Densification/SVD_Analysis"
     if not os.path.exists(output_dir):
         os.makedirs(output_dir, exist_ok=True)
     
     gif_path = os.path.join(output_dir, f"bloch_svd_evolution_theta_{theta_input_str}.gif")
-    
-    # Generate the GIF
-    create_bloch_svd_gif(
-        sing_vals_list=sing_vals_list, 
+    svd_data_path = os.path.join(output_dir, f"svd_data_theta_{theta_input_str}.npz")
+    analysis_plot_path = os.path.join(output_dir, f"svd_components_theta_{theta_input_str}.png")
+
+    # --- Step 1: Check/Compute SVD Data ---
+    if os.path.exists(svd_data_path):
+        print(f"📦 Loading existing SVD data for Theta {theta_input_str}...")
+        stored_data = np.load(svd_data_path)
+        sing_vals_list = stored_data['sing_vals']
+        V_list = stored_data['V_list']
+    else:
+        print(f"⚙️ Computing SVD evolution via Numba for Theta {theta_input_str}...")
+        many_rho_subset = many_rho[:N_traj_svd]
+        sing_vals_list, V_list = fast_svd_evolution(many_rho_subset)
+        # Save for future use
+        np.savez(svd_data_path, sing_vals=sing_vals_list, V_list=V_list)
+        print(f"💾 SVD data saved to {svd_data_path}")
+
+    # --- Step 2: Check/Generate GIF ---
+    if os.path.exists(gif_path):
+        print(f"✅ GIF already exists for Theta {theta_input_str}. Skipping generation.")
+    else:
+        print(f"🎬 Generating GIF for Theta {theta_input_str}...")
+        create_bloch_svd_gif(
+            sing_vals_list=sing_vals_list, 
+            V_list=V_list, 
+            N_traj=N_traj_svd, 
+            N_time=many_rho.shape[1], 
+            theta_str=theta_input_str, 
+            frame_step=10, 
+            frame_duration=0.5, 
+            filename=gif_path
+        )
+
+    # --- Step 3: Always Generate/Update Analysis Plot ---
+    plot_svd_components_evolution(
+        time=time_stepped, 
+        sing_vals=sing_vals_list, 
         V_list=V_list, 
-        N_traj=N_traj_svd, 
-        N_time=N_time, 
         theta_str=theta_input_str, 
-        frame_step=10,        # Adjust this if the script takes too long
-        frame_duration=0.5, 
-        filename=gif_path
+        output_path=analysis_plot_path
     )
+
+    print(f"🏁 Analysis for Theta {theta_input_str} completed.")
