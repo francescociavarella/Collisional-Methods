@@ -108,33 +108,45 @@ print("Data extraction completed.")
 
 def plot_svd_components_evolution(time, sing_vals, V_list, theta_str, output_path):
     """
-    Plots x, y, z components of the 3 principal axes.
-    Uses fixed alpha for lines and dynamic shading for Singular Value intensity.
+    Plots x, y, z components of the 3 principal axes on the primary Y-axis.
+    Plots the Singular Value magnitude as a continuous black line on a secondary Y-axis.
     """
     fig, axes = plt.subplots(3, 1, figsize=(10, 12), sharex=True)
     axis_names = ['1st Principal Axis (Largest SV)', '2nd Principal Axis', '3rd Principal Axis (Smallest SV)']
     
-    # Normalize singular values for background shading intensity
+    # Get the global maximum singular value to scale the secondary axes uniformly
     max_s = np.max(sing_vals) if np.max(sing_vals) > 0 else 1.0
 
     for i in range(3):
         ax = axes[i]
-        # V_list coordinates: [time, component(0:x, 1:y, 2:z), axis_index(i)]
-        ax.plot(time, V_list[:, 0, i], label='x component', color='red', lw=1.5, alpha=0.5)
-        ax.plot(time, V_list[:, 1, i], label='y component', color='green', lw=1.5, alpha=0.5)
-        ax.plot(time, V_list[:, 2, i], label='z component', color='blue', lw=1.5, alpha=0.5)
         
-        # Background shading: Alpha of the fill represents the Singular Value magnitude
-        s_norm = sing_vals[:, i] / max_s
-        for t_idx in range(len(time)-1):
-            ax.axvspan(time[t_idx], time[t_idx+1], color='gray', alpha=s_norm[t_idx]*0.15, lw=0)
-
+        # 1. Primary Y-axis: Plot the Cartesian components
+        ax.plot(time, V_list[:, 0, i], label='x component', color='red', lw=1.5, alpha=0.6)
+        ax.plot(time, V_list[:, 1, i], label='y component', color='green', lw=1.5, alpha=0.6)
+        ax.plot(time, V_list[:, 2, i], label='z component', color='blue', lw=1.5, alpha=0.6)
+        
         ax.set_title(f"{axis_names[i]} Evolution")
         ax.set_ylabel("Component Value")
         ax.set_ylim(-1.1, 1.1)
-        ax.grid(alpha=0.2)
+        ax.grid(alpha=0.3)
+
+        # 2. Secondary Y-axis: Plot the Singular Value as a continuous black line
+        ax2 = ax.twinx()
+        
+        # Plot the SV as a simple black line with alpha=0.8
+        ax2.plot(time, sing_vals[:, i], color='black', lw=1.5, alpha=0.8, label='Singular Value')
+        
+        # Set the y-limits dynamically up to the global max SV + 10% padding
+        ax2.set_ylim(0, max_s * 1.1)
+        ax2.set_ylabel("Singular Value", color='black')
+        ax2.tick_params(axis='y', labelcolor='black')
+
+        # Combine legends from both primary and secondary axes on the first subplot
         if i == 0:
-            ax.legend(loc='upper right', ncol=3, fontsize='small')
+            lines_1, labels_1 = ax.get_legend_handles_labels()
+            lines_2, labels_2 = ax2.get_legend_handles_labels()
+            # Combine them in a single legend
+            ax.legend(lines_1 + lines_2, labels_1 + labels_2, loc='upper right', ncol=4, fontsize='small')
 
     axes[2].set_xlabel("Time")
     plt.tight_layout()
@@ -249,7 +261,7 @@ if __name__ == "__main__":
     # ... (Caricamento dati many_rho identico al tuo) ...
 
     # --- Path Definition ---
-    output_dir = "../../Results/Bloch_Sphere/Densification/SVD_Analysis"
+    output_dir = "../../Results/Densification/SVD_Analysis"
     if not os.path.exists(output_dir):
         os.makedirs(output_dir, exist_ok=True)
     
