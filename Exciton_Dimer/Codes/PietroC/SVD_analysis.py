@@ -108,40 +108,33 @@ print("Data extraction completed.")
 
 def plot_svd_components_evolution(time, sing_vals, V_list, theta_str, output_path):
     """
-    Creates 3 subplots (one for each principal axis) showing x, y, z components over time.
-    The line alpha is scaled by the relative intensity of the singular value.
+    Plots x, y, z components of the 3 principal axes.
+    Uses fixed alpha for lines and dynamic shading for Singular Value intensity.
     """
     fig, axes = plt.subplots(3, 1, figsize=(10, 12), sharex=True)
-    colors = ['#1f77b4', '#ff7f0e', '#2ca02c'] # Blue, Orange, Green
-    labels = ['x component', 'y component', 'z component']
-    axis_names = ['1st Principal Axis', '2nd Principal Axis', '3rd Principal Axis']
+    axis_names = ['1st Principal Axis (Largest SV)', '2nd Principal Axis', '3rd Principal Axis (Smallest SV)']
+    
+    # Normalize singular values for background shading intensity
+    max_s = np.max(sing_vals) if np.max(sing_vals) > 0 else 1.0
 
-    # Max singular value for alpha normalization
-    max_s = np.max(sing_vals)
-
-    for i in range(3): # Loop over the 3 principal axes
+    for i in range(3):
         ax = axes[i]
-        # V_list shape: (N_time, 3_components, 3_axes)
-        # We extract components for the i-th axis: V_list[:, :, i]
-        x_comp = V_list[:, 0, i]
-        y_comp = V_list[:, 1, i]
-        z_comp = V_list[:, 2, i]
+        # V_list coordinates: [time, component(0:x, 1:y, 2:z), axis_index(i)]
+        ax.plot(time, V_list[:, 0, i], label='x component', color='red', lw=1.5, alpha=0.5)
+        ax.plot(time, V_list[:, 1, i], label='y component', color='green', lw=1.5, alpha=0.5)
+        ax.plot(time, V_list[:, 2, i], label='z component', color='blue', lw=1.5, alpha=0.5)
         
-        # Current singular value for alpha (normalized to [0.1, 1.0])
-        # Using a base alpha so the line is always slightly visible
-        current_s = sing_vals[:, i]
-        alphas = 0.1 + 0.9 * (current_s / max_s)
+        # Background shading: Alpha of the fill represents the Singular Value magnitude
+        s_norm = sing_vals[:, i] / max_s
+        for t_idx in range(len(time)-1):
+            ax.axvspan(time[t_idx], time[t_idx+1], color='gray', alpha=s_norm[t_idx]*0.15, lw=0)
 
-        ax.plot(time, x_comp, label='x', color='red', lw=1.5)
-        ax.plot(time, y_comp, label='y', color='green', lw=1.5)
-        ax.plot(time, z_comp, label='z', color='blue', lw=1.5)
-        
         ax.set_title(f"{axis_names[i]} Evolution")
         ax.set_ylabel("Component Value")
         ax.set_ylim(-1.1, 1.1)
-        ax.grid(alpha=0.3)
+        ax.grid(alpha=0.2)
         if i == 0:
-            ax.legend(loc='upper right', ncol=3)
+            ax.legend(loc='upper right', ncol=3, fontsize='small')
 
     axes[2].set_xlabel("Time")
     plt.tight_layout()
