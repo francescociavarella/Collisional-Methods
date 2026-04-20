@@ -5,11 +5,11 @@
 # ==========================================================
 
 # Define the mode: 'normal' or 'close_to_90'
-MODE="normal"
+MODE="close_to_90"
 
 # Select the appropriate array of angles based on the chosen mode
 if [ "$MODE" == "normal" ]; then
-    ANGLES=(0 90)
+    ANGLES=(0 30 45 60 90)
 elif [ "$MODE" == "close_to_90" ]; then
     ANGLES=(0 90 89.9 89.7 89.5 89 88.5 88 87 86)
 else
@@ -26,8 +26,10 @@ do
     echo "Launching Python scripts for Theta = $THETA in background..."
     
     # Pass THETA as the first argument ($1) and MODE as the second argument ($2)
-    #python -u Module_Analysis_Densification.py $THETA $MODE &
-    python -u SVD_analysis.py $THETA $MODE &
+    # The '&' runs them concurrently in the background
+    #python -u Intermediate/Plot_rho_complete.py $THETA $MODE &
+    #python -u Complete_Fidelity_and_Trace_Distance_Analysis.py $THETA $MODE &
+    python -u Complete_Sx_Sy_Sz_exp_value_analysis.py $THETA $MODE &
 done
 
 # Wait for all background processes to finish before exiting the script

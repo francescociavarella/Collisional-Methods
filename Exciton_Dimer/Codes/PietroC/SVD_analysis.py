@@ -216,9 +216,9 @@ def create_bloch_svd_gif(sing_vals_list, V_list, N_traj, N_time, theta_str, file
         V = V_list[t_idx]
         S_norm = S / np.sqrt(N_traj)
         
-        vec_1 = V[:, 0] * S_norm[0]
-        vec_2 = V[:, 1] * S_norm[1]
-        vec_3 = V[:, 2] * S_norm[2]
+        vec_1 = V[:, 0] #* S_norm[0]
+        vec_2 = V[:, 1] #* S_norm[1]
+        vec_3 = V[:, 2] #* S_norm[2]
         
         b.add_vectors([vec_1, vec_2, vec_3])
         b.vector_color = ['#1f77b4', '#ff7f0e', '#2ca02c']
