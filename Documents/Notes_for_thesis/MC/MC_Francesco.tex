@@ -15,8 +15,10 @@
 \usepackage{nicefrac}
 \usepackage[toc,page]{appendix}
 \usetikzlibrary{arrows.meta, angles, quotes}
-
 \graphicspath{{Images/}}
+
+\usepackage[style=phys, backend=biber]{biblatex}
+\addbibresource{MC.bib}
 
 \allowdisplaybreaks
 
@@ -1179,7 +1181,7 @@ $ \mathcal{M}_0 $ and $ \mathcal{M}_1 $ could be seen as \textit{Kraus Operators
 \end{align}
 where $ \mathcal{W}_{\alpha, \beta} \left(t\right) $ are operators that act on the \textit{wf} of the system solely, defining the evolution conditioned by the measurement of the bath state; this operators take the form :
 \begin{equation}
-	\mathcal{W}_{\alpha, \beta} \left(t\right) = \sqrt{\lambda_{\beta}} \bra{\varphi_{\alpha}}  \mathcal{U}\left(t, t_0\right) \ket{\varphi_{\beta}}
+	\mathcal{W}_{\alpha, \beta} \left(t\right) = \sqrt{\lambda_{\alpha}} \bra{\varphi_{\beta}}  \mathcal{U}\left(t, t_0\right) \ket{\varphi_{\alpha}}
 	\label{eq:general_kraus_operators}
 \end{equation}
 The set of operators $\{ \mathcal{W}_{\alpha, \beta} \}$ formally constitutes a set of \textit{Kraus Operators}, where the standard single Kraus index is represented by the pair $(\alpha, \beta)$. Since they satisfy the completeness relation $\sum_{\alpha, \beta} \mathcal{W}_{\alpha, \beta}^\dagger \mathcal{W}_{\alpha, \beta} = \mathbb{I}_S$, they guarantee a Completely Positive and Trace-Preserving (CPTP) map.
@@ -1386,6 +1388,79 @@ so that we obtain :
 	&= \left(g_{1}^{2} \cos^{2}(c_{1} \Delta t) + g_{0}^{2} \sin^{2}(c_{1} \Delta t) \right) \left(g_{1}^{2} \cos^{2}(c_{2} \Delta t) + g_{0}^{2} \sin^{2}(c_{2} \Delta t) \right) = P_{1_{a}}^{1} P_{1_{a}}^{2}  \label{eq:P11_complete}
 \end{align}
 where $ P_{0_{a}}^{j} $ is referred to Eq.\ref{eq:P0a_final} and Eq.\ref{eq:P1a_final}. Since the two collisions are independent event the conditional probability is given by the product of the single independent probabilities.
+
+\subsection{Alternative Formalism: Measurement Scheme Unraveling}
+
+In this section, we present an alternative derivation of the stochastic unraveling limits by adopting a different formalism, consistent with the collisional model definitions used by Cattaneo\cite{cattaneoCollisionModelsCan2021}. In this approach, we keep both the collisional Hamiltonian and the initial ancilla state fixed, demonstrating that the different unraveling regimes emerge exclusively from the choice of the measurement basis. We consider the ancilla strictly initialized in the ground state $|\phi_a\rangle = |0_a\rangle$. It is important to note that, since the Lindblad jump operator $\hat{L} = \sigma_z$ is Hermitian (and thus $\hat{L} = \hat{L}^\dagger$), a different initialization or rotation of the ancilla state would not affect the reconstruction of the average Lindblad dynamics.
+
+The collisional Hamiltonian is defined as:
+\begin{equation}
+	H_{coll} = c (\sigma_z \otimes \sigma_+^a + \sigma_z \otimes \sigma_-^a) = c (\sigma_z \otimes \sigma_x^a)
+\end{equation}
+By applying the unitary evolution operator $U_{coll}(\Delta t) = \exp(-i H_{coll} \Delta t)$ to the initial product state $|\Psi(0)\rangle = |\psi_S\rangle \otimes |0_a\rangle$, we obtain the following entangled state:
+\begin{equation}
+	|\Psi(\Delta t)\rangle = \cos(c\Delta t) |\psi_S\rangle \otimes |0_a\rangle - i \sin(c\Delta t) \sigma_z |\psi_S\rangle \otimes |1_a\rangle
+\end{equation}
+We can now build up different \textit{Kraus Operators} using different \textbf{measurement basis}, i.e. $ \ket{\phi_{\beta}} $ in the equation : 
+\begin{equation}
+	\mathcal{K}_{\alpha, \beta} \left(t\right) = \sqrt{\lambda_{\beta}} \bra{\varphi_{\alpha}}  \mathcal{U}\left(t, t_0\right) \ket{\varphi_{\beta}}
+\end{equation}
+The specific unraveling is then determined by the projection of this state onto a chosen orthonormal basis for the ancilla.
+
+\paragraph{Quantum Jump Limit}
+The Quantum Jump limit is obtained by measuring the ancilla in the computational basis $\{|0_a\rangle, |1_a\rangle\}$, which corresponds to a direct detection of the environment excitations. The resulting Kraus operators are:
+\begin{equation}
+	M_0^{QJ} = \langle 0_a | \Psi(\Delta t) \rangle = \cos(c\Delta t) \mathbb{I}
+\end{equation}
+\begin{equation}
+	M_1^{QJ} = \langle 1_a | \Psi(\Delta t) \rangle = -i \sin(c\Delta t) \sigma_z
+\end{equation}
+
+\paragraph{State Diffusion Limit}
+The State Diffusion limit emerges when the ancilla is measured in the $\sigma_x$ basis, defined by the superposition states $\{|+_a\rangle, |-_a\rangle\}$. This measurement scheme simulates a homodyne-like detection, where the Kraus operators become:
+\begin{equation}
+	M_+^{SD} = \langle +_a | \Psi(\Delta t) \rangle = \frac{1}{\sqrt{2}} \left[ \cos(c\Delta t) \mathbb{I} - i \sin(c\Delta t) \sigma_z \right]
+\end{equation}
+\begin{equation}
+	M_-^{SD} = \langle -_a | \Psi(\Delta t) \rangle = \frac{1}{\sqrt{2}} \left[ \cos(c\Delta t) \mathbb{I} + i \sin(c\Delta t) \sigma_z \right]
+\end{equation}
+The comparison between these two cases highlights that the nature of the stochastic trajectory (discontinuous jumps versus continuous diffusion) is a direct consequence of the information extracted from the environment through the measurement process.
+
+\subsubsection{Generalized Measurement Basis: The Intermediate Regime}
+
+To describe the transition between the Quantum Jump and the State Diffusion limits, we generalize the measurement scheme by rotating the basis in the $x-z$ plane of the ancilla's Bloch sphere. This approach allows us to interpolate between the two regimes without modifying the collisional Hamiltonian $H_{coll} = c (\sigma_z \otimes \sigma_x^a)$ or the initial state of the ancilla $|\phi_a\rangle = |0_a\rangle$. We define a generalized orthonormal measurement basis $\{|\varphi_0\rangle, |\varphi_1\rangle\}$ parameterized by an angle $\theta$:
+
+\begin{equation}
+	|\varphi_0\rangle = \cos(\theta/2)|0_a\rangle + \sin(\theta/2)|1_a\rangle
+\end{equation}
+\begin{equation}
+	|\varphi_1\rangle = \sin(\theta/2)|0_a\rangle - \cos(\theta/2)|1_a\rangle
+\end{equation}
+
+By projecting the entangled state $|\Psi(\Delta t)\rangle = \cos(c\Delta t) |\psi_S\rangle \otimes |0_a\rangle - i \sin(c\Delta t) \sigma_z |\psi_S\rangle \otimes |1_a\rangle$ onto this basis, we derive the generalized Kraus operators $M_0$ and $M_1$:
+
+\begin{equation}
+	M_0 = \langle \varphi_0 | \Psi(\Delta t) \rangle = \cos(\theta/2) \cos(c\Delta t) \mathbb{I} - i \sin(\theta/2) \sin(c\Delta t) \sigma_z
+\end{equation}
+\begin{equation}
+	M_1 = \langle \varphi_1 | \Psi(\Delta t) \rangle = \sin(\theta/2) \cos(c\Delta t) \mathbb{I} + i \cos(\theta/2) \sin(c\Delta t) \sigma_z
+\end{equation}
+
+These operators demonstrate how the intensity of the variation applied to the system's wave function depends on the angle $\theta$. The two previous limits are naturally recovered:
+\begin{itemize}
+	\item For $\theta = 0$, the measurement is performed in the computational basis, recovering the Quantum Jump limit where $M_0 \propto \mathbb{I}$ and $M_1 \propto \sigma_z$.
+	\item For $\theta = \pi/2$, the measurement is performed in the $\sigma_x$ basis, recovering the State Diffusion limit where the operators $M_{\pm}$ are equal linear combinations of the identity and the jump operator.
+\end{itemize}
+This formalism confirms that the continuous transition between different unraveling schemes is purely a consequence of how information is extracted from the ancilla, effectively mapping the geometric parameters $\cos(\theta/2)$ and $\sin(\theta/2)$ to the weights $g_0$ and $g_1$ previously discussed in the intermediate limit analysis. In the previous derivation we used to  rotate the Interaction Hamiltonian and keep fixed the measure base, while now we are doing the opposite.
+
+Quantum Jump and State Diffusion are no longer two different "setups", but two different ways of reading the same experiment.
+
+\subsubsection{Unitary Freedom of Kraus Operators}
+The representation of a quantum channel in terms of Kraus operators is inherently non-unique. As discussed by John Preskill\cite{preskill2015lecture}, two distinct sets of Kraus operators, $\{M_k\}$ and $\{N_j\}$, describe the identical average quantum evolution if and only if they are related by a unitary or isometric transformation, expressed as 
+\begin{equation}
+	N_j = \sum_k U_{jk} M_k
+\end{equation}
+This property, often referred to as unitary freedom, is a direct physical manifestation of the GHJW (Gisin-Hughston-Jozsa-Wootters) theorem. The GHJW theorem mathematically demonstrates that any two different ensembles of pure states that yield the exact same density matrix are always connected by a unitary matrix acting on their probability-weighted state vectors. In the framework of open quantum systems, this implies that measuring the entangled environment in different orthogonal bases generates different stochastic trajectories and distinct sets of Kraus operators, while perfectly preserving the underlying Lindblad master equation.
 
 \newpage
 
@@ -1825,6 +1900,202 @@ Conversely, in the Quantum Jump limit ($\theta = 90^\circ$), the evolution is st
 
 \newpage
 
+\section{General Treatment for Collisional Methods}
+\label{sec:General_Treatment_for_Collisional Methods}
+
+In this section we try to define a general definition and treatment for \textit{Collisional Methods} model, defining the \textit{Collisional Hamiltonian} $ \mathcal{H}_{Coll} $, the related Evolution Operator $ \mathcal{U}_{Coll} $ and the associated \textit{Kraus Operators} $ \mathcal{K} $; we will define a general formalism that allows to create different $ \mathcal{K} $, associated to different Ancilla's basis for the measurement, that generates different \textit{Unraveling Scheme}. \newline
+Most of this section in based on the article from Ciccarello\cite{ciccarelloQuantumCollisionModels2022}.
+
+\subsection{Hamiltonian Definition}
+The generic Hamiltonian for a Collisional Model describes the mutual exchange in energy and information between System and environment (represented by the Ancilla); since the model have to reproduce the QME dynamics it's plausible to usa the same Jump Operator on the System, while since the Ancilla is a qubit we can assume two possible evolution of its state, given by the operators : $ \sigma_{-} = \begin{pmatrix} 0 & 1 \\ 0 & 0 \end{pmatrix} $ and $ \sigma_{+} = \begin{pmatrix} 0 & 0 \\ 1 & 0 \end{pmatrix} $, that represent the relaxation to the ground state $ \ket{0_{a}} = \begin{pmatrix} 1 \\ 0 \end{pmatrix} $ and the excitation to $ \ket{1_{a}} = \begin{pmatrix} 0 \\ 1 \end{pmatrix} $. \newline
+With this elements we can compose the \textit{Collisional Hamiltonian}, as reported in Cattaneo's article\cite{cattaneoCollisionModelsCan2021} : 
+\begin{equation}
+	\mathcal{H}_{Coll} = c_{k} \left(\mathcal{L}_{k} \otimes \sigma_{-}^{a} + \mathcal{L}_{k}^{\dagger} \otimes \sigma_{+}^{a} \right)
+	\label{eq:general_H_CM}
+\end{equation}
+with $ c_{k} = \sqrt{\frac{\gamma_{k}}{\Delta t}} $ the coefficient that defines the Intensity of the Collision, $ \mathcal{L}_{k} $ the Lindblad Jump Operator, defining the $ k-th $ dissipation channel acting on the System, while $ \sigma_{-}^{a} $ and $ \sigma_{+}^{a} $ act on the Ancilla. 
+
+This is the most general form of the \textit{Collisional Hamiltonian} that can represent any CPTP QME; by choosing different Ancilla's initial state one can model the action of the operator, i.e. with $ \ket{\phi_{a}} = \ket{0_{a}} $ the second term in Eq.\ref{eq:general_H_CM} vanishes. \newline
+In general we can take $ \ket{\phi_{a}} = p_{a} \ket{0_{a}} + \left(\ 1 - p_{a }\right) \ket{1_{a}} $.
+
+\subsection{Unitary Evolution Operator}
+Once we defined $ \mathcal{H}_{Coll} $ we can build up the \textit{Unitary Evolution Operator} as : 
+\begin{equation}
+	\mathcal{U}_{Coll} \left( \Delta t \right) = \exp \left( -i \mathcal{H}_{Coll} \Delta t \right) = \sum_{m}^{\infty}{\frac{\left( -i \mathcal{H}_{Coll} \Delta t \right)^{m}}{m!}}
+\end{equation}
+Separating and analyzing separately the even and odd term we obtain: 
+\begin{align}
+	\sum_{m=0}^{\infty}{ \frac{\left( -i \mathcal{H}_{Coll} \Delta t \right)^{2m}}{(2m)!} } &= \sum_{m=0}^{\infty}{ \frac{\left( -i c \Delta t \right)^{2m}}{(2m)!} \left( \mathcal{L}_{k} \otimes \sigma_{+}^{a} + \mathcal{L}_{k}^{\dagger} \otimes \sigma_{-}^{a} \right)^{2m}} \notag \\
+	&= \sum_{m=0}^{\infty}{ \frac{\left( -i c \Delta t \right)^{2m}}{(2m)!} \left( \sqrt{\mathcal{L}_{k} \mathcal{L}_{k}^{\dagger} }\right)^{2m} \otimes P_{11}^{a} } + \sum_{m=0}^{\infty}{ \frac{\left( -i c \Delta t \right)^{2m}}{(2m)!} \left( \sqrt{\mathcal{L}_{k}^{\dagger} \mathcal{L}_{k} }\right)^{2m} \otimes P_{00}^{a} } \notag \\
+	&= \cos{\left(c \Delta t \sqrt{\mathcal{L}_{k} \mathcal{L}_{k}^{\dagger} }\right) } \otimes P_{11}^{a} + \cos{\left(c \Delta t \sqrt{\mathcal{L}_{k}^{\dagger} \mathcal{L}_{k} } \right) } \otimes P_{00}^{a}
+\end{align} 
+
+with $P_{00}^{a} = \ket{0_{a}} \bra{0_{a}} = \sigma_{+}\sigma_{-}$ and $ P_{11}^{a} = \ket{1_{a}} \bra{1_{a}} = \sigma_{-}\sigma_{+}  $
+
+\begin{align}
+	\sum_{m=0}^{\infty}{ \frac{\left( -i \mathcal{H}_{Coll} \Delta t \right)^{2m+1}}{(2m+1)!} } &= \sum_{m=0}^{\infty}{ \frac{\left( -i c \Delta t \right)^{2m+1}}{(2m+1)!} \left( \mathcal{L}_{k} \otimes \sigma_{+}^{a} + \mathcal{L}_{k}^{\dagger} \otimes \sigma_{-}^{a} \right)^{2m+1}} \notag \\
+	&= \left(\sum_{m=0}^{\infty}{\frac{\left( -i c \Delta t \right)^{2m+1}}{(2m+1)!} \frac{\left( \sqrt{\mathcal{L}_{k} \mathcal{L}_{k}^{\dagger} }\right)^{2m+1}}{\sqrt{\mathcal{L}_{k} \mathcal{L}_{k}^{\dagger} }}} \right) \mathcal{L}_{k} \otimes \sigma_{+}^{a} \notag \\
+	&+ \left(\sum_{m=0}^{\infty}{\frac{\left( -i c \Delta t \right)^{2m+1}}{(2m+1)!} \frac{\left( \sqrt{\mathcal{L}_{k}^{\dagger} \mathcal{L}_{k} }\right)^{2m+1}}{\sqrt{\mathcal{L}_{k}^{\dagger} \mathcal{L}_{k} }}} \right) \mathcal{L}_{k}^{\dagger} \otimes \sigma_{-}^{a} \notag \\
+	&= -i \sin \left( c \Delta t \sqrt{\mathcal{L}_{k} \mathcal{L}_{k}^{\dagger}} \right) \frac{\mathcal{L}_{k} \otimes \sigma_{+}^{a}}{\sqrt{\mathcal{L}_{k} \mathcal{L}_{k}^{\dagger}}} -i \sin \left( c \Delta t \sqrt{\mathcal{L}_{k}^{\dagger} \mathcal{L}_{k}} \right) \frac{\mathcal{L}_{k}^{\dagger} \otimes \sigma_{-}^{a}}{\sqrt{\mathcal{L}_{k}^{\dagger} \mathcal{L}_{k}}} 
+\end{align}
+The operator is obtained by summing the even (cosine) and odd (sine) series
+\begin{align}
+	U &= \cos{\left(c \Delta t \sqrt{\mathcal{L}_{k} \mathcal{L}_{k}^{\dagger} }\right) } \otimes P_{11}^{a} + \cos{\left(c \Delta t \sqrt{\mathcal{L}_{k}^{\dagger} \mathcal{L}_{k} } \right) } \otimes P_{00}^{a} \notag \\
+	&\quad -i \sin \left( c \Delta t \sqrt{\mathcal{L}_{k} \mathcal{L}_{k}^{\dagger}} \right) \frac{\mathcal{L}_{k} \otimes \sigma_{+}^{a}}{\sqrt{\mathcal{L}_{k} \mathcal{L}_{k}^{\dagger}}} -i \sin \left( c \Delta t \sqrt{\mathcal{L}_{k}^{\dagger} \mathcal{L}_{k}} \right) \frac{\mathcal{L}_{k}^{\dagger} \otimes \sigma_{-}^{a}}{\sqrt{\mathcal{L}_{k}^{\dagger} \mathcal{L}_{k}}}
+\end{align}
+
+\subsection{Kraus Operators}
+Once we defined the Evolution Operator, we can use it to calculate the \textit{Kraus Operators} defined in the \textit{Petruccione} as :
+\begin{align}
+	\rho_{S} \left(t\right) &= \mathcal{V}\left(t\right) \rho_{S} \left(0\right) = Tr_{B} \Big\{ \mathcal{U}\left(t, t_0\right) \Big[ \rho_{S} \otimes \rho_{B} \Big] \mathcal{U}^{\dagger}\left(t, t_0\right) \Big\} \\
+	&\left( \rho_{B} = \sum_{\alpha}{\lambda_{\alpha} \ket{\varphi_{\alpha}} \bra{\varphi_{\alpha}}} \quad \text{and} \quad Tr_{B} = \sum_{\beta}{\bra{\varphi_{\beta}} \dots \ket{\varphi_{\beta}}} \right) \notag \\
+	&= \sum_{\alpha}{\sum_{\beta}{\lambda_{\alpha}\bra{\varphi_{\beta}} \mathcal{U}\left(t, t_0\right) \left[ \rho_{S} \otimes \ket{\varphi_{\alpha}} \bra{\varphi_{\alpha}} \right]  \mathcal{U}^{\dagger}\left(t, t_0\right) \ket{\varphi_{\beta}} }} \notag \\
+	&= \sum_{\alpha, \beta}{ \mathcal{W}_{\alpha, \beta} \left(t\right) \rho_{S} \mathcal{W}^{\dagger}_{\alpha, \beta} \left(t\right) }
+	\label{eq:dynamical_map_kraus_operators}
+\end{align}
+where $ \mathcal{W}_{\alpha, \beta} \left(t\right) $ are operators that act on the \textit{wf} of the system solely, defining the evolution conditioned by the measurement of the bath state; this operators take the form :
+\begin{equation}
+	\mathcal{W}_{\alpha, \beta} \left(t\right) = \sqrt{\lambda_{\alpha}} \bra{\varphi_{\beta}}  \mathcal{U}\left(t, t_0\right) \ket{\varphi_{\alpha}}
+	\label{eq:general_kraus_operators}
+\end{equation}
+The set of operators $\{ \mathcal{W}_{\alpha, \beta} \}$ formally constitutes a set of \textit{Kraus Operators}, where the standard single Kraus index is represented by the pair $(\alpha, \beta)$. Since they satisfy the completeness relation $\sum_{\alpha, \beta} \mathcal{W}_{\alpha, \beta}^\dagger \mathcal{W}_{\alpha, \beta} = \mathbb{I}_S$, they guarantee a Completely Positive and Trace-Preserving (CPTP) map.
+
+We use as $ \lambda_{\beta} $ and $ \ket{\varphi_{\beta}} $ the eigenvalue and eigenstate obtained with the spectral decomposition of the initial environment density matrix.
+First, we define the pure coherent state of the ancilla and calculate its associated density matrix:
+\begin{align}
+	\ket{\phi_a} &= \sqrt{p} \ket{0_a} + \sqrt{1-p} \ket{1_a} \\
+	\rho_a &= \ket{\phi_a}\bra{\phi_a} \notag \\
+	&= p \ket{0_a}\bra{0_a} + \sqrt{p(1-p)} \ket{0_a}\bra{1_a} + \sqrt{p(1-p)} \ket{1_a}\bra{0_a} + (1-p) \ket{1_a}\bra{1_a}
+\end{align}
+
+Since the ancilla is in a perfectly pure state, the spectral decomposition of its density matrix yields only one non-zero eigenvalue ($\lambda_1 = 1$) associated with the eigenvector $\ket{\phi_a}$. The other eigenvalue ($\lambda_2 = 0$) is associated with the orthogonal state $\ket{\phi_a^\perp}$:
+\begin{align}
+	\rho_a &= 1 \cdot \ket{\phi_a}\bra{\phi_a} + 0 \cdot \ket{\phi_a^\perp}\bra{\phi_a^\perp}
+\end{align}
+
+The resulting Kraus operators are derived exclusively using the non-zero eigenvalue ($\lambda = 1$). The general formula $\mathcal{K}_i = \sqrt{\lambda} \bra{i_a} U \ket{\lambda}$ therefore reduces to simply evaluating the matrix elements $\bra{i_a} U \ket{\phi_a}$:
+\begin{align}
+	\mathcal{K}_{0} &= \bra{0_a} U \ket{\phi_a} \notag \\
+	&= \sqrt{p} \cos{\left(c \Delta t \sqrt{\mathcal{L}_{k}^{\dagger} \mathcal{L}_{k} } \right)} -i \sqrt{1-p} \sin{\left( c \Delta t \sqrt{\mathcal{L}_{k}^{\dagger} \mathcal{L}_{k}} \right)} \frac{\mathcal{L}_{k}^{\dagger}}{\sqrt{\mathcal{L}_{k}^{\dagger} \mathcal{L}_{k}}} \\
+	\mathcal{K}_{1} &= \bra{1_a} U \ket{\phi_a} \notag \\
+	&= -i \sqrt{p} \sin{\left( c \Delta t \sqrt{\mathcal{L}_{k} \mathcal{L}_{k}^{\dagger}} \right)} \frac{\mathcal{L}_{k}}{\sqrt{\mathcal{L}_{k} \mathcal{L}_{k}^{\dagger}}} + \sqrt{1-p} \cos{\left(c \Delta t \sqrt{\mathcal{L}_{k} \mathcal{L}_{k}^{\dagger} }\right)}
+\end{align}
+
+Alternatively, if we consider the case where the ancilla is strictly initialized in its ground state, the wavefunction and its corresponding density matrix are simply:
+\begin{align}
+	\ket{\psi_a} &= \ket{0_a} \\
+	\rho_a &= \ket{0_a}\bra{0_a}
+\end{align}
+
+This density matrix is already in its diagonal form, possessing a single non-zero eigenvalue ($\lambda = 1$) associated with the state $\ket{0_a}$. By evaluating the general formula $\mathcal{K}_i = \bra{i_a} U \ket{0_a}$, the evolution of the system is completely described by just two specific Kraus operators:
+\begin{align}
+	\mathcal{K}_{0} &= \bra{0_a} U \ket{0_a} \notag \\
+	&= \cos{\left(c \Delta t \sqrt{\mathcal{L}_{k}^{\dagger} \mathcal{L}_{k} } \right)} \\
+	\mathcal{K}_{1} &= \bra{1_a} U \ket{0_a} \notag \\
+	&= -i \sin{\left( c \Delta t \sqrt{\mathcal{L}_{k} \mathcal{L}_{k}^{\dagger}} \right)} \frac{\mathcal{L}_{k}}{\sqrt{\mathcal{L}_{k} \mathcal{L}_{k}^{\dagger}}}
+\end{align}
+
+To evaluate trigonometric functions of operators, a formal and highly effective approach is to expand them using their Taylor series. Defining the effective angle $\theta = c \Delta t$ and a generic positive semi-definite operator $A = \sqrt{\mathcal{L}_{k}^{\dagger} \mathcal{L}_{k}}$ (or $A = \sqrt{\mathcal{L}_{k} \mathcal{L}_{k}^{\dagger}}$ for the sine operator), the general expansions are:
+\begin{align}
+	\cos(\theta A) &= \sum_{n=0}^{\infty} \frac{(-1)^n}{(2n)!} (\theta A)^{2n} = \mathbb{I} - \frac{\theta^2}{2!} A^2 + \frac{\theta^4}{4!} A^4 - \dots \\
+	\sin(\theta A) &= \sum_{n=0}^{\infty} \frac{(-1)^n}{(2n+1)!} (\theta A)^{2n+1} = \theta A - \frac{\theta^3}{3!} A^3 + \frac{\theta^5}{5!} A^5 - \dots
+\end{align}
+
+This series expansion approach leads to massive simplifications when dealing with operators that possess specific algebraic properties. We can examine two fundamental physical scenarios.
+
+First, consider a pure dephasing process where $\mathcal{L}_{k} = \sigma_{z}$. The product is $\mathcal{L}_{k}^{\dagger} \mathcal{L}_{k} = \sigma_{z}^2 = \mathbb{I}$. Because every power of the identity matrix is the identity itself ($\mathbb{I}^n = \mathbb{I}$), the infinite series collapse directly into scalar trigonometric functions multiplying the identity:
+\begin{align}
+	\cos(\theta \mathbb{I}) &= \mathbb{I} \sum_{n=0}^{\infty} \frac{(-1)^n}{(2n)!} \theta^{2n} = \cos(\theta) \mathbb{I} \\
+	\sin(\theta \mathbb{I}) &= \mathbb{I} \sum_{n=0}^{\infty} \frac{(-1)^n}{(2n+1)!} \theta^{2n+1} = \sin(\theta) \mathbb{I}
+\end{align}
+Applying these to our equations for an ancilla initialized in the ground state, the effective Kraus operators for the pure dephasing channel become:
+\begin{align}
+	\mathcal{K}_{0} &= \cos(c \Delta t) \mathbb{I} \\
+	\mathcal{K}_{1} &= -i \sin(c \Delta t) \sigma_{z}
+\end{align}
+
+Second, consider the amplitude damping channel where $\mathcal{L}_{k} = \sigma_{-}$. The product $\mathcal{L}_{k}^{\dagger} \mathcal{L}_{k} = \sigma_{+} \sigma_{-}$ acts as a projection operator $P$. Since projectors are idempotent ($P^n = P$ for any $n \ge 1$), the infinite series collapses into simple closed forms. Recalling that $P^0 = \mathbb{I}$, we obtain:
+\begin{align}
+	\cos(\theta P) &= \mathbb{I} - P + P \sum_{n=0}^{\infty} \frac{(-1)^n}{(2n)!} \theta^{2n} = \mathbb{I} - P + \cos(\theta) P \\
+	\sin(\theta P) &= P \sum_{n=0}^{\infty} \frac{(-1)^n}{(2n+1)!} \theta^{2n+1} = \sin(\theta) P
+\end{align}
+The corresponding effective Kraus operators for the amplitude damping channel simplify beautifully to:
+\begin{align}
+	\mathcal{K}_{0} &= \mathbb{I} - \sigma_{+}\sigma_{-} + \cos(c \Delta t) \sigma_{+}\sigma_{-} \\
+	\mathcal{K}_{1} &= -i \sin(c \Delta t) \sigma_{-}
+\end{align}
+
+However, for a generic arbitrary operator $\mathcal{L}_{k}$ lacking such idempotency or involution, the Taylor series does not yield a simple factored form. In the general case, we must rely on the spectral decomposition theorem. By diagonalizing the Hermitian operator $\mathcal{L}_{k}^{\dagger} \mathcal{L}_{k}$ to find its eigenvalues $\lambda_m$ and eigenvectors $\ket{m}$, we can evaluate the trigonometric functions directly on its spectrum:
+\begin{align}
+	\mathcal{L}_{k}^{\dagger} \mathcal{L}_{k} &= \sum_{m} \lambda_m \ket{m}\bra{m} \\
+	\cos\left(c \Delta t \sqrt{\mathcal{L}_{k}^{\dagger} \mathcal{L}_{k}}\right) &= \sum_{m} \cos\left(c \Delta t \sqrt{\lambda_m}\right) \ket{m}\bra{m} \\
+	\sin\left(c \Delta t \sqrt{\mathcal{L}_{k}^{\dagger} \mathcal{L}_{k}}\right) &= \sum_{m} \sin\left(c \Delta t \sqrt{\lambda_m}\right) \ket{m}\bra{m}
+\end{align}
+
+This spectral formulation provides a rigorous pathway to calculate the matrix representation of the Kraus operators numerically or analytically, regardless of the complexity of $\mathcal{L}_{k}$.
+
+\subsection{Generating different Kraus Operators}
+We can demonstrate that we can generate different \textit{Kraus Operators} by changing the basis used for the trace : 
+\begin{align}
+	\rho_{S} \left(t\right) &= \mathcal{V}\left(t\right) \rho_{S} \left(0\right) = Tr_{B} \Big\{ \mathcal{U}\left(t, t_0\right) \Big[ \rho_{S} \otimes \rho_{B} \Big] \mathcal{U}^{\dagger}\left(t, t_0\right) \Big\} \\
+	&=\sum_{\alpha}{\lambda_{\alpha} {\sum_{\beta} \bra{\varphi_{\beta}} \mathcal{U}\left(t, t_0\right) \left[ \rho_{S} \otimes \ket{\varphi_{\alpha}} \bra{\varphi_{\alpha}} \right]  \mathcal{U}^{\dagger}\left(t, t_0\right) \ket{\varphi_{\beta}} }} \notag \\
+	&\left( \text{using the \textit{Identity} definition} \quad \mathbb{I} = \sum_{\gamma}{\ket{\eta_{\gamma}} \bra{\eta_{\gamma}} } \right) \notag \\
+	&=\sum_{\alpha} {\lambda_{\alpha} {\sum_{\beta} \bra{\varphi_{\beta}} \left( \sum_{\gamma}{\ket{\eta_{\gamma}} \bra{\eta_{\gamma}} } \right) \mathcal{U}\left(t, t_0\right) \left[ \rho_{S} \otimes \ket{\varphi_{\alpha}} \bra{\varphi_{\alpha}} \right]  \mathcal{U}^{\dagger}\left(t, t_0\right) \ket{\varphi_{\beta}} }} \notag \\
+	&=\sum_{\alpha} {\lambda_{\alpha} {\sum_{\beta} \sum_{\gamma} \bra{\varphi_{\beta}} \ket{\eta_{\gamma}} \bra{\eta_{\gamma}} \mathcal{U}\left(t, t_0\right) \left[ \rho_{S} \otimes \ket{\varphi_{\alpha}} \bra{\varphi_{\alpha}} \right]  \mathcal{U}^{\dagger}\left(t, t_0\right) \ket{\varphi_{\beta}} }} \notag \\
+	&=\sum_{\alpha} {\lambda_{\alpha} {\sum_{\beta} \sum_{\gamma} \bra{\eta_{\gamma}} \mathcal{U}\left(t, t_0\right) \left[ \rho_{S} \otimes \ket{\varphi_{\alpha}} \bra{\varphi_{\alpha}} \right]  \mathcal{U}^{\dagger}\left(t, t_0\right) \ket{\varphi_{\beta}} \bra{\varphi_{\beta}} \ket{\eta_{\gamma}} }} \notag \\
+	&\left( \text{and again} \quad \mathbb{I} = \sum_{\beta}{\ket{\varphi_{\beta}} \bra{\varphi_{\beta}} } \right) \notag \\
+	&=\sum_{\alpha}{\lambda_{\alpha} {\sum_{\gamma} \bra{\eta_{\gamma}} \mathcal{U}\left(t, t_0\right) \left[ \rho_{S} \otimes \ket{\varphi_{\alpha}} \bra{\varphi_{\alpha}} \right]  \mathcal{U}^{\dagger}\left(t, t_0\right) \ket{\eta_{\gamma}} }} \notag \\
+\end{align}
+So that we obtain new \textit{Kraus Operators} but using a different base for the Ancilla Trace  : 
+\begin{equation}
+	\mathcal{W}_{\alpha, \gamma} \left(t\right) = \sqrt{\lambda_{\alpha}} \bra{\eta_{\gamma}}  \mathcal{U}\left(t, t_0\right) \ket{\varphi_{\alpha}}
+\end{equation}
+Using from the original definition of the \textit{Kraus Operators} and again using the \textit{Identity} definition we see that : 
+\begin{align}
+	\mathcal{W}_{\alpha, \gamma} \left(t\right) &= \sqrt{\lambda_{\alpha}} \bra{\eta_{\gamma}} \mathcal{U}\left(t, t_0\right) \ket{\varphi_{\alpha}} \notag \\
+	&= \sqrt{\lambda_{\alpha}} \bra{\eta_{\gamma}} \left( \sum_{\beta} \ket{\varphi_{\beta}} \bra{\varphi_{\beta}} \right) \mathcal{U}\left(t, t_0\right) \ket{\varphi_{\alpha}} \notag \\
+	&= \sqrt{\lambda_{\alpha}} \sum_{\beta} \bra{\eta_{\gamma}} \ket{\varphi_{\beta}} \bra{\varphi_{\beta}} \mathcal{U}\left(t, t_0\right) \ket{\varphi_{\alpha}} = \sum_{\beta} \mathcal{W}_{\alpha, \beta} \left(t\right)
+\end{align}
+We can reformulate the change in the Ancilla Trace basis using a unitary transformation : 
+\begin{gather}
+	\ket{\eta_{\gamma}} = V \ket{\varphi_{\gamma}} \quad \text{and} \quad \bra{\eta_{\gamma}} = \bra{\varphi_{\gamma}} V^{\dagger} \\
+	\text{with} \quad V = \sum_{\gamma}{\ket{\eta_{\gamma}} \bra{\phi_{\gamma}}}
+\end{gather}
+so that : 
+\begin{align}
+	\mathcal{W}_{\alpha, \gamma} \left(t\right) &= \sqrt{\lambda_{\alpha}} \bra{\eta_{\gamma}} \mathcal{U}\left(t, t_0\right) \ket{\varphi_{\alpha}} \notag \\
+	&= \sqrt{\lambda_{\alpha}} \bra{\varphi_{\gamma}} V^{\dagger} \mathcal{U}\left(t, t_0\right) \ket{\varphi_{\alpha}} \notag \\
+	&= \sqrt{\lambda_{\alpha}} \bra{\varphi_{\gamma}} V^{\dagger} \left( \sum_{\beta} \ket{\varphi_{\beta}} \bra{\varphi_{\beta}} \right) \mathcal{U}\left(t, t_0\right) \ket{\varphi_{\alpha}} \notag \\
+	&= \sum_{\beta} \bra{\varphi_{\gamma}} V^{\dagger} \ket{\varphi_{\beta}} \left( \sqrt{\lambda_{\alpha}} \bra{\varphi_{\beta}} \mathcal{U}\left(t, t_0\right) \ket{\varphi_{\alpha}} \right) \notag \\
+	&= \sum_{\beta} V_{\gamma, \beta} \mathcal{W}_{\alpha, \beta} \left(t\right)
+\end{align}
+
+Here we identified the original Kraus operator $ \mathcal{W}_{\alpha, \beta} \left(t\right) $ 
+and defined the matrix elements of the unitary transformation as $ V_{\gamma, \beta} = \bra{\varphi_{\gamma}} V^{\dagger} \ket{\varphi_{\beta}} = \braket{\eta_{\gamma} | \varphi_{\beta}} $.
+
+To change the measurement basis of the ancilla, we apply a unitary rotation. A general rotation by an angle $\theta$ relative to the $z$-axis can be generated using the rotation operator $R_y(\theta) = \exp\left(-i \frac{\theta}{2} \sigma_y\right)$. Applying this unitary operation to the original computational basis yields the new rotated measurement basis:
+\begin{align}
+	\ket{\tilde{0}_a} &= \cos\left(\frac{\theta}{2}\right)\ket{0_a} + \sin\left(\frac{\theta}{2}\right)\ket{1_a} \\
+	\ket{\tilde{1}_a} &= -\sin\left(\frac{\theta}{2}\right)\ket{0_a} + \cos\left(\frac{\theta}{2}\right)\ket{1_a}
+\end{align}
+
+The new set of Kraus operators, $\tilde{\mathcal{K}}_i$, associated with measuring the ancilla in this rotated basis, is obtained by projecting the time-evolution operator $U$ onto the new states. Since the ancilla is still initialized in the ground state $\ket{0_a}$, the new operators are linear combinations of the original ones:
+\begin{align}
+	\tilde{\mathcal{K}}_{0} &= \bra{\tilde{0}_a} U \ket{0_a} \notag \\
+	&= \left( \cos\left(\frac{\theta}{2}\right)\bra{0_a} + \sin\left(\frac{\theta}{2}\right)\bra{1_a} \right) U \ket{0_a} \notag \\
+	&= \cos\left(\frac{\theta}{2}\right) \mathcal{K}_{0} + \sin\left(\frac{\theta}{2}\right) \mathcal{K}_{1}
+\end{align}
+
+\begin{align}
+	\tilde{\mathcal{K}}_{1} &= \bra{\tilde{1}_a} U \ket{0_a} \notag \\
+	&= \left( -\sin\left(\frac{\theta}{2}\right)\bra{0_a} + \cos\left(\frac{\theta}{2}\right)\bra{1_a} \right) U \ket{0_a} \notag \\
+	&= -\sin\left(\frac{\theta}{2}\right) \mathcal{K}_{0} + \cos\left(\frac{\theta}{2}\right) \mathcal{K}_{1}
+\end{align}
+
+These rotated Kraus operators still satisfy the completeness relation ($\tilde{\mathcal{K}}_0^\dagger \tilde{\mathcal{K}}_0 + \tilde{\mathcal{K}}_1^\dagger \tilde{\mathcal{K}}_1 = \mathbb{I}$), guaranteeing a valid trace-preserving quantum map. However, depending on the choice of $\theta$, they describe different unravelings of the same underlying open quantum system dynamics.
+
+\newpage
+
 \section{Study Case : Photoemission Qubit}
 \label{sec:Study_Case_Photoemission_Qubit}
 In this case we have a single molecule and we're studying for example a relaxation dynamics from its $ S_2 $ to $ S_1 $ Energy Level; so that it's possible to represent the dynamic via a single qubit interacting wit a single Ancilla that is reset after every collision.
@@ -1871,6 +2142,7 @@ This represents an interferometric (homodyne) measurement protocol. By projectin
 It is instructive to compare this mechanism with the one employed in the \textit{Exciton Dimer case}. In that context, which dealt exclusively with pure dephasing rather than population relaxation, the system operator within the interaction term was a simple diagonal $\sigma_{z}$. Because pure dephasing does not involve any actual energy transfer between the system and the environment, the ancilla was not strictly required to be initialized in its ground state $\ket{0}$. Consequently, the different unraveling schemes in the dimer model could be simulated by directly altering the collisional Hamiltonian $\mathcal{H}_{Coll}$ and the initial density matrix of the ancilla. In the current amplitude damping scenario, however, the strict physical requirement for the ancilla to absorb a quantum of energy forces its initial state to be exactly $\ket{0}$ and rigidly fixes the symmetric form of $\mathcal{H}_{Coll}$. As a result, the unraveling mechanism is entirely shifted onto the final measurement protocol.
 
 (See \textit{QJ Algorithm and SSE} notes, in particular \textbf{Note II})
+
 \subsection{Unitary Evolution Operator}
 \label{sub:Unitary_Evolution_Operator}
 
@@ -2077,7 +2349,7 @@ The probability of measuring the Ancilla's state are:
 	&= \frac{1}{2} \left( 1 + i(A^*B - AB^*) \sin \left(c \Delta t \right) \right) = \frac{1}{2} - \text{Im}(A^*B) \sin \left(c \Delta t \right) 
 \end{align}
 
-\newpage
+\newpage 
 
 \appendix
 \section{Demonstration of the presence of an Abrupt Change for the "Quantum Jump" limit}
@@ -2118,5 +2390,9 @@ So that it's possible to define te critical angle perturbation :
 	\delta_{Crit} = \sqrt{S^{j}} \notag \\
 	\text{where} \quad P_{1_a} \left( \delta_{Crit} \right) = 2 P_{1_a}^{j}
 \end{gather}
+
+\newpage
+
+\printbibliography
 
 \end{document}

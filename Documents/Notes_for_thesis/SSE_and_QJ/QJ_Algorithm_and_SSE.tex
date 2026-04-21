@@ -272,6 +272,182 @@
 	
 	\newpage
 	
+	\section{Coccia System}
+	We want to simulate a 3 level system with ground state $ \ket{0} $ and the two excited states $ \ket{1} $ and $ \ket{2} $ with $ \varepsilon_2 > \varepsilon_1 $. The ground state is perturbatively excited into the state $ \ket{2} $ so that the initial wave function reads:
+	\begin{equation}
+		\ket{\Psi_{S} (0)} = \sqrt{p_{0}} \ket{0} + \sqrt{p_{2}} \ket{2}
+	\end{equation}
+	
+	\subsection{Stochastic Schrodinger Equation}
+	
+	Following the definition in \cite{molmerMonteCarloWavefunction1993a} and \cite{cocciaProbingQuantumCoherence2018} and setting $ \hbar = 1 $ we define the \textit{Non - Hermitian Hamiltonian} as : 
+	\begin{equation}
+		H_{nH} = H_{S} - \frac{i}{2} \sum_{m}{C_{m}^{\dagger} C_{m}} 
+	\end{equation}
+	with :
+	\begin{itemize}
+		\item pure dephasing $ \rightarrow \quad C_{d} = \sqrt{\frac{\Gamma_{d}}{2}} \left( \ket{2}\bra{2} - \ket{1}\bra{1} \right) = \sqrt{\frac{\Gamma_{d}}{2}} \sigma_{z}^{21} \quad \rightarrow \quad C_{d}^{\dagger} C_{d} = \frac{\Gamma_{d}}{2} \left( \ket{1}\bra{1} + \ket{2}\bra{2} \right) $
+		\item 2-1 relaxation $ \rightarrow \quad C_{r} = \sqrt{\Gamma_{r}} \ket{1}\bra{2} = \sqrt{\Gamma_{r}} \sigma_{-}^{21} \quad \rightarrow \quad C_{r}^{\dagger} C_{r} = \Gamma_{r} \ket{2}\bra{2} $
+	\end{itemize}
+		
+	With a first order approximation we can define the Evolution Operator as : 
+	\begin{equation}
+		\mathcal{U} \left(\Delta t\right) \approx \mathbb{I} - i H_{nH} \Delta t + \mathcal{O} \left( \Delta t^{2} \right)
+	\end{equation}
+	so that the evolved System's wave function reads : 
+	\begin{align}
+		\ket{\Psi_{S}' \left(\Delta t\right)} &= \mathcal{U} \left(\Delta t\right) \ket{\Psi_{S} (0)} = \left( \mathbb{I} - i H_{nH} \Delta t \right) \ket{\Psi_{S} (0)} \notag \\
+		&= \ket{\Psi_{S} (0)} - i \Delta t \left[ H_{S} \ket{\Psi_{S} (0)} -  \frac{ i \Gamma_{d}}{4} \left( \ket{1}\bra{1} + \ket{2}\bra{2} \right) \ket{\Psi_{S} (0)} -  \frac{ i \Gamma_{r}}{2} \ket{2}\bra{2}  \ket{\Psi_{S} (0)} \right] \notag \\
+		&=  \ket{\Psi_{S} (0)} - i \Delta t \left( \varepsilon_{0} \sqrt{p_{0}} \ket{0} + \varepsilon_{2} \sqrt{p_{2}} \ket{2} \right) - \frac{\Delta t \Gamma_{d}}{4} \sqrt{p_{2}} \ket{2} - \frac{\Delta t \Gamma_{r}}{2} \sqrt{p_{2}} \ket{2} \notag \\
+		&= \sqrt{p_{0}} \left( 1 -  i \Delta t \varepsilon_{0} \right) \ket{0} + \sqrt{p_{2}} \left( 1 - \frac{\Delta t}{4} \left(\Gamma_{d} + 2 \Gamma_{r}\right) - i \Delta t \varepsilon_{2} \right) \ket{2}
+	\end{align}
+	No population in $ \ket{1} $ but reduction of the population in $ \ket{2} $.
+	Since the evolution occurred with a Non - Hermitian Hamiltonian the state after the wave function is non normalized, so that we need to calculate the square of the norm  as: 
+	\begin{align}
+		\braket{\Psi_{S}' (t +\Delta t) | \Psi_{S}' (t +\Delta t)} &= \bra{\Psi_{S} (0)} \left(\mathbb{I} + i H_{nH}^{\dagger} \Delta t \right) \Big(\mathbb{I} - i H_{nH} \Delta t \Big) \ket{\Psi_{S} (0)} \notag \\
+		&= 1 - i \Delta t \bra{\Psi_{S} (0)} H_{nH} - H_{nH}^{\dagger} \ket{\Psi_{S} (0)} \notag \\
+		&= 1 - i \Delta t \bra{\Psi_{S} (0)}\left( H_{S} - \frac{i}{2} \sum_{m}{C_{m}^{\dagger} C_{m}} \right) - \left( H_{S} + \frac{i}{2} \sum_{m}{C_{m}^{\dagger} C_{m}} \right) \ket{\Psi_{S} (0)} \notag \\ 
+		&= 1 - \Delta t \bra{\Psi_{S} (0)} \sum_{m}{C_{m}^{\dagger} C_{m}} \ket{\Psi_{S} (0)} = 1 - \delta p
+	\end{align}
+	making explicit $ \delta p $ we obtain :
+	\begin{align}
+		\delta p &= \Delta t \bra{\Psi_{S} (0)} \sum_{m}{C_{m}^{\dagger} C_{m}} \ket{\Psi_{S} (0)} \notag \\
+		&= \Delta t \bra{\Psi_{S} (0)} \frac{\Gamma_{d}}{2} \left( \ket{1}\bra{1} + \ket{2}\bra{2} \right) + \Gamma_{r} \ket{2}\bra{2} \ket{\Psi_{S} (0)} \notag \\
+		&= \Delta t \, p_{2} \left( \frac{\Gamma_{d}}{2} + \Gamma_{r} \right)
+	\end{align}
+	
+	This result coincides with the complete calculation of the squared norm, neglecting the terms with $ \Delta t^{2} $ (limit $ \Delta t \rightarrow 0 $) : 
+	\begin{align}
+		\braket{\Psi_{S}' (t +\Delta t) | \Psi_{S}' (t +\Delta t)} &= p_{0} \left( 1 + \Delta t^{2} \varepsilon_{0}^{2}\right) + p_{2} \left[ \left( 1 -\frac{\Delta t}{4} \left(\Gamma_{d} + 2 \Gamma_{r} \right) \right)^{2} + \Delta t^{2} \varepsilon_{2}^{2} \right] \notag \\
+		&= p_{0} + p_{2} \left( 1 - \Delta t \left( \frac{\Gamma_{d}}{2} + \Gamma_{r} \right) \right) = p_{0} + p_{2} - p_{2} \Delta t \left( \frac{\Gamma_{d}}{2} + \Gamma_{r} \right) \notag \\
+		&= 1 - p_{2} \Delta t \left( \frac{\Gamma_{d}}{2} + \Gamma_{r} \right) = 1 -\delta p
+	\end{align}
+	So now the normalized evolved state reads : 
+	\begin{equation}
+		\ket{\Psi_{S} \left(\Delta t\right)} = \frac{\sqrt{p_{0}} \left( 1 -  i \Delta t \varepsilon_{0} \right)}{\sqrt{1 -  p_{2} \Delta t \left( \frac{\Gamma_{d}}{2} + \Gamma_{r} \right)} } \ket{0} + \frac{\sqrt{p_{2}} \left( 1 - \frac{\Delta t}{4} \left(\Gamma_{d} + 2 \Gamma_{r}\right) - i \Delta t \varepsilon_{2} \right)}{\sqrt{1 - p_{2} \Delta t \left( \frac{\Gamma_{d}}{2} + \Gamma_{r} \right)}} \ket{2}
+	\end{equation}
+	The state population now are : 
+	\begin{align}
+		p_{0} \left(\Delta t\right) &= \braket{\Psi_{S} | 0}   \braket{0 | \Psi_{S}} = \left(\frac{\sqrt{p_{0}} \left( 1 -  i \Delta t \varepsilon_{0} \right)}{\sqrt{1 -  p_{2} \Delta t \left( \frac{\Gamma_{d}}{2} + \Gamma_{r} \right)} }\right)^{2} = \frac{p_{0} \left( 1 + \Delta t^{2} \varepsilon_{0}^{2} \right)}{1 -  p_{2} \Delta t \left( \frac{\Gamma_{d}}{2} + \Gamma_{r} \right)} \approx \frac{p_{0}}{1 - \delta p} \\
+		p_{1} \left(\Delta t\right) &= \braket{\Psi_{S} | 1}   \braket{1 | \Psi_{S}} = 0 \\
+		p_{2} \left(\Delta t\right) &= \braket{\Psi_{S} | 2}   \braket{2 | \Psi_{S}} = \left(\frac{\sqrt{p_{2}} \left( 1 - \frac{\Delta t}{4} \left(\Gamma_{d} + 2 \Gamma_{r}\right) - i \Delta t \varepsilon_{2} \right)}{\sqrt{1 -  p_{2} \Delta t \left( \frac{\Gamma_{d}}{2} + \Gamma_{r} \right)} }\right)^{2} \notag \\
+		&= \frac{p_{2} \left[ \left( 1 - \frac{\Delta t}{4} \left(\Gamma_{d} + 2 \Gamma_{r}\right) \right)^{2} + \Delta t^{2} \varepsilon_{2}^{2} \right]}{1 -  p_{2} \Delta t \left( \frac{\Gamma_{d}}{2} + \Gamma_{r} \right)} \notag \\
+		&= \frac{p_{2} - p_{2} \Delta t \left(\frac{\Gamma_{d}}{2} + \Gamma_{r}\right)}{1 -  p_{2} \Delta t \left( \frac{\Gamma_{d}}{2} + \Gamma_{r} \right)} \approx \frac{p_{2} - \delta p}{1 - \delta p} = \frac{p_{2} - \delta p}{p_{0} + p_{2} - \delta p}
+	\end{align}
+	
+	\newpage
+	
+	\subsection{Collisional Methods}
+	We now try to do the same unraveling but via \textit{Collisional Methods}. Note that most of the Equation used are derived in the notes MC, where we treated a simple two level system; here the dynamic will be the same, i.e relaxation of an excited state, but extending the system to 3 levels, with $ \ket{0} $ not involved in the collision.
+	The initial System wave function is still : 
+	\begin{equation}
+		\ket{\Psi_{S} (0)} = \sqrt{p_{0}} \ket{0} + \sqrt{p_{2}} \ket{2}
+	\end{equation}
+	The Hamiltonian reads : 
+	\begin{equation}
+		H_{CM} = H_{S} + H_{Coll}
+	\end{equation}
+	with $ H_{S} $ associated to the eigenenergies of the system, while the Collisional Hamiltonian reads:
+	\begin{equation}
+		H_{Coll} = c \left( \ket{1}\bra{2} \otimes \sigma_{+}^{a} + \ket{2}\bra{1} \otimes \sigma_{-}^{a} \right)
+	\end{equation}
+	We use an ancilla always initialize in $ \ket{0_{a}} $ so that $ \rho_{a} = \begin{pmatrix} 1 & 0 \\ 0 & 0 \end{pmatrix} $. \newline
+	The total wave function is $ \ket{\Psi (0)} = \ket{\Psi_{S} (0)} \otimes \ket{0_{a}} $. \newline
+	The collisional step of evolution is carried out with :
+	\begin{equation}
+		\mathcal{U}_{Coll} \left( \Delta t \right) = \exp \left( -i H_{Coll} \Delta t \right) = \ket{0}\bra{0} \otimes \mathbb{I}^{a} + P + \cos \left( c \Delta t \right) Z - i \sin \left( c \Delta t \right) \frac{X}{2} 
+	\end{equation} 
+	the derivation is the same of the notes MC but in this case from the Taylor expansion of the exponential the first term, i.e. Identity acts on the total system reading $ \mathbb{I}^{tot} = \left(\ket{0}\bra{0} + \ket{1}\bra{1} + \ket{2}\bra{2}\right) \otimes \mathbb{I}^{a} $; the first term is the one appearing in $ \mathcal{U}_{Coll} $, while the other two end up in the McLaurin series for the $ \cos $ and $ \sin $. \newline
+	The other terms read : 
+	\begin{gather}
+		P = \frac{\left( \ket{1}\bra{1} + \ket{2}\bra{2} \right) \otimes \mathbb{I}^{a} + \left( \ket{1}\bra{1} - \ket{2}\bra{2} \right) \otimes \sigma_{z}^{a} }{2} \\
+		Z = \frac{\left( \ket{1}\bra{1} + \ket{2}\bra{2} \right) \otimes \mathbb{I}^{a} - \left( \ket{1}\bra{1} - \ket{2}\bra{2} \right) \otimes \sigma_{z}^{a} }{2} \\
+		X = \left( \ket{1}\bra{2} + \ket{2}\bra{1} \right) \otimes \sigma_{x}^{a} - i \left( \ket{1}\bra{2} - \ket{2}\bra{1} \right) \otimes \sigma_{y}^{a}
+	\end{gather}
+	Now we can apply every single term to the total wave function : 
+	\begin{align}
+		P \left( \ket{\Psi_{S}} \otimes \ket{0_{a}} \right) &= \frac{\left( \ket{1}\bra{1} + \ket{2}\bra{2} \right) \otimes \mathbb{I}^{a} + \left( \ket{1}\bra{1} - \ket{2}\bra{2} \right) \otimes \sigma_{z}^{a} }{2} \left( \sqrt{p_{0}} \ket{0} + \sqrt{p_{2}} \ket{2} \right) \otimes \ket{0_{a}}  \notag \\
+		&= \frac{ \sqrt{p_{2}} \ket{2} \otimes \ket{0_{a}} - \sqrt{p_{2}} \ket{2} \otimes \ket{0_{a}} }{2} = 0 \\
+		Z \left( \ket{\Psi_{S}} \otimes \ket{0_{a}} \right) &= \frac{\left( \ket{1}\bra{1} + \ket{2}\bra{2} \right) \otimes \mathbb{I}^{a} - \left( \ket{1}\bra{1} - \ket{2}\bra{2} \right) \otimes \sigma_{z}^{a} }{2} \left( \sqrt{p_{0}} \ket{0} + \sqrt{p_{2}} \ket{2} \right) \otimes \ket{0_{a}}  \notag \\
+		&= \frac{ \sqrt{p_{2}} \ket{2} \otimes \ket{0_{a}} + \sqrt{p_{2}} \ket{2} \otimes \ket{0_{a}} }{2} = \sqrt{p_{2}} \ket{2} \otimes \ket{0_{a}} \\
+		X \left( \ket{\Psi_{S}} \otimes \ket{0_{a}} \right) &= \left[\left( \ket{1}\bra{2} + \ket{2}\bra{1} \right) \otimes \sigma_{x}^{a} - i \left( \ket{1}\bra{2} - \ket{2}\bra{1} \right) \otimes \sigma_{y}^{a}\right] \left( \sqrt{p_{0}} \ket{0} + \sqrt{p_{2}} \ket{2} \right) \otimes \ket{0_{a}}  \notag \\
+		&= \sqrt{p_{2}} \ket{1} \otimes \ket{1_{a}} + \sqrt{p_{2}} \ket{1} \otimes \ket{1_{a}} = 2 \sqrt{p_{2}} \ket{1} \otimes \ket{1_{a}} 
+	\end{align}
+	
+	\newpage
+	
+	The total evolved wave function, including the identity term for $ \ket{0} $ now reads : 
+	\begin{equation}
+		\ket{\Psi \left( \Delta t \right)} = \mathcal{U}_{Coll} \ket{\Psi (0)} = \sqrt{p_{0}} \ket{0} \otimes \ket{0_{a}} + \cos \left( c \Delta t \right) \sqrt{p_{2}} \ket{2} \otimes \ket{0_{a}} - i \sin \left( c \Delta t \right) \sqrt{p_{2}}  \ket{1} \otimes \ket{1_{a}}
+	\end{equation}
+	
+	If we measure the Ancilla in state $ \ket{0_{a}} $ the new System state is :
+	\begin{equation}
+		\ket{\Psi_{S} \left( \Delta t \right)}_{0} = \sqrt{p_{0}} \ket{0} + \cos \left( c \Delta t \right) \sqrt{p_{2}} \ket{2} 
+	\end{equation}
+	this state is not normalized so we can calculate the squared norm as :
+	\begin{align}
+		\braket{\Psi_{S} \left( \Delta t \right) | \Psi_{S} \left( \Delta t \right)} &= p_{0} + p_{2} \cos^{2} \left( c \Delta t \right)  \notag \\
+		&= 1 - p_{2} \left( 1 - \cos^{2} \left( c \Delta t \right) \right) \notag \\
+		&= 1 - p_{2} \sin^{2} \left( c \Delta t \right) =  1 - \delta p
+	\end{align}
+	where $ \delta p $ is the probability of measuring the Ancilla in state $ \ket{1_{a}} $, i.e. have a \textit{Quantum Jump}.
+	
+	The normalized wave function reads : 
+	\begin{equation}
+		\ket{\Psi_{S} \left( \Delta t \right)}_{0} = \frac{\sqrt{p_{0}}}{\sqrt{1 - \delta p}} \ket{0} + \frac{\cos \left( c \Delta t \right) \sqrt{p_{2}}}{\sqrt{1 - \delta p}} \ket{2}
+	\end{equation}
+	The population of $ \ket{0} $ and $ \ket{2} $ are : 
+	\begin{align}
+		\braket{\Psi_{S} \left( \Delta t \right) | 0 } \braket{0 | \Psi_{S} \left( \Delta t \right) } &= \frac{p_{0}}{1 - \delta p} \\ 
+		\braket{\Psi_{S} \left( \Delta t \right) | 1 } \braket{1 | \Psi_{S} \left( \Delta t \right) } &= 0 \\
+		\braket{\Psi_{S} \left( \Delta t \right) | 2 } \braket{ 2 | \Psi_{S} \left( \Delta t \right) } &= \frac{ \cos^{2} \left( c \Delta t \right) p_{2}}{1 - \delta p}
+	\end{align}
+
+	\subsection{Kraus Operators}
+	Once we defined $ \mathcal{U}_{Coll} $ we can define the associated \textit{Kraus Operators}, as defined in the \textit{Petruccione} :
+	\begin{align}
+		\rho_{S} \left(t\right) &= \mathcal{V}\left(t\right) \rho_{S} \left(0\right) = Tr_{B} \Big\{ \mathcal{U}\left(t, t_0\right) \Big[ \rho_{S} \otimes \rho_{B} \Big] \mathcal{U}^{\dagger}\left(t, t_0\right) \Big\} \\
+		&\left( \rho_{B} = \sum_{\alpha}{\lambda_{\alpha} \ket{\varphi_{\alpha}} \bra{\varphi_{\alpha}}} \quad \text{and} \quad Tr_{B} = \sum_{\beta}{\bra{\varphi_{\beta}} \dots \ket{\varphi_{\beta}}} \right) \notag \\
+		&= \sum_{\alpha}{\sum_{\beta}{\lambda_{\alpha}\bra{\varphi_{\beta}} \mathcal{U}\left(t, t_0\right) \left[ \rho_{S} \otimes \ket{\varphi_{\alpha}} \bra{\varphi_{\alpha}} \right]  \mathcal{U}^{\dagger}\left(t, t_0\right) \ket{\varphi_{\beta}} }} \notag \\
+		&= \sum_{\alpha, \beta}{ \mathcal{K}_{\alpha, \beta} \left(t\right) \rho_{S} \mathcal{K}^{\dagger}_{\alpha, \beta} \left(t\right) }
+		\label{eq:dynamical_map_kraus_operators}
+	\end{align}
+	In our case, since we have $ \rho_{a} = \begin{pmatrix} 1 & 0 \\ 0 & 0 \end{pmatrix} $, with only one non zero eigenvalue we obtain only two \textit{Kraus Operators} in the two opposite limits : 
+	\paragraph{Quantum Jump Limit}
+	Measurement base : $ \{ \ket{0}, \ket{1} \} $
+	\begin{gather}
+		\mathcal{K}_{0,0}^{QJ} = \ket{0}\bra{0} + \ket{1}\bra{1} + \cos \left( c \Delta t \right) \ket{2}\bra{2} \\
+		\mathcal{K}_{0,1}^{QJ} = -i \sin \left( c \Delta t \right) \ket{1}\bra{2}
+	\end{gather}
+	We can check the Completeness Relation : 
+	\begin{align}
+		\mathcal{K}_{0,0}^{QJ \dagger} \mathcal{K}_{0,0}^{QJ} &= \ket{0}\bra{0} + \ket{1}\bra{1} + \cos^{2} \left( c \Delta t \right) \ket{2}\bra{2} \notag \\
+		\mathcal{K}_{0,1}^{QJ \dagger} \mathcal{K}_{0,1}^{QJ} &= \sin^{2} \left( c \Delta t \right) \ket{2}\bra{2} \notag \\
+		\sum_{\alpha, \beta} \mathcal{K}_{\alpha, \beta}^{QJ \dagger} \mathcal{K}_{\alpha, \beta}^{QJ} &= \mathcal{K}_{0,0}^{\dagger} \mathcal{K}_{0,0} + \mathcal{K}_{0,1}^{\dagger} \mathcal{K}_{0,1} \notag \\ 
+		&= \ket{0}\bra{0} + \ket{1}\bra{1} + \cos^{2} \left( c \Delta t \right) \ket{2}\bra{2} + \sin^{2} \left( c \Delta t \right) \ket{2}\bra{2} \notag \\
+		&= \ket{0}\bra{0} + \ket{1}\bra{1} + \ket{2}\bra{2} = \mathbb{I}
+	\end{align}
+	The associated Probability are :
+	\begin{gather}
+		P_{0_{a}}^{QJ} = \bra{\Psi_{S}}\mathcal{K}_{0,0}^{QJ \dagger} \mathcal{K}_{0,0}^{QJ}\ket{\Psi_{S}} = p_{0} + p_{2} \cos^{2} \left( c \Delta t \right) \\
+		P_{1_{a}}^{QJ} = \bra{\Psi_{S}}\mathcal{K}_{0,1}^{QJ \dagger} \mathcal{K}_{0,1}^{QJ}\ket{\Psi_{S}} = p_{2} \sin^{2} \left( c \Delta t \right) 
+	\end{gather}
+	
+	\paragraph{State Diffusion Limit}
+	Measurement base : $ \{ \ket{+}, \ket{-} \} $ with $ \ket{+} = \frac{\ket{0} + \ket{1}}{\sqrt{2}} $ and $ \ket{-} = \frac{\ket{0} - \ket{1}}{\sqrt{2}} $
+	\begin{gather}
+		\mathcal{K}_{+, 0}^{SD} = \frac{\ket{0}\bra{0} + \ket{1}\bra{1} + \cos \left( c \Delta t \right) \ket{2}\bra{2} -i \sin \left( c \Delta t \right) \ket{1}\bra{2}}{\sqrt{2}} = \frac{\mathcal{K}_{0,0}^{QJ} + \mathcal{K}_{0,1}^{QJ}}{\sqrt{2}}\\ 
+		\mathcal{K}_{-, 0}^{SD} = \frac{\ket{0}\bra{0} + \ket{1}\bra{1} + \cos \left( c \Delta t \right) \ket{2}\bra{2} +i \sin \left( c \Delta t \right) \ket{1}\bra{2} }{\sqrt{2}}= \frac{\mathcal{K}_{0,0}^{QJ} - \mathcal{K}_{0,1}^{QJ}}{\sqrt{2}}
+	\end{gather}
+	The associated Probability are :
+	\begin{gather}
+		P_{+_{a}}^{SD} = \bra{\Psi_{S}}\mathcal{K}_{0,0}^{SD \dagger} \mathcal{K}_{0,0}^{SD}\ket{\Psi_{S}} = \frac{1}{2} \left[ p_{0} + p_{2} \left(\cos^{2} \left( c \Delta t \right) + \sin^{2} \left( c \Delta t \right) \right) \right] = \frac{1}{2} \\
+		P_{-_{a}}^{SD} = \bra{\Psi_{S}}\mathcal{K}_{0,1}^{SD \dagger} \mathcal{K}_{0,1}^{SD}\ket{\Psi_{S}} = \frac{1}{2} \left[ p_{0} + p_{2} \left(\cos^{2} \left( c \Delta t \right) + \sin^{2} \left( c \Delta t \right) \right) \right] = \frac{1}{2}
+	\end{gather}
+	
+	\newpage
+	
 	\printbibliography
 	
 \end{document}
