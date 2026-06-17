@@ -460,7 +460,6 @@ def generate_kraus_operators(c_CM, dt, phi_rad):
     cos_val = np.cos(c_dt)
     sin_val = np.sin(c_dt)
     
-    # Base Quantum Jump operators (equations 290 and 291)
     K0_QJ = np.array([[1.0, 0.0, 0.0], 
                       [0.0, 1.0, 0.0], 
                       [0.0, 0.0, cos_val]], dtype=np.complex128)
@@ -470,18 +469,13 @@ def generate_kraus_operators(c_CM, dt, phi_rad):
                       [0.0, 0.0, 0.0]], dtype=np.complex128)
     
     # Trigonometric coefficients for the intermediate basis transformation
-    sin_phi2 = np.sin(phi_rad / 2.0)
     cos_phi2 = np.cos(phi_rad / 2.0)
+    sin_phi2 = np.sin(phi_rad / 2.0)
     
-    # Generalized intermediate operators (equations 299 and 300)
-    M0 = sin_phi2 * K0_QJ + cos_phi2 * K1_QJ
-    M1 = cos_phi2 * K0_QJ - sin_phi2 * K1_QJ
+    M0 = cos_phi2 * K0_QJ + sin_phi2 * K1_QJ
+    M1 = -sin_phi2 * K0_QJ + cos_phi2 * K1_QJ
         
     return M0, M1
-
-
-import numpy as np
-from numba import njit, prange
 
 @njit(parallel=True, cache=True, fastmath=True)
 def compute_trajectory_wf_core_density(psi_initial, U_site, M0, M1, N_traj, n_times, seeds):
