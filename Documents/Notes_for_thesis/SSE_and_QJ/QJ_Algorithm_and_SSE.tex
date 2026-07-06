@@ -448,6 +448,139 @@
 	
 	\newpage
 	
+	\section{Fundamental Concepts of Stochastic Calculus}
+	
+	In the context of open quantum systems, stochastic calculus is essential for describing continuous measurements and unravelings such as State Diffusion and Quantum Jumps. The two main mathematical objects used to model the noise are the Wiener process and the Poisson process.
+	
+	\subsection{The Wiener Process}
+	
+	The Wiener process models continuous white noise, typical of Brownian motion and homodyne detection schemes. The infinitesimal increment $dW$ represents the evolution of the noise over the time interval $dt$. Its fundamental statistical properties are defined by its expectation value and variance:
+	\begin{equation}
+		\mathbb{E}[dW] = 0, \quad \mathbb{E}[dW^2] = dt
+	\end{equation}
+	Physically, this means that the noise fluctuates symmetrically around zero, but its amplitude scales with the square root of time, i.e., $dW \propto \sqrt{dt}$.
+	
+	\subsection{It\^o Algebra}
+	
+	Because $dW$ scales as $\sqrt{dt}$, second-order terms cannot be neglected when performing differential expansions, unlike in classical calculus where $dt^2 \to 0$. In It\^o calculus, the following strict algebraic rules apply when manipulating stochastic differentials:
+	\begin{align}
+		dW^2 &= dt \\
+		dW dt &= 0 \\
+		dt^2 &= 0
+	\end{align}
+	The relation $dW^2 = dt$ is the cornerstone of It\^o calculus: the square of the noise increment becomes completely deterministic.
+	
+	\subsection{It\^o's Lemma}
+	
+	Due to the non-negligible second-order terms, the standard Taylor expansion for a function of a stochastic variable is modified. If $x$ is a variable governed by a stochastic differential equation, the differential of a function $f(x)$ must include the second derivative:
+	\begin{equation}
+		df(x) = f'(x)dx + \frac{1}{2}f''(x)(dx)^2
+	\end{equation}
+	When expanding $(dx)^2$, any $(dW)^2$ terms evaluate to $dt$ and contribute to the deterministic drift of the equation. This specific second-order contribution is the origin of the non-linear compensation terms in the standard Quantum State Diffusion formalism.
+	
+	\subsection{The Poisson Process}
+	
+	For discontinuous measurement records, such as photon counting or quantum jumps, the noise is initially modeled using a macroscopic discrete Poisson process. Let $N(t)$ be the total number of events up to time $t$. Over a finite time interval $\Delta t$, assuming a mean event rate $\lambda$, the probability of observing exactly $k$ events is governed by the Poisson distribution:
+	\begin{equation}
+		P(N(t)=k) = \frac{(\lambda \Delta t)^k e^{-\lambda \Delta t}}{k!}
+	\end{equation}
+	A fundamental property of the macroscopic Poisson distribution is that both its expectation value and its variance are exactly equal to $\lambda \Delta t$:
+	\begin{align}
+		\mathbb{E}[N(t)] = \sum_{k=0}^{\infty} k P(k) = \sum_{k=0}^{\infty} k  \frac{(\lambda t)^k e^{-\lambda t}}{k!} = \lambda \Delta t \\
+		\text{Var}(N(t)) = \mathbb{E}[N(t)^2] - (\mathbb{E}[N(t)])^2 = \lambda \Delta 
+	\end{align}
+	
+	In the context of stochastic differential equations, we focus on the infinitesimal increment $dn = N(t+dt) - N(t)$, which represents the number of jumps occurring in the microscopic time step $dt$. To understand the statistical behavior of $dn$, we take the limit $\Delta t \to dt$ and expand the exponential term to the first order, since terms of order $dt^2$ are negligible in It\^o calculus:
+	\begin{equation}
+		e^{-\lambda dt} = 1 - \lambda dt + \mathcal{O}(dt^2) \approx 1 - \lambda dt
+	\end{equation}
+	
+	By substituting this expansion into the Poisson probability formula, we can evaluate the probabilities of observing a specific number of events $k$ in the strictly infinitesimal interval $dt$:
+	\begin{align}
+		P(0) &= \frac{(\lambda dt)^0 e^{-\lambda dt}}{0!} \approx 1 - \lambda dt \\
+		P(1) &= \frac{(\lambda dt)^1 e^{-\lambda dt}}{1!} = \lambda dt(1 - \lambda dt) \approx \lambda dt \\
+		P(k \ge 2) &\propto \mathcal{O}(dt^2) \approx 0
+	\end{align}
+	
+	Because the probability of two or more simultaneous jumps strictly vanishes ($dt^2 = 0$), the sample space of the variable $dn$ collapses. The increment can only assume the binary values $0$ (no jump) or $1$ (one jump). Consequently, in the infinitesimal limit, the Poisson distribution asymptotically reduces to a Bernoulli distribution.
+	
+	We can now analytically compute the expectation value and variance for this infinitesimal binary variable. The expected value is simply determined by the probability of a jump occurring:
+	\begin{equation}
+		\mathbb{E}[dn] = 0 \cdot P(0) + 1 \cdot P(1) = \lambda dt
+	\end{equation}
+	The variance is defined as $\text{Var}(dn) = \mathbb{E}[dn^2] - (\mathbb{E}[dn])^2$. Since $dn$ exclusively takes values of $0$ or $1$, it acts as an idempotent variable, meaning $dn^2 = dn$. Therefore, its second moment is equivalent to its first moment: $\mathbb{E}[dn^2] = \lambda dt$. Substituting this into the variance formula yields:
+	\begin{equation}
+		\text{Var}(dn) = \lambda dt - (\lambda dt)^2 = \lambda dt
+	\end{equation}
+	The $(\lambda dt)^2$ term completely disappears because $dt^2 = 0$. Remarkably, the fundamental Poisson property where the mean equals the variance is strictly preserved even in the infinitesimal Bernoulli limit. Note that another characteristic of the Bernoulli process emerge here, i.e. that the variance is the product of the two distinct probabilities:
+	\begin{equation}
+		\text{Var}(dn) = P_{0} \, P_{1} = \lambda dt \left(1 - \lambda dt \right) = \lambda dt - (\lambda dt)^2 = \lambda dt
+	\end{equation}
+	
+	Finally, this idempotent nature mathematically justifies the algebraic substitution rules for the Poisson increment used to expand stochastic differentials:
+	\begin{align}
+		dn^2 &= dn \\
+		dn dt &= 0
+	\end{align}
+	
+	\section{Generic Forms of Stochastic Schrödinger Equations}
+	
+	In the theory of open quantum systems, the continuous measurement of the environment leads to stochastic trajectories for the pure state of the system. Depending on the measurement scheme adopted (the unraveling), the Stochastic Schrödinger Equation (SSE) takes different forms. The two most prominent unravelings are the discrete Quantum Jumps (associated with direct detection) and the continuous Quantum State Diffusion (associated with homodyne detection). Assuming a single decay channel with rate $\Gamma$ and a generic jump operator $c$, the explicitly non-linear standard forms are given below.
+	
+	\subsection{Quantum Jump (QJ) Unraveling}
+	
+	The Quantum Jump SSE describes a system undergoing a smooth, non-unitary deterministic evolution interrupted by abrupt, discrete jumps. The stochastic variable is the Poisson increment $dn$, which equals $1$ with probability $P = \Gamma \langle c^\dagger c \rangle dt$, and $0$ otherwise. The generic non-linear equation reads:
+	\begin{equation}
+		d\ket{\psi(t)} = -\frac{i}{\hbar} H \ket{\psi(t)} dt - \frac{1}{2} \Gamma \left( c^\dagger c - \langle c^\dagger c \rangle \right) \ket{\psi(t)} dt + \left( \frac{c}{\sqrt{\langle c^\dagger c \rangle}} - \mathbb{I} \right) \ket{\psi(t)} dn
+		\label{eq:generic_QJ}
+	\end{equation}
+	The term proportional to $dt$ represents the deterministic no-jump evolution, which continuously preserves the norm of the state vector. The term proportional to $dn$ acts only when a measurement click is registered, instantaneously projecting the system into the new normalized state.
+	
+	\subsection{Quantum State Diffusion (SD) Unraveling}
+	
+	The Quantum State Diffusion (SD) SSE describes an unraveling driven by continuous Gaussian noise. However, depending on the specific physical measurement scheme (e.g., measuring one or two conjugate quadratures of the environment), the equation takes two distinct standard forms.
+	
+	\subsubsection*{Homodyne Detection (Real Noise Unraveling)}
+	
+	If the measurement apparatus extracts a single continuous stream of real classical information (homodyne detection), the system is driven by a real Wiener increment $dW$, which satisfies the It\^o relation $dW^2 = dt$. The explicitly norm-preserving, non-linear equation requires compensating only for the Hermitian part of the jump operator:
+	\begin{equation}
+		d\ket{\psi(t)} = -\frac{i}{\hbar}H\ket{\psi(t)}dt - \frac{1}{2}\Gamma\left(c^\dagger c - \langle c + c^\dagger \rangle c + \frac{1}{4}\langle c + c^\dagger \rangle^2 \right)\ket{\psi(t)}dt + \sqrt{\Gamma}\left(c - \frac{\langle c + c^\dagger \rangle}{2}\right)\ket{\psi(t)}dW
+		\label{eq:SD_homodyne}
+	\end{equation}
+	Because our discrete collisional model extracts a single real bit of information per collision (projecting the ancilla into a specific basis), its continuous limit intrinsically falls into this category, generating a real stochastic variable.
+	
+	\subsubsection*{Heterodyne Detection (Complex Noise Unraveling)}
+	
+	If the measurement extracts information on two conjugate quadratures simultaneously (heterodyne detection, corresponding to the original Gisin-Percival QSD formulation), the unraveling is driven by a complex Wiener increment $d\xi = (dW_1 + i dW_2)/\sqrt{2}$. This complex noise satisfies $|d\xi|^2 = dt$ and $d\xi^2 = 0$. In this case, preserving the norm requires balancing the full complex expectation value $\langle c \rangle$:
+	\begin{equation}
+		d\ket{\psi(t)} = -\frac{i}{\hbar} H \ket{\psi(t)} dt - \frac{1}{2} \Gamma \left( c^\dagger c - 2\langle c^\dagger \rangle c + \langle c^\dagger \rangle \langle c \rangle \right) \ket{\psi(t)} dt + \sqrt{\Gamma} (c - \langle c \rangle) \ket{\psi(t)} d\xi
+		\label{eq:SD_heterodyne}
+	\end{equation}
+	
+	In both continuous formulations, the non-linear terms containing the expectation values act as a continuous feedback. They dynamically compensate for the non-unitary drift generated by the measurement operator $c$, strictly preserving the normalization of the wave function at every infinitesimal time step $dt$.
+	
+	\subsection{Linear (Unnormalized) Stochastic Equations}
+	
+	In analytical calculations and numerical simulations, it is often much more efficient to use the linear (or homogeneous) versions of the SSEs. In this approach, we drop the non-linear expectation value terms, leading to the evolution of an unnormalized state vector $\ket{\tilde{\psi}(t)}$. The physical state is then recovered by manually normalizing the vector: $\ket{\psi(t)} = \ket{\tilde{\psi}(t)} / \sqrt{\braket{\tilde{\psi}(t)|\tilde{\psi}(t)}}$.
+	
+	To write these equations compactly, we introduce the non-Hermitian effective Hamiltonian:
+	\begin{equation}
+		H_{\text{eff}} = H - i\frac{\hbar}{2} \Gamma c^\dagger c
+	\end{equation}
+	
+	For the \textbf{Quantum Jump} unraveling, the linear SSE simplifies drastically. The state evolves under the effective Hamiltonian until a jump occurs, without any continuous norm-preserving feedback:
+	\begin{equation}
+		d\ket{\tilde{\psi}(t)} = \left[ -\frac{i}{\hbar} H_{\text{eff}} dt + \left( c - \mathbb{I} \right) dn \right] \ket{\tilde{\psi}(t)}
+	\end{equation}
+	
+	Similarly, for the \textbf{Quantum State Diffusion} driven by real noise $d\xi$, the removal of the continuous feedback terms $\langle c \rangle$ and $\langle c^\dagger c \rangle$ yields a purely linear stochastic differential equation:
+	\begin{equation}
+		d\ket{\tilde{\psi}(t)} = \left[ -\frac{i}{\hbar} H_{\text{eff}} dt + \sqrt{\Gamma} c dW \right] \ket{\tilde{\psi}(t)}
+	\end{equation}
+	
+	These linear forms clearly show that the deterministic drift between measurements is universally governed by the same non-Hermitian effective Hamiltonian, regardless of the chosen unraveling.
+		
+	\newpage
 	\printbibliography
 	
 \end{document}
