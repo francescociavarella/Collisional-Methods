@@ -55,7 +55,7 @@ jumps_IC = data['jumps_IC']
 jumps_ISC = data['jumps_ISC']
 
 # -----------------------------------------------
-# Extract from rho_tot_all (3, 3, n_times, N_traj)
+# Extract from rho_tot_all (4, 4, n_times, N_traj)
 # -----------------------------------------------
 rho_all = data['rho_tot_all']
 
@@ -86,7 +86,7 @@ avg_coh_13 = coh_13.mean(axis=1)
 avg_coh_23 = coh_23.mean(axis=1)
 
 # -----------------------------------------------
-# Extract baseline: rho_trace (3, 3, n_times)
+# Extract baseline: rho_trace (4, 4, n_times)
 # -----------------------------------------------
 rho_trace = data['rho_trace']
 pops_trace_00 = np.real(rho_trace[0, 0, :])
@@ -95,7 +95,7 @@ pops_trace_22 = np.real(rho_trace[2, 2, :])
 pops_trace_33 = np.real(rho_trace[3, 3, :])
 
 # ----------------------------------------------------
-# Extract Lindblad: rho_list_lindblad (n_times, 3, 3)
+# Extract Lindblad: rho_list_lindblad (n_times, 4, 4)
 # ----------------------------------------------------
 rho_lind = data['rho_list_lindblad']
 lindblad_00 = np.real(rho_lind[:, 0, 0])

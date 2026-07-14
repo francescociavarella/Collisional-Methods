@@ -22,26 +22,26 @@ sz = np.array(([[1,0], [0,-1]]), dtype=complex); sx = np.array(([[0,1],[1,0]]), 
 # ============================
 
 
-def interaction_Hamiltonian(c_CM, P12, P21, sp, sm):
+def interaction_Hamiltonian(c_CM, L, L_dag, sp, sm):
     """
     Builds the Interaction Hamiltonian for the 3-level System and Ancilla collision.
     Implements the model: c * (|1><2| @ sigma_plus_a + |2><1| @ sigma_minus_a)
         
     Parameters: 
     - c_CM : float, Interaction strength for the collision
-    - P12_sys : numpy array, System relaxes from |2> to |1>
-    - P21_sys : numpy array, System excites from |1> to |2>
+    - L : numpy array, System jump operator
+    - L_dag : numpy array, System jump dagger operator
     - sp : numpy array, Ancilla raising operator
     - sm : numpy array, Ancilla lowering operator
         
     Returns: 
     - H_int : numpy array (6x6), Interaction Hamiltonian
     """
-    # Tensor product for relaxation: System relaxes (P12), Ancilla excites (sp)
-    term_relaxation = np.kron(P12, sp)
+    # Tensor product for relaxation: System relaxes (L), Ancilla excites (sp)
+    term_relaxation = np.kron(L, sp)
     
-    # Tensor product for excitation: System excites (P21), Ancilla relaxes (sm)
-    term_excitation = np.kron(P21, sm)
+    # Tensor product for excitation: System excites (L_dag), Ancilla relaxes (sm)
+    term_excitation = np.kron(L_dag, sm)
     
     # Total Collisional Hamiltonian
     H_int = c_CM * (term_relaxation + term_excitation)
@@ -49,35 +49,37 @@ def interaction_Hamiltonian(c_CM, P12, P21, sp, sm):
     return H_int
 
 
-def complete_Hamiltonian(H_Sys, c_CM, P12, P21, sp, sm):
+def complete_Hamiltonian(H_Sys, c_IC, c_ISC, P12, P21, P32, P23, sp, sm):
     """
-    Generates the Hamiltonians for the 3-level system collision model using pure NumPy:
-                - H_system : system Hamiltonian
-                - H_collision : interaction Hamiltonian with 1 ancilla
-                - H_tot : complete Hamiltonian (system + collision)
-
-    Parameters: 
-    - H_Sys: numpy array (3x3), System Hamiltonian
-    - c_CM : float, Interaction Force
-    - P12_sys, P21_sys, sp, sm : numpy arrays, operators for the interaction
-                
-    Returns: 
-    - H_system, H_collision, H_tot (all as numpy arrays)
+    Generates the Hamiltonians for the 4-level system with TWO collisional channels (IC and ISC).
+    The total environmental space is composed of two ancillae (2x2 @ 2x2 = 4x4).
+    
+    Parameters:
+    - H_Sys: numpy array (4x4), System Hamiltonian
+    - c_IC, c_ISC: floats, Interaction Forces for the two channels
+    - Pij: numpy arrays (4x4), System transition projectors
+    - sp, sm: numpy arrays (2x2), Ancilla ladder operators
     """
-    # 1. System Hamiltonian 
-    H_system = H_Sys
+    Id_anc_single = np.eye(2, dtype=complex)
+    Id_anc_double = np.eye(4, dtype=complex) # Total environment space
     
-    # 2. Collision Hamiltonian
-    H_collision = interaction_Hamiltonian(c_CM, P12, P21, sp, sm) 
+    # 1. Expand System Hamiltonian
+    H_system_expanded = np.kron(H_Sys, Id_anc_double)
     
-    # 3. Total Hamiltonian
-    # Expand H_sys in the total space: System (3x3) tensor Identity_ancilla (2x2)
-    Id_ancilla = np.eye(2, dtype=complex)
-    H_system_expanded = np.kron(H_system, Id_ancilla)  
-        
+    # 2. Internal Conversion (IC) - Acts on Ancilla A (first subspace)
+    sp_A = np.kron(sp, Id_anc_single)
+    sm_A = np.kron(sm, Id_anc_single)
+    H_IC = c_IC * (np.kron(P12, sp_A) + np.kron(P21, sm_A))
+    
+    # 3. Intersystem Crossing (ISC) - Acts on Ancilla B (second subspace)
+    sp_B = np.kron(Id_anc_single, sp)
+    sm_B = np.kron(Id_anc_single, sm)
+    H_ISC = c_ISC * (np.kron(P32, sp_B) + np.kron(P23, sm_B))
+    
+    H_collision = H_IC + H_ISC
     H_tot = H_system_expanded + H_collision
-        
-    return H_system, H_collision, H_tot
+    
+    return H_Sys, H_collision, H_tot
 
 
 def evolution_operator(H, dt, method='expm', hermitian=True):
@@ -330,11 +332,11 @@ def compute_trajectory_wf_isolated(times, psi_sys_initial, U_site):
 @njit(cache=True)
 def _compute_trace_ancilla_core_density(rho_sys, rho_anc, U_step, U_step_dag, n_times, dim_sys, dim_anc):
     """
-    Core computation optimized with Numba for an N-level system + single ancilla.
-    Evolves the total state and traces out the ancilla at each step, 
-    returning the full system density matrix over time.
+    Core computation optimized with Numba.
+    Evolves the total state (System 4x4 @ Environment 4x4 = Total 16x16)
+    and traces out the 4-dimensional environment at each step.
     """
-    # Pre-allocate array for the density matrix trajectory: shape (N, N, n_times)
+    # Pre-allocate array for the density matrix trajectory: shape (4, 4, n_times)
     rho_trace = np.zeros((dim_sys, dim_sys, n_times), dtype=np.complex128)
     
     # Store initial state density matrix
@@ -344,17 +346,18 @@ def _compute_trace_ancilla_core_density(rho_sys, rho_anc, U_step, U_step_dag, n_
     
     # Time Evolution loop
     for t in range(1, n_times):
-        # 1: Expansion (System tensor Ancilla)
+        # 1: Expansion (System tensor double Ancilla) -> 16x16 matrix
         rho_tot = np.kron(rho_sys, rho_anc)
         
-        # 2: Evolution (single time step)
+        # 2: Evolution (single time step with U_tot)
         rho_tot = U_step @ rho_tot @ U_step_dag
         
-        # 3: Partial Trace over the Ancilla
-        rho_tot_reshaped = rho_tot.reshape(dim_sys, dim_anc, dim_sys, dim_anc)
+        # 3: Partial Trace over the 4D environmental space
+        rho_tot_reshaped = rho_tot.reshape((dim_sys, dim_anc, dim_sys, dim_anc))
         
-        # Manual trace (summing over the ancilla indices)
         rho_sys = np.zeros((dim_sys, dim_sys), dtype=np.complex128)
+        
+        # Manual trace: summing over the environment index k (0 to 3)
         for i in range(dim_sys):
             for j in range(dim_sys):
                 for k in range(dim_anc):
@@ -368,28 +371,23 @@ def _compute_trace_ancilla_core_density(rho_sys, rho_anc, U_step, U_step_dag, n_
     return rho_trace
 
 
-def compute_trace_ancilla_density(rho_sys_initial, rho_anc_single, U_diag, V, times):
+def compute_trace_ancilla_density(rho_sys_initial, rho_anc_double, U_diag, V, times):
     """
-    Evolution with complete collisional Hamiltonian and trace on the Ancilla 
-    degrees of freedom. Corresponds to the deterministic dynamics of the 
-    open quantum system.
+    Wrapper for the deterministic dynamics via partial trace.
+    Takes the double ancilla state as the environmental input.
     """
-    # Convert system and ancilla states to numpy arrays if they are QuTiP objects
-    rho_anc = rho_anc_single.full() if hasattr(rho_anc_single, 'full') else np.array(rho_anc_single, dtype=complex)
-    rho_sys = rho_sys_initial.full() if hasattr(rho_sys_initial, 'full') else np.array(rho_sys_initial, dtype=complex)
-
-    # Time parameters
+    # Ensure inputs are standard numpy arrays
+    rho_anc = np.array(rho_anc_double, dtype=complex)
+    rho_sys = np.array(rho_sys_initial, dtype=complex)
     n_times = len(times)
-
-    # Dimensions
-    dim_sys = rho_sys.shape[0]
-    dim_anc = rho_anc.shape[0]
     
-    # Evolution operator for a single time step
-    V_np = V.full() if hasattr(V, 'full') else np.array(V, dtype=complex)
-    U_diag_np = U_diag.full() if hasattr(U_diag, 'full') else np.array(U_diag, dtype=complex)
+    # Extract dimensions dynamically: dim_sys = 4, dim_anc = 4
+    dim_sys = rho_sys.shape[0]
+    dim_anc = rho_anc.shape[0] 
     
     # Reconstruct U_step = V * U_diag * V_dagger
+    V_np = np.array(V, dtype=complex)
+    U_diag_np = np.array(U_diag, dtype=complex)
     U_step = V_np @ U_diag_np @ V_np.conj().T
     U_step_dag = U_step.conj().T
     
@@ -404,147 +402,147 @@ def compute_trace_ancilla_density(rho_sys_initial, rho_anc_single, U_diag, V, ti
 # Stochastic Trajectories with Kraus Operators
 # =============================================
 
-@njit(cache=True)
-def sigma_xyz_expectation_value(psi):
+# @njit(cache=True)
+# def sigma_xyz_expectation_value(psi):
+#     """
+#     Calculates the expectation values of the Pauli operators <sigma_x>, 
+#     <sigma_y>, and <sigma_z> for the subspace spanned by states |1> and |2> 
+#     in a 3-level system.
+
+#     Parameters: 
+#     - psi : numpy array, wave function at time t (shape: 3,)
+
+#     Returns: 
+#     - S_x : float, expectation value of <sigma_x>
+#     - S_y : float, expectation value of <sigma_y>
+#     - S_z : float, expectation value of <sigma_z>
+#     """
+    
+#     # Pauli X embedded in the |1>, |2> subspace
+#     sigma_x = np.array([[0.0, 0.0, 0.0], 
+#                         [0.0, 0.0, 1.0], 
+#                         [0.0, 1.0, 0.0]], dtype=np.complex128) 
+    
+#     # Pauli Y embedded in the |1>, |2> subspace
+#     sigma_y = np.array([[0.0, 0.0, 0.0], 
+#                         [0.0, 0.0, -1.0j], 
+#                         [0.0, 1.0j, 0.0]], dtype=np.complex128) 
+    
+#     # Pauli Z embedded in the |1>, |2> subspace
+#     sigma_z = np.array([[0.0, 0.0, 0.0], 
+#                         [0.0, 1.0, 0.0], 
+#                         [0.0, 0.0, -1.0]], dtype=np.complex128) 
+
+#     # Compute expectation values 
+#     S_x = np.real(np.vdot(psi, sigma_x @ psi))
+#     S_y = np.real(np.vdot(psi, sigma_y @ psi))
+#     S_z = np.real(np.vdot(psi, sigma_z @ psi))
+
+#     return S_x, S_y, S_z
+
+def generate_kraus_operators_separated(c_IC, c_ISC, dt, phi_IC_rad, phi_ISC_rad):
     """
-    Calculates the expectation values of the Pauli operators <sigma_x>, 
-    <sigma_y>, and <sigma_z> for the subspace spanned by states |1> and |2> 
-    in a 3-level system.
-
-    Parameters: 
-    - psi : numpy array, wave function at time t (shape: 3,)
-
-    Returns: 
-    - S_x : float, expectation value of <sigma_x>
-    - S_y : float, expectation value of <sigma_y>
-    - S_z : float, expectation value of <sigma_z>
+    Genera gli operatori di Kraus separati per i due canali.
+    Non esegue il prodotto matriciale combinato.
     """
+    # --- Internal Conversion (IC) ---
+    c_dt_IC = c_IC * dt
+    K0_IC = np.array([[1.0, 0, 0, 0], 
+                      [0, 1.0, 0, 0], 
+                      [0, 0, np.cos(c_dt_IC), 0],
+                      [0, 0, 0, 1.0]], dtype=np.complex128)
+    K1_IC = np.zeros((4,4), dtype=np.complex128)
+    K1_IC[1, 2] = -1j * np.sin(c_dt_IC)
     
-    # Pauli X embedded in the |1>, |2> subspace
-    sigma_x = np.array([[0.0, 0.0, 0.0], 
-                        [0.0, 0.0, 1.0], 
-                        [0.0, 1.0, 0.0]], dtype=np.complex128) 
-    
-    # Pauli Y embedded in the |1>, |2> subspace
-    sigma_y = np.array([[0.0, 0.0, 0.0], 
-                        [0.0, 0.0, -1.0j], 
-                        [0.0, 1.0j, 0.0]], dtype=np.complex128) 
-    
-    # Pauli Z embedded in the |1>, |2> subspace
-    sigma_z = np.array([[0.0, 0.0, 0.0], 
-                        [0.0, 1.0, 0.0], 
-                        [0.0, 0.0, -1.0]], dtype=np.complex128) 
+    cos_IC, sin_IC = np.cos(phi_IC_rad / 2.0), np.sin(phi_IC_rad / 2.0)
+    M0_IC = cos_IC * K0_IC + sin_IC * K1_IC
+    M1_IC = -sin_IC * K0_IC + cos_IC * K1_IC
 
-    # Compute expectation values 
-    S_x = np.real(np.vdot(psi, sigma_x @ psi))
-    S_y = np.real(np.vdot(psi, sigma_y @ psi))
-    S_z = np.real(np.vdot(psi, sigma_z @ psi))
+    # --- Intersystem Crossing (ISC) ---
+    c_dt_ISC = c_ISC * dt
+    K0_ISC = np.array([[1.0, 0, 0, 0], 
+                       [0, 1.0, 0, 0], 
+                       [0, 0, np.cos(c_dt_ISC), 0],
+                       [0, 0, 0, 1.0]], dtype=np.complex128)
+    K1_ISC = np.zeros((4,4), dtype=np.complex128)
+    K1_ISC[3, 2] = -1j * np.sin(c_dt_ISC)
+    
+    cos_ISC, sin_ISC = np.cos(phi_ISC_rad / 2.0), np.sin(phi_ISC_rad / 2.0)
+    M0_ISC = cos_ISC * K0_ISC + sin_ISC * K1_ISC
+    M1_ISC = -sin_ISC * K0_ISC + cos_ISC * K1_ISC
 
-    return S_x, S_y, S_z
-
-
-def generate_kraus_operators(c_CM, dt, phi_rad):
-    """
-    Generates the generalized Kraus operators M0 and M1 for the 3-level system
-    using exclusively the intermediate angle phi_rad.
-    
-    Parameters: 
-    - c_CM: float, Interaction coefficient
-    - dt: float, Time step
-    - phi_rad: float, Angle for the measurement basis (in radians)
-                
-    Returns: 
-    - M0, M1: numpy arrays, The generalized Kraus operators
-    """
-    c_dt = c_CM * dt
-    cos_val = np.cos(c_dt)
-    sin_val = np.sin(c_dt)
-    
-    K0_QJ = np.array([[1.0, 0.0, 0.0], 
-                      [0.0, 1.0, 0.0], 
-                      [0.0, 0.0, cos_val]], dtype=np.complex128)
-                       
-    K1_QJ = np.array([[0.0, 0.0, 0.0],
-                      [0.0, 0.0, -1j * sin_val], 
-                      [0.0, 0.0, 0.0]], dtype=np.complex128)
-    
-    # Trigonometric coefficients for the intermediate basis transformation
-    cos_phi2 = np.cos(phi_rad / 2.0)
-    sin_phi2 = np.sin(phi_rad / 2.0)
-    
-    M0 = cos_phi2 * K0_QJ + sin_phi2 * K1_QJ
-    M1 = -sin_phi2 * K0_QJ + cos_phi2 * K1_QJ
-        
-    return M0, M1
+    return M0_IC, M1_IC, M0_ISC, M1_ISC
 
 @njit(parallel=True, cache=True, fastmath=True)
-def compute_trajectory_wf_core_density(psi_initial, U_site, M0, M1, N_traj, n_times, seeds):
-    """
-    Core trajectory evolution optimized with Numba for an N-level system.
-    Probabilities are dynamically computed at each time step using Kraus operators.
-    Computes and stores the full density matrix rho(t) for each trajectory, 
-    and records every quantum jump occurrence.
-    """
+def compute_trajectory_wf_core_separated(psi_initial, U_site, M0_IC, M1_IC, M0_ISC, M1_ISC, N_traj, n_times, seeds):
     N_dim = len(psi_initial)
-    
-    # Pre-allocate array for all trajectories: shape (N_dim, N_dim, n_times, N_traj)
     rho_traj = np.zeros((N_dim, N_dim, n_times, N_traj), dtype=np.complex128)
     
-    # Pre-allocate array to record jumps safely across threads: shape (n_times, N_traj)
-    jump_records = np.zeros((n_times, N_traj), dtype=np.int32)
+    jumps_IC = np.zeros((n_times, N_traj), dtype=np.int32)
+    jumps_ISC = np.zeros((n_times, N_traj), dtype=np.int32)
     
-    # Loop over independent trajectories in parallel
     for traj in prange(N_traj):
         np.random.seed(seeds[traj])
         psi = psi_initial.copy()
         
-        # Initialization at t=0
+        # Salvataggio t=0
         for i in range(N_dim):
             for j in range(N_dim):
                 rho_traj[i, j, 0, traj] = psi[i] * np.conj(psi[j])
 
         # Time evolution loop
         for step in range(1, n_times):
-            # 1. Deterministic evolution given by the isolated System Hamiltonian
+            # 1. Evoluzione Deterministica
             psi = U_site @ psi
 
-            # 2. Apply Kraus operator M1 to test the jump probability
-            v1 = M1 @ psi
+            # ==========================================
+            # 2. CANALE 1: Internal Conversion (IC)
+            # ==========================================
+            v1_IC = M1_IC @ psi
+            P1_IC = np.real(np.vdot(v1_IC, v1_IC))
             
-            # The probability P1 is exactly the squared norm of the resulting vector
-            P1 = np.real(np.vdot(v1, v1))
-            
-            # 3. Stochastic jump Monte Carlo selection
-            r = np.random.rand()
-            if r < P1:
-                psi = v1 # Quantum Jump occurs (M1 was already applied)
-                # Safely record the jump for this specific trajectory and time step
-                jump_records[step, traj] = 1 
+            r_IC = np.random.rand()
+            if r_IC < P1_IC:
+                # Salto avvenuto!
+                psi = v1_IC / np.sqrt(P1_IC) # Normalizzazione esatta
+                jumps_IC[step, traj] = 1 
             else:
-                psi = M0 @ psi # No jump occurs (Null measurement)
+                # Nessun salto, la funzione d'onda si aggiorna (State Diffusion / No-jump dynamics)
+                psi = M0_IC @ psi
+                psi = psi / np.linalg.norm(psi) # Normalizzazione fondamentale!
 
-            # 4. State Normalization
-            norm_psi = np.linalg.norm(psi)
-            for i in range(N_dim):
-                psi[i] = psi[i] / norm_psi
+            # ==========================================
+            # 3. CANALE 2: Intersystem Crossing (ISC)
+            # ==========================================
+            v1_ISC = M1_ISC @ psi
+            P1_ISC = np.real(np.vdot(v1_ISC, v1_ISC))
+            
+            r_ISC = np.random.rand()
+            if r_ISC < P1_ISC:
+                # Salto avvenuto!
+                psi = v1_ISC / np.sqrt(P1_ISC)
+                jumps_ISC[step, traj] = 1
+            else:
+                # Nessun salto
+                psi = M0_ISC @ psi
+                psi = psi / np.linalg.norm(psi)
 
-            # 5. Store the full density matrix for the current step
+            # 4. Salvataggio della matrice densità
             for i in range(N_dim):
                 for j in range(N_dim):
                     rho_traj[i, j, step, traj] = psi[i] * np.conj(psi[j])
 
-    return rho_traj, jump_records
+    return rho_traj, jumps_IC, jumps_ISC
 
 
-def compute_trajectory_wf(c_CM, dt, N_traj, times, 
-                          psi_sys_initial, U_site, 
-                          phi, batch_size=1000):
+def compute_trajectory_wf(c_IC, c_ISC, dt, N_traj, times, 
+                               psi_sys_initial, U_site, 
+                               phi_IC_rad, phi_ISC_rad, batch_size=1000):
     """
     Wrapper function to handle batching and random seeds before calling the JIT core.
-    Returns the collection of all single trajectories and an array containing 
-    the total count of jumps evaluated at each time step.
+    Adapted for the 4-level system with two independent sequential channels (IC and ISC).
     """
-    # Convert objects to numpy arrays if necessary
+    # Convert objects to numpy arrays if they are QuTiP Qobjs
     U_site_np = U_site.full() if hasattr(U_site, 'full') else np.array(U_site, dtype=complex)
     psi_sys_initial_np = psi_sys_initial.full() if hasattr(psi_sys_initial, 'full') else np.array(psi_sys_initial, dtype=complex)
     
@@ -552,10 +550,12 @@ def compute_trajectory_wf(c_CM, dt, N_traj, times,
         psi_sys_initial_np = psi_sys_initial_np.flatten()
         
     n_times = len(times)
-    N_dim = len(psi_sys_initial_np)
+    N_dim = len(psi_sys_initial_np) # Automatically resolves to 4
     
-    # Generate the specific Kraus Operators according to the selected mode
-    M0, M1 = generate_kraus_operators(c_CM, dt, phi)
+    # Generate the separated Kraus Operators for IC and ISC
+    M0_IC, M1_IC, M0_ISC, M1_ISC = generate_kraus_operators_separated(
+        c_IC, c_ISC, dt, phi_IC_rad, phi_ISC_rad
+    )
 
     # Pre-generate seeds for reproducible parallel execution
     rng_seeds = np.random.RandomState(42)
@@ -564,8 +564,9 @@ def compute_trajectory_wf(c_CM, dt, N_traj, times,
     # Pre-allocate the complete array for all trajectories
     rho_tot_all = np.zeros((N_dim, N_dim, n_times, N_traj), dtype=np.complex128)
     
-    # Pre-allocate array to sum up all jumps across all batches
-    total_jump_counts = np.zeros(n_times, dtype=np.int64)
+    # Pre-allocate arrays to sum up jumps across all batches for both channels
+    total_jumps_IC = np.zeros(n_times, dtype=np.int64)
+    total_jumps_ISC = np.zeros(n_times, dtype=np.int64)
 
     N_done = 0
     n_batches = int(np.ceil(N_traj / batch_size))
@@ -575,21 +576,26 @@ def compute_trajectory_wf(c_CM, dt, N_traj, times,
         N_batch = min(batch_size, N_traj - N_done)
         seeds_b = all_seeds[N_done : N_done + N_batch]
 
-        # Call the Numba JIT compiled core
-        rho_batch, jumps_batch = compute_trajectory_wf_core_density(
-            psi_sys_initial_np, U_site_np, M0, M1,
-            N_batch, n_times, seeds_b)
+        # Call the new Numba JIT compiled core with separated sequential operators
+        rho_batch, j_IC_batch, j_ISC_batch = compute_trajectory_wf_core_separated(
+            psi_sys_initial_np, U_site_np, 
+            M0_IC, M1_IC, M0_ISC, M1_ISC,
+            N_batch, n_times, seeds_b
+        )
 
         # Store batch results
         rho_tot_all[:, :, :, N_done : N_done + N_batch] = rho_batch
         
         # Accumulate the jump counts for this batch by summing across the trajectory axis
-        total_jump_counts += np.sum(jumps_batch, axis=1)
+        total_jumps_IC += np.sum(j_IC_batch, axis=1)
+        total_jumps_ISC += np.sum(j_ISC_batch, axis=1)
 
         N_done += N_batch
-        del rho_batch, jumps_batch
+        
+        # Free memory for the next batch
+        del rho_batch, j_IC_batch, j_ISC_batch
 
-    return rho_tot_all, total_jump_counts
+    return rho_tot_all, total_jumps_IC, total_jumps_ISC
 
 # ======================================
 # Main Loop for varying dt and N_{traj}
@@ -598,14 +604,14 @@ def compute_trajectory_wf(c_CM, dt, N_traj, times,
 # ===================
 # System's Parameters
 # ===================
-np.random.seed(1) # always use the same seed 
-N_site = 3  # Number of sites
-#V_array = [1.0]    NO potential
-E0 = 0.0  # Energy of the ground state |0>
-E1 = 1.5  # Energy of the first excited state |1>
-E2 = 2.0  # Energy of the second excited state |2>    
+np.random.seed(1) # Always use the same seed 
+N_site = 4        # Now 4 levels (0, 1, 2, 3)
+E0 = 0.0          # Ground state
+E1 = 1.5          # First excited (Internal Conversion target)
+E2 = 2.0          # Second excited (Initial excitation)
+E3 = 1.8          # Third state (Intersystem Crossing target / triplet)
 
-H_Sys = np.diag([E0, E1, E2])  # System Hamiltonian
+H_Sys = np.diag([E0, E1, E2, E3])  # System Hamiltonian (4x4)
 
 # =========================
 # Time Evolution Parameters
@@ -620,13 +626,11 @@ N_traj = 10000  # change numberof trajectories
 # ===================
 # Dephasing Parameter 
 # ===================
-gamma_r = 0.1   # Gamma rate for the decay
+gamma_IC = 0.1   # Gamma rate for the Internal Convertion
+gamma_ISC = 0.08   # Gamma rate for the Intersystem Crossing
+
 # Lindblad Rates list
-gamma_k = [gamma_r ]
-
-# Scaling for the collsional algorithm c = sqrt(gamma / dt)
-c_CM_list = np.array([np.sqrt(gamma_r / dt_list[j]) for j in range(len(dt_list))] )  
-
+gamma_k = [gamma_IC, gamma_ISC]
 
 # ========================================
 # Initial wave function and density matrix
@@ -638,78 +642,51 @@ c_CM_list = np.array([np.sqrt(gamma_r / dt_list[j]) for j in range(len(dt_list))
 pop_0 = np.sqrt(1 - 10**(-3)) # Population in |0> is close to 1, but not exactly 1 to avoid numerical issues
 pop_1 = 0.0
 pop_2 = np.sqrt(10**(-3))
+pop_3 = 0.0
 
-psi_sys_initial = np.array([pop_0, pop_1, pop_2], dtype=complex) # System is initialized in |0> mainly and|2> perturbatively
+psi_sys_initial = np.array([pop_0, pop_1, pop_2, pop_3], dtype=complex) # System is initialized in |0> mainly and|2> perturbatively
 rho_sys_initial = np.outer(psi_sys_initial, psi_sys_initial.conj()) # Density matrix of the system at t=0     
 
 # =======
 # Ancilla
 # =======
-# Ancilla is strictly initialized in |0> 
-psi_anc_single = np.array([1.0, 0.0], dtype=complex)  # ancilla initialized in |0> always
-rho_anc_single = np.outer(psi_anc_single, psi_anc_single.conj())
+# Single ancilla state |0>
+psi_anc_single = np.array([1.0, 0.0], dtype=complex)
+
+# Double ancilla state |0_a> @ |0_b> (Tensor product)
+psi_anc_double = np.kron(psi_anc_single, psi_anc_single) 
+
+# Density matrix for the combined environment (4x4 matrix)
+rho_anc_double = np.outer(psi_anc_double, psi_anc_double.conj())
 
 # =========
 # Projectors
 # =========
-P00 = np.array([[1, 0, 0],
-                 [0, 0, 0], 
-                 [0, 0, 0]], dtype=complex) # Projector on |0><0|
-
-P11 = np.array([[0, 0, 0], 
-                [0, 1, 0], 
-                [0, 0, 0]], dtype=complex) # Projector on |1><1|
-
-P22 = np.array([[0, 0, 0], 
-                [0, 0, 0], 
-                [0, 0, 1]], dtype=complex) # Projector on |2><2|
-
-P01 = np.array([[0, 1, 0], 
-                [0, 0, 0], 
-                [0, 0, 0]], dtype=complex) # Projector on |0><1|
-
-P10 = np.array([[0, 0, 0], 
-                [1, 0, 0], 
-                [0, 0, 0]], dtype=complex) # Projector on |1><0|
-
-P12 = np.array([[0, 0, 0], 
-                [0, 0, 1], 
-                [0, 0, 0]], dtype=complex) # Projector on |1><2|
-
-P21 = np.array([[0, 0, 0], 
-                [0, 0, 0], 
-                [0, 1, 0]], dtype=complex) # Projector on |2><1|
-
-P02 = np.array([[0, 0, 1], 
-                [0, 0, 0], 
-                [0, 0, 0]], dtype=complex) # Projector on |0><2|
-
-P20 = np.array([[0, 0, 0], 
-                [0, 0, 0], 
-                [1, 0, 0]], dtype=complex) # Projector on |2><0|
-
-
-projectors = np.array([P00, P11, P22], dtype=complex) 
-projectors_cohe = np.array([P01, P10,P12, P21, P02, P20], dtype=complex) 
+# Only define the ones needed for the Hamiltonians and Jump Operators
+P12 = np.zeros((4,4), dtype=complex); P12[1,2] = 1.0
+P21 = np.zeros((4,4), dtype=complex); P21[2,1] = 1.0
+P32 = np.zeros((4,4), dtype=complex); P32[3,2] = 1.0
+P23 = np.zeros((4,4), dtype=complex); P23[2,3] = 1.0
 
 # ======================
-# Lindblad Jump Operator
+# Lindblad Jump Operators
 # ======================
-L_r = P12 # Jump operator for relaxation |1><2| 
-L_k = [L_r]
+L_k = [P12, P32]
 
 # ============
 # Calculation
 # ============
 
-# Lettura degli argomenti passati dal file Bash:
+# Bash argument reading for the intermediate angle
 if len(sys.argv) > 1:
     phi_deg = float(sys.argv[1]) 
     bash_mode = sys.argv[2] if len(sys.argv) > 2 else "unknown" 
 else:
-    phi_deg = 90.0 
+    phi_deg = 90.0 # Default to SD
     bash_mode = "local_test"
 
+# Assuming the same measurement angle for both channels. 
+# You can split this into phi_IC and phi_ISC if needed.
 phi_rad = np.radians(phi_deg)
 
 # ======================
@@ -721,55 +698,66 @@ BATCH_SIZE = 1000
 
 def _make_fname_npz(results_dir, phi_deg, dt, N_traj):
     dt_str = f"{dt:.6f}".replace(".", "p")
-    # Ora usa phi_deg, così manterrà lo standard '0p1' o '89p9'
     phi_str = f"{phi_deg:.4f}".replace(".", "p") 
     return os.path.join(results_dir, f"result_phi{phi_str}_dt{dt_str}_Ntraj{N_traj}.npz")
 
-print(f"Starting computation for phi = {phi_deg:.4f}")
+print(f"Starting 4-level computation for phi = {phi_deg:.4f}")
 
 for dt_idx, dt in enumerate(dt_list):
     times = times_list[dt_idx]
     steps = steps_list[dt_idx]
-    c_CM  = c_CM_list[dt_idx]
+    
+    # Calculate interaction strengths dynamically for the current dt
+    c_IC  = np.sqrt(gamma_IC / dt)
+    c_ISC = np.sqrt(gamma_ISC / dt)
 
-    H_site, H_coll, H_tot = complete_Hamiltonian(H_Sys, c_CM, P12, P21, sp, sm)
+    # Build up the deterministic components
+    H_site, H_coll, H_tot = complete_Hamiltonian(H_Sys, c_IC, c_ISC, P12, P21, P32, P23, sp, sm)
     U_tot, U_diag, w, V = evolution_operator(H_tot, dt, method='diagonalization', hermitian=True)
     U_site, U_diag_site, w_site, V_site = evolution_operator(H_site, dt, method='diagonalization', hermitian=True)
 
+    # 1. Lindblad Reference
     rho_list_lindblad, V_lindblad, W_lindblad = Lindblad_evo(
         rho_sys_initial, H_site, gamma_k, L_k, times, method="diagonal", vectorized=False
     )
+    
+    # 2. Isolated System
     rho_traj_isolated = compute_trajectory_wf_isolated(times, psi_sys_initial, U_site)
-    rho_trace = compute_trace_ancilla_density(rho_sys_initial, rho_anc_single, U_diag, V, times)
+    
+    # 3. Deterministic Dynamics (Trace over both ancillae)
+    rho_trace = compute_trace_ancilla_density(rho_sys_initial, rho_anc_double, U_diag, V, times)
 
-    # Compute trajectories using the dynamically passed phi value
-    rho_tot_all, total_jumps = compute_trajectory_wf(
-        c_CM, dt, N_traj, times,
+    # 4. Stochastic Trajectories (Monte Carlo)
+    rho_tot_all, jumps_IC, jumps_ISC = compute_trajectory_wf(
+        c_IC, c_ISC, dt, N_traj, times,
         psi_sys_initial, U_site,
-        phi=phi_rad, batch_size=BATCH_SIZE
+        phi_IC_rad=phi_rad, phi_ISC_rad=phi_rad, batch_size=BATCH_SIZE
     )
+    
+    # Save everything correctly
     fname_npz = _make_fname_npz(results_dir, phi_deg, dt, N_traj)
 
     np.savez_compressed(
         fname_npz,
         rho_tot_all=rho_tot_all,
-        total_jumps=total_jumps,
+        jumps_IC=jumps_IC,           # Saved separately to track IC events
+        jumps_ISC=jumps_ISC,         # Saved separately to track ISC events
         rho_trace=rho_trace,
         rho_list_lindblad=rho_list_lindblad,
         V_lindblad=V_lindblad,
         W_lindblad=W_lindblad,
         rho_traj_isolated=rho_traj_isolated,
         phi=phi_rad, dt=dt, N_traj=N_traj,
-        times=times, steps=steps, c_CM=c_CM
+        times=times, steps=steps, 
+        c_IC=c_IC, c_ISC=c_ISC       # Saved both coupling constants
     )
 
     print(f"Saved -> {os.path.basename(fname_npz)}")
-    del rho_tot_all, total_jumps, rho_list_lindblad, rho_traj_isolated, rho_trace
+    del rho_tot_all, jumps_IC, jumps_ISC, rho_list_lindblad, rho_traj_isolated, rho_trace
 
 print("\n" + "=" * 40)
-print("COMPUTATION COMPLETED!")
+print("COMPUTATION COMPLETED (4-Level System)!")
 print("Results saved for:")
-# Updated print statements to reflect the new angle-based logic
 print(f"  - Angle (phi): {phi_deg} degrees ({phi_rad:.4f} rad)")
 print(f"  - {len(dt_list)} dt values: {dt_list}")
 print(f"  - Fixed N_traj: {N_traj}")
