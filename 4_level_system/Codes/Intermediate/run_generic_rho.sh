@@ -18,30 +18,21 @@
 # fi
 
 # ANGLES=(0 0.001 0.005 0.1 0.2 0.5 0.7 1 3)
-ANGLES=(0.1 0.2 0.5 0.7 1 3)
+ANGLES=(0.01 0.05 0.07)
+
+
+echo "Starting automated parallel batch processing..."
 
 # Loop through each angle in the array
 for THETA in "${ANGLES[@]}"
-#do
-#    echo "Launching Python scripts for Theta = $THETA in background..."
-#    
-    # Raggruppa calcolo e plot in un unico job in background per ogni angolo
-#    (
-#       python -u Generic_Populations_Analysis.py $THETA
-#        python -u Generic_Fidelity_and_Trace_Distance_Analysis.py $THETA
-#    ) &
-
-#done
-
 do
     echo "Launching Python scripts for Theta = $THETA in background..."
     
-    # Run only the populations analysis in the background for each angle
-    python -u Generic_Populations_Analysis.py $THETA &
-
+    # Raggruppa calcolo e plot in un unico job in background
+    ( python -u CM_generic_rho_only.py $THETA && python -u Plot_generic.py $THETA ) &
 done
 
-# Wait for all background groups to finish
+# Wait for all background processes to finish before exiting the script
 wait
 
 echo "ALL PARALLEL CALCULATIONS COMPLETED SUCCESSFULLY"
