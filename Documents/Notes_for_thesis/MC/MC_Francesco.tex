@@ -223,7 +223,7 @@
 
 	\subsection{Theoretical Algorithm}
 	\label{sub:theoretical_algorithm}
-	Concatenating the evolution given by Eq.\eqref{eq:psi_evol_Diff0} and Eq.\eqref{eq:psi_evol_Diff1} or Eq.\eqref{eq:psi_evol_QJ}, it's possible to create a Stochastic Algorithm that creates a Trajectory in the two limits; averaging then different trajectories realizations it's possible to recover the Lindblad evolution.
+	Concatenating the evolution given by Eq.\ref{eq:psi_evol_Diff0} and Eq.\ref{eq:psi_evol_Diff1} or Eq.\ref{eq:psi_evol_QJ}, it's possible to create a Stochastic Algorithm that creates a Trajectory in the two limits; averaging then different trajectories realizations it's possible to recover the Lindblad evolution.
 
 	\begin{description}
 		\item[Quantum Jump Algorithm] \leavevmode
@@ -239,8 +239,8 @@
 		\begin{enumerate}
 			\item Isolated System's evolution with $ \mathcal{U}_{Exc} = \exp{\left( -i \, \mathcal{H}_{Exc} \Delta t \right) }$
 			\item Extraction for every different site of a Random Number 	$\alpha$ in $[0,1]$
-			\item If $ \alpha < 0.5 $ it means that state $ \ket{0_a} $ has been measured and so the System's \textit{wf} gets modified via EQ.\eqref{eq:psi_evol_Diff0} for every \textit{j-th} site;
-			otherwise state $ \ket{1_a} $ has been measured and the System's \textit{wf} gets modified via EQ.\eqref{eq:psi_evol_Diff1}.
+			\item If $ \alpha < 0.5 $ it means that state $ \ket{0_a} $ has been measured and so the System's \textit{wf} gets modified via EQ.\ref{eq:psi_evol_Diff0} for every \textit{j-th} site;
+			otherwise state $ \ket{1_a} $ has been measured and the System's \textit{wf} gets modified via EQ.\ref{eq:psi_evol_Diff1}.
 			\item Once all the sites have been processed , measure and store System's Observables at that time step (like population)
 			\item Repeat the algorithm for the next time step
 		\end{enumerate}
@@ -259,7 +259,7 @@
 		\label{eq:dynamical_map}
 	\end{equation}
 	Since $\mathcal{U}$ is unitary, this map is guaranteed to be Completely Positive and Trace Preserving (CPTP).\\
-	It can be shown that in the continuous limit, i.e $ \Delta t \rightarrow 0 $ the discrete map defined in Eq.\eqref{eq:dynamical_map} converges to the differential Lindblad Master Equation (see section 1.3 in \href{run:./Demonstration.pdf}{Demonstration file}). \\
+	It can be shown that in the continuous limit, i.e $ \Delta t \rightarrow 0 $ the discrete map defined in Eq.\ref{eq:dynamical_map} converges to the differential Lindblad Master Equation (see section 1.3 in \href{run:./Demonstration.pdf}{Demonstration file}). \\
 	Thus, the Collisional Model serves as a rigorous microscopic derivation of the Lindblad dynamics.
 
 	\section{Case Study : Exciton Dimer}
@@ -279,9 +279,9 @@
 
 	\newpage
 
-	\section{Quantum Jump limit in Collisional Methods}
+	\subsection{Quantum Jump limit in Collisional Methods}
 	\label{sec:Quantum_Jump_limit_in_Collisional_Methods}
-	\subsection{Evolution Operator and Ancilla Initialization}
+	\subsubsection{Evolution Operator and Ancilla Initialization}
 	\label{sub:Evolution_Operator_and_Ancilla_Initialization_QJ}
 	The goal is to reproduce the Lindbald dynamic using a Collsional Model, that gives us a trajectory of evolution of a single state of the density matrix $ \ket{\Psi_k} $ rappresentig a qubit. By repeting the dynamic several times it's possibile to recrate the Lindblad evolution of the density matrix.
 	Different unravelling of the $ \rho (t) $ can be achieved by using different Collsional Hamiltonian. First we will reproduce the so called "Quantum Jump" or "Monte Carlo" limit, in which essentially the ancilla states stochastically jumps between the states $ \ket{0_a} $ and $ \ket{1_a} $ with a small probability to move to $ \ket{1} $ related to an effective collision, wich corresponds to an application of a $ \sigma_{z} $ to the system's state. \\
@@ -308,7 +308,7 @@
 		\label{eq:psi_evo_QJ}
 	\end{align}
 
-	\subsection{Reconstruction of the Density Matrix}
+	\subsubsection{Reconstruction of the Density Matrix}
 	\label{sub:Reconstruction_of_the_Density_Matrix_QJ}
 	Now we can rebuild the Density Matrix as :
 	\begin{align}
@@ -327,9 +327,9 @@
 		\label{eq:rho_S_anc_trace}
 	\end{align}
 
-	\subsection{Recovery of Lindblad form}
+	\subsubsection{Recovery of Lindblad form}
 	\label{sub:Recovery_of_Lindblad_form_QJ}
-	Before working on Eq.\eqref{eq:rho_S_anc_trace} we have to point out that so far we have only analyzed the effect of the Collisional Hamiltonian, forgetting about the unitary evolution via the site Hamiltonian, which has the form :
+	Before working on Eq.\ref{eq:rho_S_anc_trace} we have to point out that so far we have only analyzed the effect of the Collisional Hamiltonian, forgetting about the unitary evolution via the site Hamiltonian, which has the form :
 
 	\begin{equation}
 		\mathcal{H}_{exc} = \sum_{j=1}^{N} {\frac{\varepsilon_j}{2} \sigma_{z}^{j} \otimes \mathbb{I}^{\otimes N} } + \sum_{\langle j,j' \rangle} {\frac{V_{j,j'}}{2} \left( \sigma_{x}^{j}\sigma_{x}^{j'} \otimes \mathbb{I}^{\otimes N} + \sigma_{y}^{j}\sigma_{y}^{j'} \otimes \mathbb{I}^{\otimes N} \right)}
@@ -344,7 +344,7 @@
 		\label{eq:Liouville_von_Neumann}
 	\end{align}
 
-	Let's focus now on Eq.\eqref{eq:rho_S_anc_trace} and its form for $ \lim \Delta t \rightarrow 0  $; using Taylor's expansion for the $ sin $ and $ cos $ we obtain that:
+	Let's focus now on Eq.\ref{eq:rho_S_anc_trace} and its form for $ \lim \Delta t \rightarrow 0  $; using Taylor's expansion for the $ sin $ and $ cos $ we obtain that:
 
 	\begin{itemize}
 		\item $ \cos^{2}{\left(c_{j} \Delta t \right)} \approx 1 - c_{j}^{2} \Delta t ^{2} $
@@ -379,9 +379,9 @@
 		\label{eq:corrisponding_ME}
 	\end{equation}
 
-	Eq.\eqref{eq:corrisponding_ME} corresponds to the Lindblad ME setting $ \mathcal{L}_k = \sigma_{z} $ in fact $ \sigma_{z} = \sigma_{z}^{\dagger} $ and $ \sigma_{z} \sigma_{z}^{\dagger} = \mathbb{I} $
+	Eq.\ref{eq:corrisponding_ME} corresponds to the Lindblad ME setting $ \mathcal{L}_k = \sigma_{z} $ in fact $ \sigma_{z} = \sigma_{z}^{\dagger} $ and $ \sigma_{z} \sigma_{z}^{\dagger} = \mathbb{I} $
 
-	\subsection{Algorithm for Trajectories}
+	\subsubsection{Algorithm for Trajectories}
 	\label{sub:alg_for_traj_QJ}
 
 	By measuring the Ancilla's state we can deduce if we had an avoided collision $ \ket{0_a} $ or an occurred collision $ \ket{1_a} $, which imples the application to the system of $ \sigma_{z}^{j} \ket{\Psi_S} $ which introduce a flip in the phase of the interacting site, with a probability of $ \left| {\sin \left(c_j \Delta t \right)} \right|^2  $, which contributes to the site dephasing process, helping the excitonic tranport (ENAQT - Enviroment Assisted Quantum Transport). \\
@@ -409,10 +409,10 @@
 	\clearpage
 	\newpage
 
-	\section{State Diffusion Limit in Collisional Methods}
+	\subsection{State Diffusion Limit in Collisional Methods}
 	\label{sec:State Diffusion_Limit_in_Collisional_Methods}
 
-	\subsection{Evolution Operator and Ancilla Initialization}
+	\subsubsection{Evolution Operator and Ancilla Initialization}
 	\label{sub:Evolution_Operator_and_Ancilla_Initialization_Diff}
 
 	In this framework, we define the interaction Hamiltonian and the initial state of the ancilla as follows:
@@ -490,7 +490,7 @@
 		\label{eq:psi_1_evo}
 	\end{align}
 
-	\subsection{Density Matrix Reconstruction}
+	\subsubsection{Density Matrix Reconstruction}
 	\label{sub:Density_Matrix_Reconstruction_Diff}
 
 	We can now define the effective operators acting on the system space. Let us define the operator $\mathcal{K}_0$ acting on $\ket{\psi_S}$ when the ancilla is $\ket{0}$:
@@ -553,12 +553,12 @@
 		It can be demonstrated that this equation can lead to a Dynamical Map in the Lindblad Master Equation form.
 	\end{flushleft}
 
-	\subsection{Recovery of Lindblad form}
+	\subsubsection{Recovery of Lindblad form}
 	\label{sub:Recovery_of_Lindblad_form_Diff}
 
-	Since Eq.\eqref{eq:rho_s_partial_trace_diff} is the same obtained for the Quantum Jump limit, the procedure to recover the Lindblad form is the same of Section \ref{sub:Recovery_of_Lindblad_form_QJ}
+	Since Eq.\ref{eq:rho_s_partial_trace_diff} is the same obtained for the Quantum Jump limit, the procedure to recover the Lindblad form is the same of Section \ref{sub:Recovery_of_Lindblad_form_QJ}
 
-	\subsection{Algorithm for Trajectories}
+	\subsubsection{Algorithm for Trajectories}
 	\label{sub:alg_for_traj_diff}
 
 	As already seen in Section 2.1.3 to produce an evolution with the Collisional Hamiltonian we can evolve the density matrix in tensor product with the Ancilla's density matrix with the complete Hamiltonian, i.e. Excitonic and Collisional term, and then trace out the Ancilla; this evolution has to reproduce exactly the Lindblad dynamic and corresponds to an average over an infinite number of trajectories. \\
@@ -576,10 +576,10 @@
 	\clearpage
 	\newpage
 
-	\section{Coherent Ancilla Regime}
+	\subsection{Coherent Ancilla Regime}
 	\label{sec:Coherent_Ancilla_Regime }
 
-	\subsection{Evolution Operator and Ancilla Initialization}
+	\subsubsection{Evolution Operator and Ancilla Initialization}
 	\label{sub:Evolution_Operator_and_Ancilla_Initialization_Cohe}
 
 	In this case we define
@@ -646,7 +646,7 @@
 		\label{eq:psi_evo_cohe}
 	\end{align}
 
-	\subsection{Density Matrix}
+	\subsubsection{Density Matrix}
 	\label{sub:Density_Matrix_Reconstruction_cohe}
 
 	Now we rebuild the Density Matrix, but first we define:
@@ -693,7 +693,7 @@
 	\end{align}
 	This is the form already seen in the \textit{Quantum Jump} and \textit{State Diffusion Limit}.
 
-	\subsection{State Diffusion and Coherent Regime Comparison}
+	\subsubsection{State Diffusion and Coherent Regime Comparison}
 	\label{sub:State Diffusion_and_Coherent_Regime_Comparison}
 	It seems that the \textit{Coherent} and \textit{State Diffusion Limit} give the same dynamics. To verify this let's calculate the effective value of :
 	\begin{equation}
@@ -710,7 +710,7 @@
 		\mathcal{U}_{CM} \approx \mathbb{I}^{j} \otimes \mathbb{I}^{a_j} -i \, \mathcal{H}_{Exc} \Delta t -i \,\sqrt{\Gamma_{j}} \left(\sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \right) \sqrt{\Delta t} - 1/2 \, \Gamma_{j}\mathbb{I}^{j} \otimes \mathbb{I}^{a_j} \Delta t \label{eq:U_CM_expansion_series} \\
 		\mathcal{U}_{CM}^{\dagger} \approx \mathbb{I}^{j} \otimes \mathbb{I}^{a_j} +i \, \mathcal{H}_{Exc} \Delta t +i \,\sqrt{\Gamma_{j}} \left(\sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \right) \sqrt{\Delta t} - 1/2 \, \Gamma_{j} \mathbb{I}^{j} \otimes \mathbb{I}^{a_j} \Delta t \label{eq:U_CM_dagger_expansion_series}
 	\end{gather}
-	Using the operator $ \mathcal{U}_{CM} $ \eqref{eq:U_CM_expansion_series} and $ \mathcal{U}_{CM}^{\dagger} $ \eqref{eq:U_CM_dagger_expansion_series} in Eq.\eqref{eq:dynamical_map_rho_s} and considering only the terms in $ \Delta t $ :
+	Using the operator $ \mathcal{U}_{CM} $ \ref{eq:U_CM_expansion_series} and $ \mathcal{U}_{CM}^{\dagger} $ \ref{eq:U_CM_dagger_expansion_series} in Eq.\ref{eq:dynamical_map_rho_s} and considering only the terms in $ \Delta t $ :
 	\begin{align}
 		\rho_{S}(t + \Delta t) &= \text{Tr}_A \Big[ \rho_{S} \otimes \rho_{A} - i \sqrt{\Gamma_j \Delta t} \left[ \left( \sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \right) , \rho_{S} \otimes \rho_{A} \right] -i \Delta t \left[ \mathcal{H}_{Exc} \, , \rho_{S} \otimes \rho_{A} \right] \notag \\
 		& \quad + \Gamma_{j} \Delta t \, \left( \left( \sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \right) \rho_{S} \otimes \rho_{A} \left( \sigma_{z}^{j} \otimes \sigma_{z}^{a_j} \right) - \rho_{S} \otimes \rho_{A}  \right)  \Big]
@@ -736,9 +736,9 @@
 	\end{equation}
 	The only term that depend from the Ancilla's Density Matrix initialization vanishes. This allows us to conclude that in this particular case the two \textit{Regimes} return the same dynamics.\\
 
-	This is also essential to be able to recover Eq.\eqref{eq:corrisponding_ME} obtained by applying the Trace to equation Eq.\eqref{eq:complete_rho_evo_diff_cohe}\\
+	This is also essential to be able to recover Eq.\ref{eq:corrisponding_ME} obtained by applying the Trace to equation Eq.\ref{eq:complete_rho_evo_diff_cohe}\\
 
-	Note that the result obtained in Eq. \eqref{eq:final_trace_to_0} is valid only using the $ \sigma_{z}^{a_j} $ operator on the Ancilla. $ \sigma_{x}^{a_j} $ would give different results in the two regimes, in particular:
+	Note that the result obtained in Eq. \ref{eq:final_trace_to_0} is valid only using the $ \sigma_{z}^{a_j} $ operator on the Ancilla. $ \sigma_{x}^{a_j} $ would give different results in the two regimes, in particular:
 	\begin{itemize}
 		\item \textit{State Diffusion Limit} $\langle \sigma_{x}^{a_j} \rangle = \textbf{0}$
 		\item \textit{Coherent Regime} $\langle \sigma_{x}^{a_j} \rangle = \textbf{1}$
@@ -750,16 +750,16 @@
 		\item \textit{Coherent Regime} $\langle \sigma_{y}^{a_j} \rangle = \textbf{0}$
 	\end{itemize}
 
-	This expectation value should be the same of the 3rd term of Eq.\eqref{eq:comp_rho_int} ? Check this
+	This expectation value should be the same of the 3rd term of Eq.\ref{eq:comp_rho_int} ? Check this
 
 	\clearpage
 	\newpage
 
-	\section{Intermediate Limit}
+	\subsection{Intermediate Limit}
 	\label{sec:intermediate_limit}
 	Once we've defined the Quantum Jump and the State Diffusion Limit we now seek for an equation that can describe an intermediate regime, between the rare but big change applied with $ \sigma_{z}^{j} \otimes \sigma_{x}^{a_j} $ and $ \rho_a = \ket{0_a}\bra{0_a} $ (QJ limit) and the small but constant change applied with $ \sigma_{z}^{j} \otimes \sigma_{z}^{a_j}$ and $ \rho_a = \frac{1}{2} \left(\ket{0_a} + \ket{1_a}\right)\left(\bra{0_a} + \bra{1_a} \right) $ (Dif limit).
 
-	\subsection{Collisional Hamiltonian}
+	\subsubsection{Collisional Hamiltonian}
 	\label{sub:coll_hamiltonian_int}
 	The first target is the definition of the Collisional Hamiltonian operator; since we are looking for an intermediate effect one idea could be to use a linear combination of the two different Pauli operator on the ancilla, while keeping always the same one on the system, in order to reproduce a Dephasing Dynamic. This should corresponds to a rotation respect to an axis with intermediate direction between the z and x axis. So in general we have:
 
@@ -1160,7 +1160,7 @@ Now the question that arises is, if both the two unraveling has to give back the
 
 Is it possible to quantify a quantity that defines the intensity of the variation applied to the System's wf after the collision? Is it possible to define it as a function of the \textit{g} parameters? And therefore, what would its behavior be with respect to the angle theta?
 
-\subsection{Focus on $\mathcal{M}_0$ and $\mathcal{M}_1$ operator}
+\subsubsection{Kraus Operators}
 \label{sub:focus_on_M0_M1}
 Remember that:
 \begin{align*}
@@ -1169,7 +1169,7 @@ Remember that:
 	\mathcal{M}_{1}^{j} &= g_1 \cos(c_j \Delta t) \mathbb{I}^{j} - i g_0 \sin(c_j \Delta t) \sigma_{z}^{j} \\
 	\mathcal{M}_1^{j \dagger} &= g_1 \cos(c_j \Delta t) \mathbb{I}^{j} + i g_0 \sin(c_j \Delta t) \sigma_{z}^{j}
 \end{align*}
-\subsubsection{Kraus Operators}
+
 \label{subsub:Kraus_Operators}
 $ \mathcal{M}_0 $ and $ \mathcal{M}_1 $ could be seen as \textit{Kraus Operators}, as defined in the \textit{Petruccione} :
 \begin{align}
@@ -1462,9 +1462,413 @@ The representation of a quantum channel in terms of Kraus operators is inherentl
 \end{equation}
 This property, often referred to as unitary freedom, is a direct physical manifestation of the GHJW (Gisin-Hughston-Jozsa-Wootters) theorem. The GHJW theorem mathematically demonstrates that any two different ensembles of pure states that yield the exact same density matrix are always connected by a unitary matrix acting on their probability-weighted state vectors. In the framework of open quantum systems, this implies that measuring the entangled environment in different orthogonal bases generates different stochastic trajectories and distinct sets of Kraus operators, while perfectly preserving the underlying Lindblad master equation.
 
-\newpage
+\subsection{Connection to the SSE Formalism}
+\label{sub:connection_to_SSE_Exc_Dimer}
 
-\subsubsection{Fidelity and Intensity of Variation}
+Having defined the form of the generic Kraus operators, we can connect them to the Stochastic Schrödinger Equation (SSE) formalism. To do this, we define the infinitesimal variation of the wave function due to a single collisional step as:
+\begin{equation}
+	\Delta \ket{\psi_{S}(t)} = \ket{\psi_{S}(t + \Delta t)} - \ket{\psi_{S}(t)}
+	\label{eq:diff_psi}
+\end{equation}
+where the evolved state is constructed as:
+\begin{equation}
+	\ket{\psi_{S}(t + \Delta t)} = \frac{M_{0}}{\sqrt{P_{0}}} \ket{\psi_{S}(t)} (1 - dn) + \frac{M_{1}}{\sqrt{P_{1}}} \ket{\psi_{S}(t)} dn
+	\label{eq:generic_CM_to_SSE}
+\end{equation} 
+Here, $dn$ is a binary random variable following a Bernoulli distribution, which is equal to $1$ with probability $P_{1}$ and equal to $0$ with probability $P_{0} = 1 - P_{1}$.
+
+To investigate the continuous limit, we evaluate the system for $\Delta t \rightarrow 0$. The singular terms for the Kraus operators read:
+\begin{align}
+	M_{0} &= \cos\left(\frac{\theta}{2}\right) \left[1 - \frac{\Gamma \Delta t}{2}\right] \mathbb{I} - i \sin\left(\frac{\theta}{2}\right) \sqrt{\Gamma \Delta t} \, \sigma_{z} \label{eq:M0_explicit} \\
+	M_{1} &= \sin\left(\frac{\theta}{2}\right) \left[1 - \frac{\Gamma \Delta t}{2}\right] \mathbb{I} + i \cos\left(\frac{\theta}{2}\right) \sqrt{\Gamma \Delta t} \, \sigma_{z} \label{eq:M1_explicit}
+\end{align}
+and their corresponding occurrence probabilities are:
+\begin{align}
+	P_{0} &= \bra{\psi_{S}(t)} M_{0}^{\dagger} M_{0} \ket{\psi_{S}(t)}
+	= \cos^{2}\left(\frac{\theta}{2}\right) [1-\Gamma\Delta t]
+	+ \sin^{2}\left(\frac{\theta}{2}\right) (\Gamma\Delta t) \label{eq:P0_explicit} \\
+	P_{1} &= \bra{\psi_{S}(t)} M_{1}^{\dagger} M_{1} \ket{\psi_{S}(t)}
+	= \sin^{2}\left(\frac{\theta}{2}\right) [1-\Gamma\Delta t]
+	+ \cos^{2}\left(\frac{\theta}{2}\right) (\Gamma\Delta t) \label{eq:P1_explicit}
+\end{align}
+Substituting Eqs.\ref{eq:M0_explicit}-\ref{eq:P1_explicit} into Eq.\ref{eq:generic_CM_to_SSE}, we obtain the fully explicit discrete stochastic update:
+\begin{align}
+	\ket{\psi_{S}(t + \Delta t)} &= 
+	\frac{\cos\left(\frac{\theta}{2}\right) \left[1 - \frac{\Gamma \Delta t}{2}\right] \mathbb{I} - i \sin\left(\frac{\theta}{2}\right) \sqrt{\Gamma \Delta t} \, \sigma_{z}}
+	{\sqrt{\cos^{2}\left(\frac{\theta}{2}\right)[1-\Gamma\Delta t] + \sin^{2}\left(\frac{\theta}{2}\right)(\Gamma\Delta t)}} \ket{\psi_{S}(t)} (1 - dn) \notag \\
+	&\quad + \frac{\sin\left(\frac{\theta}{2}\right) \left[1 - \frac{\Gamma \Delta t}{2}\right] \mathbb{I} + i \cos\left(\frac{\theta}{2}\right) \sqrt{\Gamma \Delta t} \, \sigma_{z}}
+	{\sqrt{\sin^{2}\left(\frac{\theta}{2}\right)[1-\Gamma\Delta t] + \cos^{2}\left(\frac{\theta}{2}\right)(\Gamma\Delta t)}} \ket{\psi_{S}(t)} dn
+	\label{eq:complete_dw_evolved}
+\end{align}
+
+\subsubsection{Justification of the Stochastic Update}
+\label{subsub:justification_unraveling}
+
+To rigorously justify the structural form of Eq.\ref{eq:generic_CM_to_SSE}, we provide a twofold demonstration. First, we adopt a top-down physical perspective, demonstrating how a generalized measurement logically induces the stochastic unraveling. Second, we present a bottom-up algebraic derivation, showing that the Bernoulli variable emerges naturally as the unique consistent representation of a proper mixture.
+
+\paragraph{1. From the Non-Selective Kraus Map to a Stochastic Unraveling}
+The collisional step, once the ancilla is traced out, generates the unconditional (non-selective) evolution of the system density matrix, expressed in Kraus form as:
+\begin{equation}
+	\rho_{S}(t + \Delta t) = \sum_{i=0,1} M_{i} \, \rho_{S}(t) \, M_{i}^{\dagger}, 
+	\qquad \sum_{i=0,1} M_{i}^{\dagger} M_{i} = \mathbb{I}
+	\label{eq:kraus_nonselective}
+\end{equation}
+This map describes the average evolution of the system when no information about the ancilla's outcome is retrieved. To obtain a stochastic unraveling, we instead assume that immediately after the system-ancilla interaction, a projective measurement is performed on the ancilla in the basis that realizes the decomposition $\{M_{0}, M_{1}\}$. According to the generalized (Lüders) measurement postulate, conditioned on obtaining outcome $i \in \{0,1\}$, the pure state undergoes the update:
+\begin{equation}
+	\ket{\psi_{S}(t)} \;\longrightarrow\; 
+	\frac{M_{i} \ket{\psi_{S}(t)}}{\sqrt{P_{i}}}
+	\label{eq:luders_update}
+\end{equation}
+where $P_{i}$ is the Born-rule probability and the factor $1/\sqrt{P_{i}}$ guarantees the normalization of the post-measurement state. By introducing the Bernoulli indicator variable $dn \in \{0,1\}$---such that $dn=1$ with probability $P_{1}$ and $dn=0$ with probability $P_{0}$---the two mutually exclusive branches of Eq.\ref{eq:luders_update} can be recast into the single compact expression presented in Eq.\ref{eq:generic_CM_to_SSE}. For every single realization, exactly one of the two indicator terms $(1-dn)$ or $dn$ is nonzero, seamlessly capturing the selective measurement.
+
+For Eq.\ref{eq:generic_CM_to_SSE} to be a legitimate unraveling, its ensemble average over many stochastic trajectories must reproduce the non-selective Kraus map of Eq.\ref{eq:kraus_nonselective}. We verify this by taking the expectation over realizations of $dn$ for the single-trajectory density matrix $\rho_{S}(t+\Delta t) = \ket{\psi_{S}(t+\Delta t)}\bra{\psi_{S}(t+\Delta t)}$:
+\begin{align}
+	\overline{\rho_{S}(t+\Delta t)} 
+	&\equiv \mathbb{E}_{dn}\Big[ \ket{\psi_{S}(t+\Delta t)} \bra{\psi_{S}(t+\Delta t)} \Big] \notag \\
+	&= \mathbb{E}_{dn}\Big[ (1-dn)^{2} \Big] \, \frac{M_{0}\ket{\psi_{S}(t)}\bra{\psi_{S}(t)}M_{0}^{\dagger}}{P_{0}} \notag \\
+	&\quad + \mathbb{E}_{dn}\Big[ dn^{2} \Big] \, \frac{M_{1}\ket{\psi_{S}(t)}\bra{\psi_{S}(t)}M_{1}^{\dagger}}{P_{1}} \notag \\
+	&\quad + \mathbb{E}_{dn}\Big[ (1-dn)dn \Big] \times (\text{cross terms})
+	\label{eq:ensemble_average_step}
+\end{align}
+Since $dn$ is a Bernoulli variable, it satisfies the idempotency property ($dn^{2}=dn$) and the exclusivity property ($(1-dn)dn = 0$). Thus, the cross terms vanish identically, yielding:
+\begin{equation}
+	\mathbb{E}_{dn}\big[(1-dn)^{2}\big] = \mathbb{E}_{dn}[1-dn] = P_{0}, 
+	\qquad 
+	\mathbb{E}_{dn}\big[dn^{2}\big] = \mathbb{E}_{dn}[dn] = P_{1}
+	\label{eq:bernoulli_moments}
+\end{equation}
+Substituting Eq.\ref{eq:bernoulli_moments} into Eq.\ref{eq:ensemble_average_step}, the probabilities $P_{0}$ and $P_{1}$ cancel exactly against the normalization factors. Using $\rho_{S}(t) = \ket{\psi_{S}(t)}\bra{\psi_{S}(t)}$, we recover:
+\begin{equation}
+	\overline{\rho_{S}(t+\Delta t)} 
+	= M_{0} \, \rho_{S}(t) \, M_{0}^{\dagger} + M_{1} \, \rho_{S}(t) \, M_{1}^{\dagger}
+	= \sum_{i=0,1} M_{i}\, \rho_{S}(t)\, M_{i}^{\dagger}
+	\label{eq:ensemble_recovers_kraus}
+\end{equation}
+This confirms that the ensemble average exactly reproduces the Lindblad-generating mixed-state evolution.
+
+\paragraph{2. From the Kraus Map to the Stochastic Wavefunction}
+Alternatively, we can derive Eq.\ref{eq:generic_CM_to_SSE} starting from the unconditional map. Given the pure initial state $\rho_{S}(t) = \ket{\psi_{S}(t)}\bra{\psi_{S}(t)}$, we rewrite Eq.\ref{eq:kraus_nonselective} by inserting $1 = P_{i}/P_{i}$:
+\begin{equation}
+	\rho_{S}(t+\Delta t) = \sum_{i=0,1} P_{i} \, \ket{\phi_{i}}\bra{\phi_{i}}, 
+	\qquad 
+	\ket{\phi_{i}} \equiv \frac{M_{i}\ket{\psi_{S}(t)}}{\sqrt{P_{i}}}
+	\label{eq:convex_decomposition}
+\end{equation}
+This algebraic convex decomposition features properly normalized states ($\braket{\phi_{i}|\phi_{i}} = 1$) and weights that sum to unity ($\sum P_{i} = 1$) due to the Kraus completeness relation.
+
+Because the states $\ket{\phi_{i}}$ and weights $P_{i}$ correspond to a physically realizable measurement scheme (the collisional ancilla), Eq.\ref{eq:convex_decomposition} represents a \emph{proper mixture}: the system is in the definite pure state $\ket{\phi_{i}}$ with probability $P_{i}$. A proper mixture over two branches admits a direct representation as a classical stochastic process. By introducing the Bernoulli variable $dn \in \{0,1\}$ (where $P(dn=1) = P_{1}$ and $P(dn=0) = P_{0}$), the random pure state trajectory is fundamentally defined as:
+\begin{equation}
+	\ket{\psi_{S}(t+\Delta t)} = 
+	\begin{cases}
+		\ket{\phi_{0}} & \text{if } dn = 0 \quad (\text{probability } P_{0}) \\[4pt]
+		\ket{\phi_{1}} & \text{if } dn = 1 \quad (\text{probability } P_{1})
+	\end{cases}
+	\label{eq:stochastic_branches}
+\end{equation}
+Because $dn$ acts as an exclusive indicator, these two branches combine seamlessly into the algebraic expression:
+\begin{equation}
+	\ket{\psi_{S}(t + \Delta t)} 
+	= \ket{\phi_{0}} (1 - dn) + \ket{\phi_{1}} dn
+	= \frac{M_{0}}{\sqrt{P_{0}}} \ket{\psi_{S}(t)} (1 - dn) + \frac{M_{1}}{\sqrt{P_{1}}} \ket{\psi_{S}(t)} dn
+\end{equation}
+which is exactly Eq.\ref{eq:generic_CM_to_SSE}. The stochastic wavefunction update is thus the natural, necessary mathematical endpoint of unraveling the density matrix, rather than an initial ansatz.
+
+\subsubsection{Quantum Jump Limit}
+For the \textit{Quantum Jump} limit, i.e. setting $ \theta = 0 $ in Eq.\ref{eq:complete_dw_evolved} we get : 
+\begin{equation}
+	\ket{\psi_{S}\left(t + \Delta t \right)} = 
+	\frac{\Big[1 - \frac{\Gamma \Delta t}{2}\Big] \mathbb{I}}
+	{\sqrt{1-\Gamma\Delta t}} \ket{\psi_{S}\left(t\right)} \left(1 - dn\right) 
+	+ \frac{i \left(\sqrt{\Gamma \Delta t}\right) \sigma_{z}}
+	{\sqrt{\Gamma\Delta t}} \ket{\psi_{S}\left(t\right)} dn
+\end{equation}
+Now we can perform the Taylor expansion for the first denominator, noting that  $\sqrt{1-\Gamma\Delta t} \approx 1 - \frac{\Gamma \Delta t}{2}$. The fraction perfectly 
+cancels out to $\mathbb{I}$. In the second term, the square roots simply cancel each other:
+
+\begin{equation}
+	\ket{\psi_{S}\left(t + \Delta t \right)} = \mathbb{I} \ket{\psi_{S}\left(t\right)} \left(1 - dn\right) + i \sigma_{z} \ket{\psi_{S}\left(t\right)} dn
+\end{equation}
+
+Finally, substituting this result into the definition of the infinitesimal variation 
+$ d\ket{\psi_{S}(t)} = \ket{\psi_{S}(t + \Delta t)} - \ket{\psi_{S}(t)}$ , we exactly recover 
+the continuous stochastic differential equation for the Quantum Jump regime:
+\begin{equation}
+	d\ket{\psi_{S}\left(t\right)} = \left( i\sigma_{z} - \mathbb{I} \right) \ket{\psi_{S}\left(t\right)} dn
+\end{equation}
+
+To prove the exact equivalence between our collisional derivation and the standard 
+Quantum Jump (QJ) SSE (Eq. 2 of van Dorsselaer and Nienhuis \cite{vandorsselaerQuantumTrajectoriesGeneralized}), we identify the 
+jump operator c associated with our measurement $M_1$. 
+Comparing $M_1 \approx i \sqrt{\Gamma \Delta t} \sigma_z$ with the standard continuous 
+definition $M_1 \approx c \sqrt{dt}$, we identify:
+\begin{equation}
+	c = i\sqrt{\Gamma}\sigma_{z}
+\end{equation}
+
+The general nonlinear QJ stochastic equation (neglecting the system Hamiltonian) is:
+\begin{equation}
+	d\ket{\psi_{S}} = \left[ -\frac{1}{2}\left(c^\dagger c - \langle c^\dagger c \rangle\right)dt + \left( \frac{c}{\sqrt{\langle c^\dagger c \rangle}} - \mathbb{I} \right)dn \right] \ket{\psi_{S}}
+	\label{eq:standard_QJ_SSE}
+\end{equation}
+
+For our pure dephasing jump operator, we calculate $c^\dagger c$:
+\begin{equation}
+	c^\dagger c = (-i\sqrt{\Gamma}\sigma_{z})(i\sqrt{\Gamma}\sigma_{z}) = \Gamma\sigma_{z}^{2} = \Gamma\mathbb{I}
+\end{equation}
+Consequently, its expectation value is state-independent: $\langle c^\dagger c \rangle = \Gamma$.
+
+Substituting these values into Eq.\ref{eq:standard_QJ_SSE}, the deterministic drift 
+term (proportional to dt) exactly vanishes since $\Gamma\mathbb{I} - \Gamma\mathbb{I} = 0$.
+The stochastic jump term simplifies to:
+\begin{equation}
+	\left( \frac{i\sqrt{\Gamma}\sigma_{z}}{\sqrt{\Gamma}} - \mathbb{I} \right)dn = (i\sigma_{z} - \mathbb{I})dn
+\end{equation}
+
+Thus, we perfectly recover our derived differential equation from the standard formalism:
+\begin{equation}
+	d\ket{\psi_{S}\left(t\right)} = \left( i\sigma_{z} - \mathbb{I} \right) \ket{\psi_{S}\left(t\right)} dn
+\end{equation}
+
+\subsubsection{State Diffusion Limit}
+For the \textit{State Diffusion} limit, i.e. setting $ \theta = 90 $ in Eq.\ref{eq:complete_dw_evolved} we get:
+\begin{align}
+	\ket{\psi_{S}\left(t + \Delta t \right)} &= 
+	\Big[ \left(1 - \frac{\Gamma \Delta t}{2}\right) \mathbb{I} - i \left(\sqrt{\Gamma \Delta t}\right) \sigma_{z} \Big] \ket{\psi_{S}\left(t\right)} \left(1 - dn\right) \notag \\
+	&\quad + \Big[ \left(1 - \frac{\Gamma \Delta t}{2}\right) \mathbb{I} + i \left(\sqrt{\Gamma \Delta t}\right) \sigma_{z} \Big] \ket{\psi_{S}\left(t\right)} dn
+\end{align}
+This because in the denominators:
+$ P_0 = P_1 = \frac{1}{2}[1 - \Gamma\Delta t] + \frac{1}{2}[\Gamma\Delta t] = \frac{1}{2}$.
+The $\Delta t$ terms cancel out exactly, making the probabilities constant and equal to 1/2.
+
+Grouping the common terms, we can factor out the deterministic and stochastic parts.
+Noting that $(1 - dn) + dn = 1 $, the identity term simplifies, while the $\sigma_z$ term
+is multiplied by $dn - (1 - dn) = 2dn - 1$ :
+
+\begin{equation}
+	\ket{\psi_{S}\left(t + \Delta t \right)} = \left( 1 - \frac{\Gamma \Delta t}{2} \right) \mathbb{I} \ket{\psi_{S}\left(t\right)} + i \left(\sqrt{\Gamma \Delta t}\right) \sigma_{z} \ket{\psi_{S}\left(t\right)} (2dn - 1)
+\end{equation}
+
+Since $dn \in \{0, 1\}$ with equal probability $P = 1/2$, the term $2dn - 1)$ is a discrete 
+random variable taking values $\{-1, +1\}$ with zero mean. We can define the discrete 
+Wiener increment as $\Delta W = (2dn - 1)\sqrt{\Delta t}$, which satisfies $\mathbb{E}[\Delta W] = 0 $
+and $\mathbb{E}[\Delta W^2] = \Delta t$.
+Substituting $\Delta W$ and moving $\ket{\psi_{S}(t)}$ to the left side to form the differential, we obtain the continuous State Diffusion SSE for $\Delta t \rightarrow dt$ :
+
+\begin{equation}
+	d\ket{\psi_{S}\left(t\right)} = \left( - \frac{\Gamma}{2} dt \mathbb{I} + i \sqrt{\Gamma} dW \sigma_{z} \right) \ket{\psi_{S}\left(t\right)}
+\end{equation}
+
+To demonstrate the exact equivalence between our derived result and the standard State Diffusion equation (Eq. 3 of van Dorsselaer and Nienhuis \cite{vandorsselaerQuantumTrajectoriesGeneralized} ), we introduce the generic nonlinear stochastic differential equation. First, we identify our jump operator and its adjoint:
+\begin{equation}
+	c = i\sqrt{\Gamma}\sigma_{z} \quad \implies \quad c^\dagger = -i\sqrt{\Gamma}\sigma_{z}
+\end{equation}
+
+The general State Diffusion equation for a generic operator $c$ reads:
+\begin{equation}
+	d\ket{\psi_{S}} = \left[ -\frac{1}{2}\left(c^\dagger c - \langle c + c^\dagger \rangle c + \frac{1}{4}\langle c + c^\dagger \rangle^2 \right)dt + \left(c - \frac{\langle c + c^\dagger \rangle}{2}\right)dW \right] \ket{\psi_{S}}
+	\label{eq:standard_SD_SSE}
+\end{equation}
+
+Since our jump operator $c$ is purely imaginary, its Hermitian part vanishes:
+\begin{equation}
+	c + c^\dagger = i\sqrt{\Gamma}\sigma_{z} - i\sqrt{\Gamma}\sigma_{z} = 0
+\end{equation}
+
+This implies that the expectation value $\langle c + c^\dagger \rangle$ is exactly zero for any generic state $\ket{\psi_{S}}$. Furthermore, we calculate the product for the deterministic drift term:
+\begin{equation}
+	c^\dagger c = (-i\sqrt{\Gamma}\sigma_{z})(i\sqrt{\Gamma}\sigma_{z}) = \Gamma\sigma_{z}^{2} = \Gamma\mathbb{I}
+\end{equation}
+
+Substituting $\langle c + c^\dagger \rangle = 0$ and $c^\dagger c = \Gamma\mathbb{I}$ into Eq.\ref{eq:standard_SD_SSE}, all the nonlinear terms designed to continuously preserve the norm of the state exactly disappear. The equation perfectly collapses into our derived linear form:
+\begin{equation}
+	d\ket{\psi_{S}\left(t\right)} = \left( - \frac{\Gamma}{2} \mathbb{I} dt + i \sqrt{\Gamma} \sigma_{z} dW \right) \ket{\psi_{S}\left(t\right)}
+\end{equation}
+
+\subsection{General Regime}
+we can collect the factors $ \cos^{2} \left(\frac{\theta}{2}\right) $ and $ \sin^{2} \left(\frac{\theta}{2}\right) $ from the denominators and apply the expansion $ \left(1 - x\right)^{-\nicefrac{1}{2}} \approx 1 - \frac{1}{2}x $. Like this we obtain : 
+\begin{align}
+	\frac{1}{\sqrt{P_{0}}} &= \frac{1}{\sqrt{\cos^{2}\left(\frac{\theta}{2}\right) \left[ 1 - \Gamma\Delta t + \tan^{2}\left(\frac{\theta}{2}\right)\Gamma\Delta t \right]}} \nonumber \\
+	&\approx \frac{1}{\cos\left(\frac{\theta}{2}\right)} \left[ 1 + \frac{\Gamma\Delta t}{2} \left( 1 - \tan^{2}\left(\frac{\theta}{2}\right) \right) \right], 
+	\label{eq:expansion_P0} \\
+	\frac{1}{\sqrt{P_{1}}} &= \frac{1}{\sqrt{\sin^{2}\left(\frac{\theta}{2}\right) \left[ 1 - \Gamma\Delta t + \cot^{2}\left(\frac{\theta}{2}\right)\Gamma\Delta t \right]}} \nonumber \\
+	&\approx \frac{1}{\sin\left(\frac{\theta}{2}\right)} \left[ 1 + \frac{\Gamma\Delta t}{2} \left( 1 - \cot^{2}\left(\frac{\theta}{2}\right) \right) \right].
+	\label{eq:expansion_P1}
+\end{align}
+Neglecting terms of order higher than $\Delta t$, we get:
+\begin{align}
+	\frac{M_{0}}{\sqrt{P_{0}}} &\approx \left[ \left(1 - \frac{\Gamma \Delta t}{2}\right) \mathbb{I} - i \tan\left(\frac{\theta}{2}\right) \sqrt{\Gamma \Delta t} \sigma_{z} \right] \left[ 1 + \frac{\Gamma\Delta t}{2} \left( 1 - \tan^{2}\left(\frac{\theta}{2}\right) \right) \right] \nonumber \\
+	&\approx \mathbb{I} - \frac{\Gamma\Delta t}{2} \tan^{2}\left(\frac{\theta}{2}\right) \mathbb{I} - i \tan\left(\frac{\theta}{2}\right) \sqrt{\Gamma \Delta t} \sigma_{z}, \label{eq:norm_M0} \\
+	\frac{M_{1}}{\sqrt{P_{1}}} &\approx \left[ \left(1 - \frac{\Gamma \Delta t}{2}\right) \mathbb{I} + i \cot\left(\frac{\theta}{2}\right) \sqrt{\Gamma \Delta t} \sigma_{z} \right] \left[ 1 + \frac{\Gamma\Delta t}{2} \left( 1 - \cot^{2}\left(\frac{\theta}{2}\right) \right) \right] \nonumber \\
+	&\approx \mathbb{I} - \frac{\Gamma\Delta t}{2} \cot^{2}\left(\frac{\theta}{2}\right) \mathbb{I} + i \cot\left(\frac{\theta}{2}\right) \sqrt{\Gamma \Delta t} \sigma_{z}. \label{eq:norm_M1}
+\end{align}
+Substituting these normalized operators back into the state update equation, we obtain the expanded form of the wave function at time $ t + \Delta t $ :
+\begin{align}
+	\ket{\psi_{S}\left(t + \Delta t \right)} &= \left[ \mathbb{I} - \frac{\Gamma\Delta t}{2} \tan^{2}\left(\frac{\theta}{2}\right) \mathbb{I} - i \tan\left(\frac{\theta}{2}\right) \sqrt{\Gamma \Delta t} \sigma_{z} \right] \ket{\psi_{S}\left(t\right)} (1 - dn) \notag \\
+	&+ \left[ \mathbb{I} - \frac{\Gamma\Delta t}{2} \cot^{2}\left(\frac{\theta}{2}\right) \mathbb{I} + i \cot\left(\frac{\theta}{2}\right) \sqrt{\Gamma \Delta t} \sigma_{z} \right] \ket{\psi_{S}\left(t\right)} dn.
+	\label{eq:psi_t_plus_dt_expanded}
+\end{align}
+To calculate the differential $ \Delta\ket{\psi_{S}(t)} = \ket{\psi_{S}(t + \Delta t)} - \ket{\psi_{S}(t)}$ we subtract the initial state. Noting that (1 - dn) + dn = 1, we can distribute  the subtracted term as $ \mathbb{I}\ket{\psi_{S}(t)}(1 - dn) + \mathbb{I}\ket{\psi_{S}(t)}dn$. 
+
+This perfectly cancels out the leading identity $\mathbb{I}$ in both brackets:
+\begin{align}
+	\Delta \ket{\psi_{S}\left(t\right)} &= \left[ - \frac{\Gamma\Delta t}{2} \tan^{2}\left(\frac{\theta}{2}\right) \mathbb{I} - i \tan\left(\frac{\theta}{2}\right) \sqrt{\Gamma \Delta t} \sigma_{z} \right] \ket{\psi_{S}\left(t\right)} (1 - dn) \notag \\
+	&+ \left[ - \frac{\Gamma\Delta t}{2} \cot^{2}\left(\frac{\theta}{2}\right) \mathbb{I} + i \cot\left(\frac{\theta}{2}\right) \sqrt{\Gamma \Delta t} \sigma_{z} \right] \ket{\psi_{S}\left(t\right)} dn
+	\label{eq:dpsi_general}
+\end{align}
+
+\paragraph{Focus on the Bernoulli variable \textit{dn}}
+
+To rigorously analyze the continuous limit of Eq.\ref{eq:dpsi_general}, we decompose 
+the discrete Bernoulli variable $dn$ into its deterministic expectation value and a 
+zero-mean stochastic fluctuation $\delta n$. This is valid for any random variable.
+Applying this to $dn$, we define:
+\begin{equation}
+	\delta n \equiv dn - \mathbb{E}[dn], 
+	\qquad \text{so that} \qquad 
+	dn = \mathbb{E}[dn] + \delta n, 
+	\qquad \mathbb{E}[\delta n] = 0
+	\label{eq:centering_definition}
+\end{equation}
+Note that $\delta n$ is a variable with two possible values, obtained by shifting the Bernoulli variable $dn$ by the quantity $P_{1}$. Therefore, $\delta n$ can assume two values: $\delta n = -P_{1}$ (for $dn = 0$) and $\delta n = 1 - P_{1}$ (for $dn = 1$). This shift is reflected in the expectation value, which is shifted from $P_{1}$ to $0$, but the probabilities of the two possible outcomes, $P_{0}$ and $P_{1}$, are preserved:
+\begin{equation*}
+	\mathbb{E}[\delta n] = P_{0}(-P_{1}) + P_{1}(1-P_{1}) = (1 - P_{1})(-P_{1}) + P_{1}(1-P_{1}) = 0
+\end{equation*}
+This is an exact identity, valid for any $\Delta t$; no approximation has yet 
+been made.
+
+Remember that the exact expressions for the probabilities $P_1$ and $P_0$ without early truncation are:
+\begin{align}
+	\mathbb{E}[dn] = P_{1} &= \sin^{2}\left(\frac{\theta}{2}\right) [1-\Gamma\Delta t]
+	+ \cos^{2}\left(\frac{\theta}{2}\right) (\Gamma\Delta t) = \sin^{2}\left(\frac{\theta}{2}\right) + \Gamma\Delta t \, \cos\theta \\
+	P_{0} &= \cos^{2}\left(\frac{\theta}{2}\right) [1-\Gamma\Delta t]
+	+ \sin^{2}\left(\frac{\theta}{2}\right) (\Gamma\Delta t) = \cos^{2}\left(\frac{\theta}{2}\right) - \Gamma\Delta t \, \cos\theta
+\end{align}
+Without performing any early approximations on $\Delta t$, the full exact decomposition of $dn$ and $1-dn$ becomes:
+\begin{align}
+	dn &= \sin^{2}\left(\frac{\theta}{2}\right) + \Gamma\Delta t \, \cos\theta + \delta n \label{eq:dn_exact_decomp} \\
+	1 - dn &= \cos^{2}\left(\frac{\theta}{2}\right) - \Gamma\Delta t \, \cos\theta - \delta n
+\end{align}
+
+We can explicit the exact \textit{Variance} too. Since $dn \in \{0,1\}$, it satisfies the idempotency property $dn^{2} = dn$. 
+Using $\text{Var}(dn) = \mathbb{E}[dn^{2}] - (\mathbb{E}[dn])^{2}$ together with 
+$\mathbb{E}[dn^2]=\mathbb{E}[dn]=P_1$, we obtain the standard Bernoulli variance form $P_1 P_0$:
+\begin{align}
+	\text{Var}(dn) = P_{1} P_{0} &= \left[ \sin^{2}\left(\frac{\theta}{2}\right) + \Gamma\Delta t \, \cos\theta \right] \left[ \cos^{2}\left(\frac{\theta}{2}\right) - \Gamma\Delta t \, \cos\theta \right] \notag \\
+	&= \sin^{2}\left(\frac{\theta}{2}\right)\cos^{2}\left(\frac{\theta}{2}\right) + \Gamma\Delta t \, \cos\theta\left(\cos^{2}\left(\frac{\theta}{2}\right) - \sin^{2}\left(\frac{\theta}{2}\right)\right) - (\Gamma\Delta t)^{2} \cos^{2}\theta \notag \\
+	&= \frac{1}{4} \sin^{2}(\theta) + \Gamma\Delta t \, \cos^{2}\theta (1 - \Gamma\Delta t)
+	\label{eq:bernoulli_variance_exact}
+\end{align}
+Since $\delta n = dn - P_{1}$ differs from $dn$ only by a constant shift, it shares the same variance: $\text{Var}(\delta n) = \text{Var}(dn) = P_{0}P_{1}$.
+
+Substituting the exact expressions for $dn$ and $1-dn$ into Eq.\ref{eq:dpsi_general}, the stochastic fluctuation $\delta n$ is systematically accompanied by the deterministic shift $\Gamma\Delta t \cos\theta$. Collecting the terms proportional to $\mathbb{I}$ (deterministic part) and to $\sigma_{z}$ (stochastic part) separately, we obtain the fully unapproximated equation:
+\begin{align}
+	\Delta \ket{\psi_{S}\left(t\right)} &= 
+	-\frac{\Gamma\Delta t}{2} \Big[ \tan^{2}\left(\frac{\theta}{2}\right)\cos^{2}\left(\frac{\theta}{2}\right) 
+	+ \cot^{2}\left(\frac{\theta}{2}\right)\sin^{2}\left(\frac{\theta}{2}\right) \Big] \mathbb{I} \, \ket{\psi_{S}\left(t\right)} \notag \\
+	&\quad - i\sqrt{\Gamma \Delta t} \Big[ \tan\left(\frac{\theta}{2}\right)\cos^{2}\left(\frac{\theta}{2}\right) 
+	- \cot\left(\frac{\theta}{2}\right)\sin^{2}\left(\frac{\theta}{2}\right) \Big] \sigma_{z} \, \ket{\psi_{S}\left(t\right)} \notag \\
+	&\quad + i\sqrt{\Gamma \Delta t} \Big[ \cot\left(\frac{\theta}{2}\right) + \tan\left(\frac{\theta}{2}\right) \Big] \sigma_{z} \, (\delta n + \Gamma\Delta t \cos\theta) \, \ket{\psi_{S}\left(t\right)} \notag \\
+	&\quad - \frac{\Gamma\Delta t}{2}\Big[\cot^{2}\left(\frac{\theta}{2}\right)-\tan^{2}\left(\frac{\theta}{2}\right)\Big] (\delta n + \Gamma\Delta t \cos\theta) \, \mathbb{I}\,\ket{\psi_{S}\left(t\right)}
+	\label{eq:substitution_full_exact}
+\end{align}
+
+The first bracket simplifies via $\tan^{2}(x)\cos^{2}(x)+\cot^{2}(x)\sin^{2}(x) = 1$ (with $x=\theta/2$), while the second vanishes identically since $\tan (x) \cos^{2}(x) - \cot (x) \sin^{2}(x) = 0$. Using the standard identities $\cot(\theta/2)+\tan(\theta/2) = 2/\sin\theta$ and $\cot^2(\theta/2)-\tan^2(\theta/2) = 4\cos\theta/\sin^2\theta$, Eq.\ref{eq:substitution_full_exact} reduces exactly to:
+\begin{align}
+	\Delta \ket{\psi_{S}\left(t\right)} &= \left[ -\frac{\Gamma \Delta t}{2} \, \mathbb{I} 
+	+ i \, \frac{2}{\sin\theta} \sqrt{\Gamma \Delta t} \; \sigma_{z} \, (\delta n + \Gamma\Delta t \cos\theta) \right. \notag \\
+	&\quad\left. - 2\frac{\cos\theta}{\sin^2\theta}\Gamma\Delta t \, (\delta n + \Gamma\Delta t \cos\theta) \, \mathbb{I} \right] \ket{\psi_{S}\left(t\right)}
+\end{align}
+
+Expanding the brackets allows us to isolate every contribution based on its scaling behavior with respect to $\Delta t$:
+\begin{align}
+	\Delta \ket{\psi_{S}\left(t\right)} = \left[ \vphantom{\frac{2}{\sin\theta}} \right. &-\frac{\Gamma \Delta t}{2} \, \mathbb{I} + i \, \frac{2}{\sin\theta} \sqrt{\Gamma \Delta t} \; \sigma_{z} \, \delta n \notag \\
+	&+ i \frac{2\cos\theta}{\sin\theta} (\Gamma \Delta t)^{3/2} \, \sigma_{z} - 2\frac{\cos\theta}{\sin^2\theta} \Gamma\Delta t \, \delta n \, \mathbb{I} - 2\frac{\cos^2\theta}{\sin^2\theta} (\Gamma\Delta t)^2 \, \mathbb{I} \left. \vphantom{\frac{2}{\sin\theta}} \right] \ket{\psi_{S}\left(t\right)}
+\end{align}
+
+We can now rigorously evaluate the continuous limit $\lim\limits_{\Delta t \rightarrow 0} \Delta t = dt $. The deterministic terms proportional to $(\Gamma\Delta t)^{3/2}$ and $(\Gamma\Delta t)^2$ are strictly subleading compared to the main deterministic drift $-\frac{\Gamma \Delta t}{2}\mathbb{I}$. Similarly, the cross-stochastic term scaling as $O(\Delta t \cdot \delta n)$ is subleading relative to the primary stochastic driving term $O(\sqrt{\Delta t}\cdot\delta n)$. Neglecting these higher-order corrections in the continuum limit, we successfully recover the standard stochastic differential equation:
+\begin{equation}
+	d\ket{\psi_{S}\left(t\right)} = \left[ -\frac{\Gamma dt}{2} \, \mathbb{I} 
+	+ i \, \frac{2}{\sin\theta} \sqrt{\Gamma dt} \; \sigma_{z} \, \delta n \right] \ket{\psi_{S}\left(t\right)}
+	\label{eq:substitution_result}
+\end{equation}
+
+The stochastic part couples exclusively to $\sigma_{z}$ through $\delta n$; we can define the stochastic update as:
+\begin{equation}
+	d\ket{\psi_{S}}_{\text{stoch}} = i\,\frac{2}{\sin\theta}\,\sqrt{\Gamma dt}\;\sigma_{z}\,\delta n \,\ket{\psi_{S}}
+	\label{eq:general_stochastic_term}
+\end{equation}
+
+\paragraph{Universal Wiener limit for $\theta \neq 0,\pi$.}
+We now show that Eq.\ref{eq:general_stochastic_term} converges to the \emph{same} 
+diffusive noise found in the State Diffusion limit ($\theta=\pi/2$), for any fixed 
+$\theta \in (0,\pi)$. Define the rescaled increment:
+\begin{equation}
+	\Delta W \equiv \frac{2}{\sin (\theta)}\,\delta n\,\sqrt{\Delta t}
+	\label{eq:general_dW_definition} = \frac{dn - P_{1}}{\sqrt{P_{0}P_{1}}} \sqrt{\Delta t}
+\end{equation}
+where $ \frac{2}{\sin (\theta)} \sqrt{\Delta t} $ is the "\textit{Jump Amplitude}", that defines the intensity of the variation due to the stochastic jump given by $  \delta n $; note that $ \theta $ is the parameter defining this Amplitude, i.e. the strength of System-Ancilla interaction.
+
+Its first two moments are, using $\text{Var}(\delta n)=P_0P_1=\tfrac{1}{4}\sin^2\theta$:
+\begin{equation}
+	\mathbb{E}[\Delta W] = 0, \qquad 
+	\mathbb{E}[\Delta W^{2}] = \frac{4}{\sin^{2}\theta}\,\Delta t \cdot \text{Var}(\delta n) 
+	= \frac{4}{\sin^{2}\theta}\,\Delta t \cdot \frac{\sin^{2}\theta}{4} = \Delta t
+	\label{eq:general_dW_moments}
+\end{equation}
+i.e.\ $\Delta W$ satisfies the defining moments of a Wiener increment \emph{for any} 
+$\theta \in (0,\pi)$, not only at $\theta=\pi/2$.
+
+This is not accidental: it follows 
+from the identity $\sin^{2}\theta = 4\sin^{2}(\theta/2)\cos^{2}(\theta/2)=4P_0P_1$, which 
+links the jump amplitude ($\propto 1/\sin\theta$) to the jump probability ($P_0P_1$) in 
+exactly the combination needed to restore unit-variance-per-unit-time scaling.
+
+Beyond matching the first two moments, since for any fixed $\theta\in(0,\pi)$ the 
+jump probability $P_{1}\approx\sin^{2}(\theta/2)$ is $O(1)$ (it does \emph{not} vanish 
+as $\Delta t\to0$), a finite time interval $[0,T]$ contains $N=T/\Delta t \to \infty$ 
+independent Bernoulli trials $\delta n_{k}$, each contributing a state perturbation of 
+amplitude $O(\sqrt{\Delta t})$. By Donsker's invariance principle (the functional 
+Central Limit Theorem), the rescaled cumulative process 
+$\sum_{k} \delta n_{k}\sqrt{\Delta t}$ converges weakly, as $\Delta t \to 0$, to a 
+standard Wiener process — regardless of the precise (Bernoulli) distribution of the 
+individual increments, since only the mean and variance survive in the limit. 
+
+Substituting Eq.\ref{eq:general_dW_definition} into 
+Eq.\ref{eq:general_stochastic_term}, together with the drift term of 
+Eq.\ref{eq:general_drift}, we obtain the continuous limit:
+\begin{equation}
+	d\ket{\psi_{S}\left(t\right)} = \left( -\frac{\Gamma}{2}\,dt\,\mathbb{I} 
+	+ i\sqrt{\Gamma}\,dW\,\sigma_{z} \right) \ket{\psi_{S}\left(t\right)}
+	\label{eq:general_regime_SDE}
+\end{equation}
+This is \emph{identical}, term by term, to the State Diffusion SDE derived for 
+$\theta=\pi/2$: the mixing angle $\theta$ disappears entirely from the final equation, 
+surviving only in the (purely conventional) normalization of $dW$ in terms of the 
+microscopic fluctuation $\delta n$. We conclude that \emph{every} value 
+$\theta \in (0,\pi)$ generates, in the continuum limit, the same universal 
+State-Diffusion-type dynamics.
+
+\paragraph{Singular limits: $\theta=0$ and $\theta=\pi$.}
+The universality result above requires $P_{0}P_{1}\neq 0$, i.e.\ $\sin\theta \neq 0$. 
+It breaks down precisely at the two boundary points $\theta=0$ and $\theta=\pi$, where 
+one of $M_{0},M_{1}$ has vanishing $\Delta t$-independent weight and the corresponding 
+probability scales linearly with $\Delta t$ instead of remaining $O(1)$: at $\theta=0$, 
+$P_{1}=\Gamma\Delta t \to 0$, so the expected number of "jumps" in a finite interval 
+$T$ stays finite, $N P_{1} = (T/\Delta t)(\Gamma\Delta t) = \Gamma T$, and the discrete 
+process converges instead to a \emph{compound Poisson process} with finite rate 
+$\Gamma$ — recovering the Quantum Jump regime. By symmetry, $\theta=\pi$ (where the 
+roles of $M_{0}$ and $M_{1}$ are exchanged, $P_{0}=\Gamma\Delta t\to0$) is the analogous 
+singular jump point. These two isolated values are thus the only points of the 
+parameter space where the discrete unraveling does \emph{not} converge to Wiener noise; 
+for every other $\theta$, however small the deviation from $0$ or $\pi$, the continuum 
+limit is governed by Eq.\ref{eq:general_regime_SDE}.
+\paragraph{Conclusion}
+At finite time steps $\Delta t$, the individual simulated trajectories fundamentally depend on the angle $\theta$, since the discrete stochastic increment $ \Delta W$ carries the specific statistical signature (i.e., higher-order moments) of the underlying Bernoulli process. However, in the continuous limit $dt \to 0$, the accumulation of these infinitesimal steps causes all higher-order moments to vanish. As a result, the microscopic structure of the noise becomes entirely independent of $\theta$ and converges to a standard Wiener process. 
+
+Therefore, our conclusion is that different collisional unravelings share the exact same continuous stochastic limit, while retaining distinct, angle-dependent noise signatures in the prelimit regime. While observing single trajectories at finite $\Delta t$ reveals distinct dynamical behaviors depending on $\theta$, passing to the continuous limit maps every unraveling onto the identically distributed universal diffusive process.
+
+
+\subsection{Fidelity and Intensity of Variation}
 \label{subsub:Fidelity_and_Intensity_of_Variation}
 To quantify the \textit{Intensity} of the Variation induced by $ \mathcal{M}_{0} $ and $ \mathcal{M}_{1} $ it's possible to evaluate the \textit{Fidelity} of the state after and before the transformation. The \textit{Fidelity} reads :
 \begin{equation}
@@ -1496,7 +1900,7 @@ So that the quantity related to the difference between the two \textit{wf} befor
 \textbf{Remark}: the \textit{Fidelity} calculated in this case is refered to the variation induced by the application of $ \mathcal{M}_{0}^{j} $ and $ \mathcal{M}_{1}^{j} $ \\
 
 As we could see this quantities depends on the form of the \textit{wf}, for different time steps and different trajectories.
-So we need to evaluate this for different values of $ \left| \braket{\sigma_{z}^{j}} \right|^2 $ in different unraveling schemes. For this purpose it might be useful to rephrase Eq.\eqref{eq:fidelity_M0} and Eq.\eqref{eq:fidelity_M0} as follows:
+So we need to evaluate this for different values of $ \left| \braket{\sigma_{z}^{j}} \right|^2 $ in different unraveling schemes. For this purpose it might be useful to rephrase Eq.\ref{eq:fidelity_M0} and Eq.\ref{eq:fidelity_M0} as follows:
 
 \begin{equation}
 	c = \cos^{2} \left( c_{j} \Delta t \right) \quad ; \quad s_{z} = \left| \braket{\sigma_{z}^{j}} \right|^2 = \left| \bra{\Psi_{S}} \sigma_{z}^{j}\ket{\Psi_{S}} \right|^2
@@ -2348,6 +2752,508 @@ The probability of measuring the Ancilla's state are:
 	&= \frac{1}{2} \left(| A |^{2} + i A^* B \sin \left(c \Delta t \right) - i A B^* \sin \left(c \Delta t \right) + | B |^{2} \right) \notag \\
 	&= \frac{1}{2} \left( 1 + i(A^*B - AB^*) \sin \left(c \Delta t \right) \right) = \frac{1}{2} - \text{Im}(A^*B) \sin \left(c \Delta t \right) 
 \end{align}
+
+\subsection{Coccia System}
+\subsection{Collisional Methods}
+We now try to do the same unraveling but via \textit{Collisional Methods}. Note that most of the Equation used are derived in the notes MC, where we treated a simple two level system; here the dynamic will be the same, i.e relaxation of an excited state, but extending the system to 3 levels, with $ \ket{0} $ not involved in the collision.
+The initial System wave function is still : 
+\begin{equation}
+	\ket{\Psi_{S} (0)} = \sqrt{p_{0}} \ket{0} + \sqrt{p_{2}} \ket{2}
+\end{equation}
+The Hamiltonian reads : 
+\begin{equation}
+	H_{CM} = H_{S} + H_{Coll}
+\end{equation}
+with $ H_{S} $ associated to the eigenenergies of the system, while the Collisional Hamiltonian reads:
+\begin{equation}
+	H_{Coll} = c \left( \ket{1}\bra{2} \otimes \sigma_{+}^{a} + \ket{2}\bra{1} \otimes \sigma_{-}^{a} \right)
+\end{equation}
+We use an ancilla always initialize in $ \ket{0_{a}} $ so that $ \rho_{a} = \begin{pmatrix} 1 & 0 \\ 0 & 0 \end{pmatrix} $. \newline
+The total wave function is $ \ket{\Psi (0)} = \ket{\Psi_{S} (0)} \otimes \ket{0_{a}} $. \newline
+The collisional step of evolution is carried out with :
+\begin{equation}
+	\mathcal{U}_{Coll} \left( \Delta t \right) = \exp \left( -i H_{Coll} \Delta t \right) = \ket{0}\bra{0} \otimes \mathbb{I}^{a} + P + \cos \left( c \Delta t \right) Z - i \sin \left( c \Delta t \right) \frac{X}{2} 
+\end{equation} 
+the derivation is the same of the notes MC but in this case from the Taylor expansion of the exponential the first term, i.e. Identity acts on the total system reading $ \mathbb{I}^{tot} = \left(\ket{0}\bra{0} + \ket{1}\bra{1} + \ket{2}\bra{2}\right) \otimes \mathbb{I}^{a} $; the first term is the one appearing in $ \mathcal{U}_{Coll} $, while the other two end up in the McLaurin series for the $ \cos $ and $ \sin $. \newline
+The other terms read : 
+\begin{gather}
+	P = \frac{\left( \ket{1}\bra{1} + \ket{2}\bra{2} \right) \otimes \mathbb{I}^{a} + \left( \ket{1}\bra{1} - \ket{2}\bra{2} \right) \otimes \sigma_{z}^{a} }{2} \\
+	Z = \frac{\left( \ket{1}\bra{1} + \ket{2}\bra{2} \right) \otimes \mathbb{I}^{a} - \left( \ket{1}\bra{1} - \ket{2}\bra{2} \right) \otimes \sigma_{z}^{a} }{2} \\
+	X = \left( \ket{1}\bra{2} + \ket{2}\bra{1} \right) \otimes \sigma_{x}^{a} - i \left( \ket{1}\bra{2} - \ket{2}\bra{1} \right) \otimes \sigma_{y}^{a}
+\end{gather}
+Now we can apply every single term to the total wave function : 
+\begin{align}
+	P \left( \ket{\Psi_{S}} \otimes \ket{0_{a}} \right) &= \frac{\left( \ket{1}\bra{1} + \ket{2}\bra{2} \right) \otimes \mathbb{I}^{a} + \left( \ket{1}\bra{1} - \ket{2}\bra{2} \right) \otimes \sigma_{z}^{a} }{2} \left( \sqrt{p_{0}} \ket{0} + \sqrt{p_{2}} \ket{2} \right) \otimes \ket{0_{a}}  \notag \\
+	&= \frac{ \sqrt{p_{2}} \ket{2} \otimes \ket{0_{a}} - \sqrt{p_{2}} \ket{2} \otimes \ket{0_{a}} }{2} = 0 \\
+	Z \left( \ket{\Psi_{S}} \otimes \ket{0_{a}} \right) &= \frac{\left( \ket{1}\bra{1} + \ket{2}\bra{2} \right) \otimes \mathbb{I}^{a} - \left( \ket{1}\bra{1} - \ket{2}\bra{2} \right) \otimes \sigma_{z}^{a} }{2} \left( \sqrt{p_{0}} \ket{0} + \sqrt{p_{2}} \ket{2} \right) \otimes \ket{0_{a}}  \notag \\
+	&= \frac{ \sqrt{p_{2}} \ket{2} \otimes \ket{0_{a}} + \sqrt{p_{2}} \ket{2} \otimes \ket{0_{a}} }{2} = \sqrt{p_{2}} \ket{2} \otimes \ket{0_{a}} \\
+	X \left( \ket{\Psi_{S}} \otimes \ket{0_{a}} \right) &= \left[\left( \ket{1}\bra{2} + \ket{2}\bra{1} \right) \otimes \sigma_{x}^{a} - i \left( \ket{1}\bra{2} - \ket{2}\bra{1} \right) \otimes \sigma_{y}^{a}\right] \left( \sqrt{p_{0}} \ket{0} + \sqrt{p_{2}} \ket{2} \right) \otimes \ket{0_{a}}  \notag \\
+	&= \sqrt{p_{2}} \ket{1} \otimes \ket{1_{a}} + \sqrt{p_{2}} \ket{1} \otimes \ket{1_{a}} = 2 \sqrt{p_{2}} \ket{1} \otimes \ket{1_{a}} 
+\end{align}
+
+\newpage
+
+The total evolved wave function, including the identity term for $ \ket{0} $ now reads : 
+\begin{equation}
+	\ket{\Psi \left( \Delta t \right)} = \mathcal{U}_{Coll} \ket{\Psi (0)} = \sqrt{p_{0}} \ket{0} \otimes \ket{0_{a}} + \cos \left( c \Delta t \right) \sqrt{p_{2}} \ket{2} \otimes \ket{0_{a}} - i \sin \left( c \Delta t \right) \sqrt{p_{2}}  \ket{1} \otimes \ket{1_{a}}
+\end{equation}
+
+If we measure the Ancilla in state $ \ket{0_{a}} $ the new System state is :
+\begin{equation}
+	\ket{\Psi_{S} \left( \Delta t \right)}_{0} = \sqrt{p_{0}} \ket{0} + \cos \left( c \Delta t \right) \sqrt{p_{2}} \ket{2} 
+\end{equation}
+this state is not normalized so we can calculate the squared norm as :
+\begin{align}
+	\braket{\Psi_{S} \left( \Delta t \right) | \Psi_{S} \left( \Delta t \right)} &= p_{0} + p_{2} \cos^{2} \left( c \Delta t \right)  \notag \\
+	&= 1 - p_{2} \left( 1 - \cos^{2} \left( c \Delta t \right) \right) \notag \\
+	&= 1 - p_{2} \sin^{2} \left( c \Delta t \right) =  1 - \delta p
+\end{align}
+where $ \delta p $ is the probability of measuring the Ancilla in state $ \ket{1_{a}} $, i.e. have a \textit{Quantum Jump}.
+
+The normalized wave function reads : 
+\begin{equation}
+	\ket{\Psi_{S} \left( \Delta t \right)}_{0} = \frac{\sqrt{p_{0}}}{\sqrt{1 - \delta p}} \ket{0} + \frac{\cos \left( c \Delta t \right) \sqrt{p_{2}}}{\sqrt{1 - \delta p}} \ket{2}
+\end{equation}
+The population of $ \ket{0} $ and $ \ket{2} $ are : 
+\begin{align}
+	\braket{\Psi_{S} \left( \Delta t \right) | 0 } \braket{0 | \Psi_{S} \left( \Delta t \right) } &= \frac{p_{0}}{1 - \delta p} \\ 
+	\braket{\Psi_{S} \left( \Delta t \right) | 1 } \braket{1 | \Psi_{S} \left( \Delta t \right) } &= 0 \\
+	\braket{\Psi_{S} \left( \Delta t \right) | 2 } \braket{ 2 | \Psi_{S} \left( \Delta t \right) } &= \frac{ \cos^{2} \left( c \Delta t \right) p_{2}}{1 - \delta p}
+\end{align}
+
+\subsection{Kraus Operators}
+Once we defined $ \mathcal{U}_{Coll} $ we can define the associated \textit{Kraus Operators}, as defined in the \textit{Petruccione} :
+\begin{align}
+	\rho_{S} \left(t\right) &= \mathcal{V}\left(t\right) \rho_{S} \left(0\right) = Tr_{B} \Big\{ \mathcal{U}\left(t, t_0\right) \Big[ \rho_{S} \otimes \rho_{B} \Big] \mathcal{U}^{\dagger}\left(t, t_0\right) \Big\} \\
+	&\left( \rho_{B} = \sum_{\alpha}{\lambda_{\alpha} \ket{\varphi_{\alpha}} \bra{\varphi_{\alpha}}} \quad \text{and} \quad Tr_{B} = \sum_{\beta}{\bra{\varphi_{\beta}} \dots \ket{\varphi_{\beta}}} \right) \notag \\
+	&= \sum_{\alpha}{\sum_{\beta}{\lambda_{\alpha}\bra{\varphi_{\beta}} \mathcal{U}\left(t, t_0\right) \left[ \rho_{S} \otimes \ket{\varphi_{\alpha}} \bra{\varphi_{\alpha}} \right]  \mathcal{U}^{\dagger}\left(t, t_0\right) \ket{\varphi_{\beta}} }} \notag \\
+	&= \sum_{\alpha, \beta}{ \mathcal{K}_{\alpha, \beta} \left(t\right) \rho_{S} \mathcal{K}^{\dagger}_{\alpha, \beta} \left(t\right) }
+	\label{eq:dynamical_map_kraus_operators}
+\end{align}
+In our case, since we have $ \rho_{a} = \begin{pmatrix} 1 & 0 \\ 0 & 0 \end{pmatrix} $, with only one non zero eigenvalue we obtain only two \textit{Kraus Operators} in the two opposite limits : 
+\paragraph{Quantum Jump Limit}
+Measurement base : $ \{ \ket{0}, \ket{1} \} $
+\begin{gather}
+	\mathcal{K}_{0,0}^{QJ} = \ket{0}\bra{0} + \ket{1}\bra{1} + \cos \left( c \Delta t \right) \ket{2}\bra{2} \\
+	\mathcal{K}_{0,1}^{QJ} = -i \sin \left( c \Delta t \right) \ket{1}\bra{2}
+\end{gather}
+We can check the Completeness Relation : 
+\begin{align}
+	\mathcal{K}_{0,0}^{QJ \dagger} \mathcal{K}_{0,0}^{QJ} &= \ket{0}\bra{0} + \ket{1}\bra{1} + \cos^{2} \left( c \Delta t \right) \ket{2}\bra{2} \notag \\
+	\mathcal{K}_{0,1}^{QJ \dagger} \mathcal{K}_{0,1}^{QJ} &= \sin^{2} \left( c \Delta t \right) \ket{2}\bra{2} \notag \\
+	\sum_{\alpha, \beta} \mathcal{K}_{\alpha, \beta}^{QJ \dagger} \mathcal{K}_{\alpha, \beta}^{QJ} &= \mathcal{K}_{0,0}^{\dagger} \mathcal{K}_{0,0} + \mathcal{K}_{0,1}^{\dagger} \mathcal{K}_{0,1} \notag \\ 
+	&= \ket{0}\bra{0} + \ket{1}\bra{1} + \cos^{2} \left( c \Delta t \right) \ket{2}\bra{2} + \sin^{2} \left( c \Delta t \right) \ket{2}\bra{2} \notag \\
+	&= \ket{0}\bra{0} + \ket{1}\bra{1} + \ket{2}\bra{2} = \mathbb{I}
+\end{align}
+The associated Probability are :
+\begin{gather}
+	P_{0_{a}}^{QJ} = \bra{\Psi_{S}}\mathcal{K}_{0,0}^{QJ \dagger} \mathcal{K}_{0,0}^{QJ}\ket{\Psi_{S}} = p_{0} + p_{2} \cos^{2} \left( c \Delta t \right) \\
+	P_{1_{a}}^{QJ} = \bra{\Psi_{S}}\mathcal{K}_{0,1}^{QJ \dagger} \mathcal{K}_{0,1}^{QJ}\ket{\Psi_{S}} = p_{2} \sin^{2} \left( c \Delta t \right) 
+\end{gather}
+
+\paragraph{State Diffusion Limit}
+Measurement base : $ \{ \ket{+}, \ket{-} \} $ with $ \ket{+} = \frac{\ket{0} + \ket{1}}{\sqrt{2}} $ and $ \ket{-} = \frac{\ket{0} - \ket{1}}{\sqrt{2}} $
+\begin{gather}
+	\mathcal{K}_{+, 0}^{SD} = \frac{\ket{0}\bra{0} + \ket{1}\bra{1} + \cos \left( c \Delta t \right) \ket{2}\bra{2} -i \sin \left( c \Delta t \right) \ket{1}\bra{2}}{\sqrt{2}} = \frac{\mathcal{K}_{0,0}^{QJ} + \mathcal{K}_{0,1}^{QJ}}{\sqrt{2}}\\ 
+	\mathcal{K}_{-, 0}^{SD} = \frac{\ket{0}\bra{0} + \ket{1}\bra{1} + \cos \left( c \Delta t \right) \ket{2}\bra{2} +i \sin \left( c \Delta t \right) \ket{1}\bra{2} }{\sqrt{2}}= \frac{\mathcal{K}_{0,0}^{QJ} - \mathcal{K}_{0,1}^{QJ}}{\sqrt{2}}
+\end{gather}
+The associated Probability are :
+\begin{gather}
+	P_{+_{a}}^{SD} = \bra{\Psi_{S}}\mathcal{K}_{0,0}^{SD \dagger} \mathcal{K}_{0,0}^{SD}\ket{\Psi_{S}} = \frac{1}{2} \left[ p_{0} + p_{2} \left(\cos^{2} \left( c \Delta t \right) + \sin^{2} \left( c \Delta t \right) \right) \right] = \frac{1}{2} \\
+	P_{-_{a}}^{SD} = \bra{\Psi_{S}}\mathcal{K}_{0,1}^{SD \dagger} \mathcal{K}_{0,1}^{SD}\ket{\Psi_{S}} = \frac{1}{2} \left[ p_{0} + p_{2} \left(\cos^{2} \left( c \Delta t \right) + \sin^{2} \left( c \Delta t \right) \right) \right] = \frac{1}{2}
+\end{gather}
+
+\subsection{Intermediate Limit}
+Since the different types of unraveling depend on the measurement basis, we can define a general form of the Kraus operators depending on a parameter $ \theta $. This angle defines the combination of the computational basis states $ \{ \ket{0_{a}}, \ket{1_{a}} \} $. To ensure the standard operators are exactly recovered in the limit, we apply a standard rotation, defining the new general measurement basis as: 
+\begin{gather*}
+	\ket{\chi_{+}^{a}} = \cos \left(\nicefrac{\theta}{2} \right) \ket{0_{a}} + \sin \left(\nicefrac{\theta}{2} \right) \ket{1_{a}} \\
+	\ket{\chi_{-}^{a}} = \sin \left(\nicefrac{\theta}{2} \right) \ket{0_{a}} - \cos \left(\nicefrac{\theta}{2} \right) \ket{1_{a}}
+\end{gather*}
+
+\begin{figure}[htbp]
+	\centering
+	\begin{tikzpicture}[scale=1.0, >=Stealth]
+		
+		% Draw the vertical z-axis
+		\draw[->, thick] (0,-2) -- (0,3) node[above] {$+z$};
+		\node[below] at (0,-2) {$-z$};
+		
+		% Mark the origin point
+		\filldraw (0,0) circle (1.5pt);
+		
+		% Draw the measurement basis vector
+		\draw[->, very thick, olive] (0,0) -- (-45:2.5) node[right] {$\vec{a}$};
+		
+		% Draw the arc representing the angle phi
+		\draw[->, red, thick] (0,1.5) arc (90:-45:1.5);
+		
+		% Add the label for the angle
+		\node[red] at (67.5:1.8) {$\theta$};
+		
+	\end{tikzpicture}
+	\caption{Rappresentazione geometrica dell'angolo $\phi$ per la base di misura.}
+	\label{fig:measurement_basis}
+\end{figure}
+
+Using this basis we obtain the following general form of the Kraus Operators that reads: 
+\begin{align}
+	\mathcal{K}_{0, \chi_{+}^{a}} &= \cos \left(\frac{\theta}{2}\right) \Big[ \ket{0}\bra{0} + \ket{1}\bra{1} + \cos \left( c \Delta t \right) \ket{2}\bra{2} \Big] - i \sin \left( \frac{\theta}{2} \right) \sin \left( c \Delta t \right) \ket{1}\bra{2} \notag \\ 
+	&= \cos \left(\frac{\theta}{2}\right) \mathcal{K}_{0,0} + \sin \left( \frac{\theta}{2} \right) \mathcal{K}_{0,1} \\
+	\mathcal{K}_{0, \chi_{-}^{a}} &= \sin \left(\frac{\theta}{2}\right) \Big[ \ket{0}\bra{0} + \ket{1}\bra{1} + \cos \left( c \Delta t \right) \ket{2}\bra{2} \Big] + i \cos \left( \frac{\theta}{2} \right) \sin \left( c \Delta t \right) \ket{1}\bra{2} \notag \\
+	&= \sin \left(\frac{\theta}{2}\right) \mathcal{K}_{0,0} - \cos \left( \frac{\theta}{2} \right) \mathcal{K}_{0,1}
+\end{align}
+
+These operators respect the completeness rule:
+\begin{align}
+	\mathcal{K}_{0, \chi_{+}^{a}}^{\dagger} \mathcal{K}_{0, \chi_{+}^{a}} + \mathcal{K}_{0, \chi_{-}^{a}}^{\dagger} \mathcal{K}_{0, \chi_{-}^{a}} &= \left( \cos^2 \left(\frac{\theta}{2}\right) + \sin^2 \left(\frac{\theta}{2}\right) \right) \mathcal{K}_{0,0}^\dagger \mathcal{K}_{0,0} + \left( \sin^2 \left(\frac{\theta}{2}\right) + \cos^2 \left(\frac{\theta}{2}\right) \right) \mathcal{K}_{0,1}^\dagger \mathcal{K}_{0,1} \notag \\
+	&= \mathcal{K}_{0,0}^\dagger \mathcal{K}_{0,0} + \mathcal{K}_{0,1}^\dagger \mathcal{K}_{0,1} = \mathbb{I}
+\end{align}
+
+We can recover the two limits with these particular angles: 
+\begin{itemize}
+	\item \textbf{QJ} : $ \theta = 0 \, \rightarrow \,  \mathcal{K}_{0, \chi_{+}^{a}} = \mathcal{K}_{0,0} \, ; \, \mathcal{K}_{0, \chi_{-}^{a}} = \mathcal{K}_{0,1} $
+	\item \textbf{SD} : $ \theta = \nicefrac{\pi}{2} \, \rightarrow \,  \mathcal{K}_{0, \chi_{+}^{a}} = \frac{1}{\sqrt{2}} \left( \mathcal{K}_{0,0} + \mathcal{K}_{0,1} \right) \, ; \, \mathcal{K}_{0, \chi_{-}^{a}} = -\frac{1}{\sqrt{2}} \left( \mathcal{K}_{0,0} - \mathcal{K}_{0,1} \right) $
+	\item \textit{Alternative QJ Case :} $ \theta = \pi \, \rightarrow \,  \mathcal{K}_{0, \chi_{+}^{a}} = \mathcal{K}_{0,1} \, ; \, \mathcal{K}_{0, \chi_{-}^{a}} = -\mathcal{K}_{0,0} $
+\end{itemize}
+\subsubsection{General Measurement Probability}
+\label{subsub:General_Probability}
+
+To calculate the probability of measuring the Ancilla in the generalized basis states $ \ket{\chi_{+}^{a}} $ or $ \ket{\chi_{-}^{a}} $, we evaluate the expectation value of the corresponding Kraus operators over the system state $ \ket{\Psi_{S}} = \sqrt{p_{0}} \ket{0} + \sqrt{p_{2}} \ket{2} $.
+
+Notice that the cross terms $ \mathcal{K}_{0,0}^\dagger \mathcal{K}_{0,1} $ and $ \mathcal{K}_{0,1}^\dagger \mathcal{K}_{0,0} $ do not contribute to the final probability. These terms map $ \ket{2} $ to $ \ket{1} $ (and vice versa), and since the initial state has no population in $ \ket{1} $, their expectation value is exactly zero:
+\begin{equation}
+	\bra{\Psi_{S}} \mathcal{K}_{0,0}^\dagger \mathcal{K}_{0,1} \ket{\Psi_{S}} = \bra{\Psi_{S}} \mathcal{K}_{0,1}^\dagger \mathcal{K}_{0,0} \ket{\Psi_{S}} = 0
+\end{equation}
+
+To calculate the probability of measuring the Ancilla in the generalized basis states $ \ket{\chi_{+}^{a}} $ or $ \ket{\chi_{-}^{a}} $, we evaluate the expectation value of the corresponding Kraus operators over the general system state $ \ket{\Psi_{S}} = c_{0} \ket{0} + c_{1} \ket{1} + c_{2} \ket{2} $.
+
+Unlike the specific initial state at $ t=0 $, during the dynamical evolution the state $ \ket{1} $ can acquire population ($ p_1 \neq 0 $). Therefore, the cross terms $ \mathcal{K}_{0,0}^\dagger \mathcal{K}_{0,1} $ and $ \mathcal{K}_{0,1}^\dagger \mathcal{K}_{0,0} $ do not vanish, and their sum yields a quantum interference term:
+\begin{align}
+	\bra{\Psi_{S}} \left( \mathcal{K}_{0,0}^\dagger \mathcal{K}_{0,1} + \mathcal{K}_{0,1}^\dagger \mathcal{K}_{0,0} \right) \ket{\Psi_{S}} &= -i \sin \left( c \Delta t \right) c_{1}^* c_{2} + i \sin \left( c \Delta t \right) c_{2}^* c_{1} \notag \\
+	&= 2 \sin \left( c \Delta t \right) \text{Im}(c_1^* c_2)
+\end{align}
+
+Using the identity $ 2 \cos\left(\frac{\theta}{2}\right)\sin\left(\frac{\theta}{2}\right) = \sin(\theta) $, the general probabilities become:
+
+\begin{align}
+	P_{\chi_{+}^{a}} &= \bra{\Psi_{S}} \mathcal{K}_{0, \chi_{+}^{a}}^{\dagger} \mathcal{K}_{0, \chi_{+}^{a}} \ket{\Psi_{S}} \notag \\
+	&= \cos^2 \left(\frac{\theta}{2}\right) \bra{\Psi_{S}} \mathcal{K}_{0,0}^\dagger \mathcal{K}_{0,0} \ket{\Psi_{S}} + \sin^2 \left(\frac{\theta}{2}\right) \bra{\Psi_{S}} \mathcal{K}_{0,1}^\dagger \mathcal{K}_{0,1} \ket{\Psi_{S}} \notag \\
+	&\quad + \cos \left(\frac{\theta}{2}\right)\sin \left(\frac{\theta}{2}\right) \bra{\Psi_{S}} \left( \mathcal{K}_{0,0}^\dagger \mathcal{K}_{0,1} + \mathcal{K}_{0,1}^\dagger \mathcal{K}_{0,0} \right) \ket{\Psi_{S}} \notag \\
+	&= \cos^2 \left(\frac{\theta}{2}\right) \Big[ p_{0} + p_{1} + p_{2} \cos^2 \left( c \Delta t \right) \Big] + \sin^2 \left(\frac{\theta}{2}\right) \Big[ p_{2} \sin^2 \left( c \Delta t \right) \Big] + \sin(\theta)\sin \left( c \Delta t \right) \text{Im}(c_1^* c_2)
+\end{align}
+
+\begin{align}
+	P_{\chi_{-}^{a}} &= \bra{\Psi_{S}} \mathcal{K}_{0, \chi_{-}^{a}}^{\dagger} \mathcal{K}_{0, \chi_{-}^{a}} \ket{\Psi_{S}} \notag \\
+	&= \sin^2 \left(\frac{\theta}{2}\right) \bra{\Psi_{S}} \mathcal{K}_{0,0}^\dagger \mathcal{K}_{0,0} \ket{\Psi_{S}} + \cos^2 \left(\frac{\theta}{2}\right) \bra{\Psi_{S}} \mathcal{K}_{0,1}^\dagger \mathcal{K}_{0,1} \ket{\Psi_{S}} \notag \\
+	&\quad - \cos \left(\frac{\theta}{2}\right)\sin \left(\frac{\theta}{2}\right) \bra{\Psi_{S}} \left( \mathcal{K}_{0,0}^\dagger \mathcal{K}_{0,1} + \mathcal{K}_{0,1}^\dagger \mathcal{K}_{0,0} \right) \ket{\Psi_{S}} \notag \\
+	&= \sin^2 \left(\frac{\theta}{2}\right) \Big[ p_{0} + p_{1} + p_{2} \cos^2 \left( c \Delta t \right) \Big] + \cos^2 \left(\frac{\theta}{2}\right) \Big[ p_{2} \sin^2 \left( c \Delta t \right) \Big] - \sin(\theta)\sin \left( c \Delta t \right) \text{Im}(c_1^* c_2)
+\end{align}
+
+As a consistency check, it is trivial to verify that evaluating $ P_{\chi_{+}^{a}} + P_{\chi_{-}^{a}} $ perfectly cancels the interference terms and yields $ p_0 + p_1 + p_2 = 1 $.
+
+\newpage 
+
+\subsection{Connection to the SSE formalism}
+\label{sub:connection_to_SSE_Photoemission}
+
+As already done in the previous sections, we will analyze the continuous limit of the wavefunction update defined as: 
+\begin{equation}
+	d\ket{\psi_{S}(t)} = \ket{\psi_{S}(t + \Delta t)} - \ket{\psi_{S}(t)}
+\end{equation}
+where the state immediately after the collisional step is given by the stochastic unraveling:
+\begin{equation}
+	\ket{\psi_{S}(t + \Delta t)} = \frac{\mathcal{M}_{0, \chi_{+}^{a}}}{\sqrt{P_{\chi_{+}^{a}}}} \ket{\psi_{S}(t)} (1 - dn) + \frac{\mathcal{M}_{0, \chi_{-}^{a}}}{\sqrt{P_{\chi_{-}^{a}}}} \ket{\psi_{S}(t)} dn
+	\label{eq:new_stochastic_update}
+\end{equation}
+Here, the binary random variable $dn$ follows a Bernoulli distribution, being equal to $1$ with probability $P_{\chi_{-}^{a}}$ and $0$ with probability $P_{\chi_{+}^{a}}$.
+
+The Kraus operators defining the measurement branches are:
+\begin{align}
+	\mathcal{M}_{0, \chi_{+}^{a}} &= \cos\left(\frac{\theta}{2}\right) \Big[ \ket{0}\bra{0} + \ket{1}\bra{1} + \cos(c \Delta t) \ket{2}\bra{2} \Big] - i \sin\left(\frac{\theta}{2}\right) \sin(c \Delta t) \ket{1}\bra{2} \label{eq:M0_chi_plus} \\
+	\mathcal{M}_{0, \chi_{-}^{a}} &= \sin\left(\frac{\theta}{2}\right) \Big[ \ket{0}\bra{0} + \ket{1}\bra{1} + \cos(c \Delta t) \ket{2}\bra{2} \Big] + i \cos\left(\frac{\theta}{2}\right) \sin(c \Delta t) \ket{1}\bra{2} \label{eq:M0_chi_minus}
+\end{align}
+
+To ensure complete algebraic consistency, we derive the occurrence probabilities directly from the definition $P_k = \bra{\psi_S(t)} \mathcal{M}_k^\dagger \mathcal{M}_k \ket{\psi_S(t)}$. By expressing the system state in terms of its complex probability amplitudes $c_n = \braket{n|\psi_S(t)}$, such that the corresponding populations are $p_n = |c_n|^2$, and properly accounting for the off-diagonal coherence term between states $\ket{1}$ and $\ket{2}$, the explicit expressions are:
+\begin{align}
+	P_{\chi_{+}^{a}} &= \cos^2 \left(\frac{\theta}{2}\right) \Big[ p_{0} + p_{1} + p_{2} \cos^2 \left( c \Delta t \right) \Big] + \sin^2 \left(\frac{\theta}{2}\right) \Big[ p_{2} \sin^2 \left( c \Delta t \right) \Big] + \sin(\theta)\sin \left( c \Delta t \right) \text{Im}(c_1^* c_2) \\
+	P_{\chi_{-}^{a}} &= \sin^2 \left(\frac{\theta}{2}\right) \Big[ p_{0} + p_{1} + p_{2} \cos^2 \left( c \Delta t \right) \Big] + \cos^2 \left(\frac{\theta}{2}\right) \Big[ p_{2} \sin^2 \left( c \Delta t \right) \Big] - \sin(\theta)\sin \left( c \Delta t \right) \text{Im}(c_1^* c_2)
+\end{align}
+
+Substituting the explicit Kraus operators of Eqs.~\eqref{eq:M0_chi_plus}-\eqref{eq:M0_chi_minus} 
+and the associated probabilities into Eq.~\eqref{eq:new_stochastic_update}, we obtain the 
+fully explicit stochastic update:
+{\footnotesize
+\begin{align}
+	&\ket{\psi_{S}\left(t + \Delta t \right)} = \notag \\
+	&= \frac{\cos\left(\dfrac{\theta}{2}\right) \Big[ \ket{0}\bra{0} + \ket{1}\bra{1} + \cos\left(c\Delta t\right)\ket{2}\bra{2} \Big] 
+	- i\sin\left(\dfrac{\theta}{2}\right)\sin\left(c\Delta t\right)\ket{1}\bra{2}} {\sqrt{\cos^{2}\left(\dfrac{\theta}{2}\right)\Big[p_{0}+p_{1}+p_{2}\cos^{2}(c\Delta t)\Big] + \sin^{2}\left(\dfrac{\theta}{2}\right)\Big[p_{2}\sin^{2}(c\Delta t)\Big] + \sin(\theta)\sin(c\Delta t) \text{Im}(c_{1}^{*}c_{2})}} \ket{\psi_{S}\left(t\right)} \left(1-dn\right) \notag \\[14pt]
+	&\quad + \frac{\sin\left(\dfrac{\theta}{2}\right) \Big[ \ket{0}\bra{0} + \ket{1}\bra{1} + \cos\left(c\Delta t\right)\ket{2}\bra{2} \Big] + i\cos\left(\dfrac{\theta}{2}\right)\sin\left(c\Delta t\right)\ket{1}\bra{2}} {\sqrt{\sin^{2}\left(\dfrac{\theta}{2}\right)\Big[p_{0}+p_{1}+p_{2}\cos^{2}(c\Delta t)\Big] + \cos^{2}\left(\dfrac{\theta}{2}\right)\Big[p_{2}\sin^{2}(c\Delta t)\Big] - \sin(\theta)\sin(c\Delta t) \text{Im}(c_{1}^{*}c_{2})}} \ket{\psi_{S}\left(t\right)} dn \label{eq:full_substitution_photoemission}
+\end{align}
+}
+
+Setting $c = \sqrt{\Gamma/\Delta t}$, we have $c\Delta t = \sqrt{\Gamma\Delta t} \to 0$ 
+as $\Delta t \to 0$. Expanding the trigonometric functions of $c\Delta t$ to leading 
+order in $\Delta t$:
+\begin{align}
+	\cos(c\Delta t) &\approx 1 - \frac{(c\Delta t)^{2}}{2} = 1 - \frac{\Gamma\Delta t}{2}, 
+	\label{eq:cos_cdt_expansion} \\
+	\sin(c\Delta t) &\approx c\Delta t = \sqrt{\Gamma\Delta t}, 
+	\label{eq:sin_cdt_expansion} \\
+	\cos^{2}(c\Delta t) &\approx 1 - \Gamma\Delta t, 
+	\label{eq:cos2_cdt_expansion} \\
+	\sin^{2}(c\Delta t) &\approx \Gamma\Delta t. 
+	\label{eq:sin2_cdt_expansion}
+\end{align}
+
+Substituting Eqs.~\eqref{eq:cos_cdt_expansion} and \eqref{eq:sin_cdt_expansion} into 
+$\mathcal{M}_{0,\chi_{+}^{a}}$ and $\mathcal{M}_{0,\chi_{-}^{a}}$:
+\begin{align}
+	\mathcal{M}_{0, \chi_{+}^{a}} &\approx \cos\left(\frac{\theta}{2}\right) 
+	\Big[ \ket{0}\bra{0} + \ket{1}\bra{1} + \left(1-\frac{\Gamma\Delta t}{2}\right)\ket{2}\bra{2} \Big] 
+	- i \sin\left(\frac{\theta}{2}\right) \sqrt{\Gamma\Delta t}\; \ket{1}\bra{2} \notag \\
+	&= \cos\left(\frac{\theta}{2}\right) \left[ \mathbb{I} - \frac{\Gamma\Delta t}{2}\ket{2}\bra{2} \right] 
+	- i \sin\left(\frac{\theta}{2}\right) \sqrt{\Gamma\Delta t}\; \ket{1}\bra{2}, 
+	\label{eq:M0_chiplus_expanded} \\[8pt]
+	\mathcal{M}_{0, \chi_{-}^{a}} &\approx \sin\left(\frac{\theta}{2}\right) 
+	\left[ \mathbb{I} - \frac{\Gamma\Delta t}{2}\ket{2}\bra{2} \right] 
+	+ i \cos\left(\frac{\theta}{2}\right) \sqrt{\Gamma\Delta t}\; \ket{1}\bra{2}. 
+	\label{eq:M0_chiminus_expanded}
+\end{align}
+
+Similarly, substituting Eqs.~\eqref{eq:cos2_cdt_expansion} and \eqref{eq:sin2_cdt_expansion} 
+into $P_{\chi_{+}^{a}}$, and using the normalization $p_{0}+p_{1}+p_{2}=1$:
+\begin{align}
+	P_{\chi_{+}^{a}} &\approx \cos^{2}\left(\frac{\theta}{2}\right) 
+	\Big[ p_{0}+p_{1}+p_{2}\left(1-\Gamma\Delta t\right) \Big] 
+	+ \sin^{2}\left(\frac{\theta}{2}\right) p_{2}\,\Gamma\Delta t 
+	+ \sin(\theta)\sqrt{\Gamma\Delta t}\;\text{Im}(c_{1}^{*}c_{2}) \notag \\
+	&= \cos^{2}\left(\frac{\theta}{2}\right) 
+	- \Gamma\Delta t\, p_{2}\Big[\cos^{2}\left(\frac{\theta}{2}\right)-\sin^{2}\left(\frac{\theta}{2}\right)\Big] 
+	+ \sin(\theta)\sqrt{\Gamma\Delta t}\;\text{Im}(c_{1}^{*}c_{2}) \notag \\
+	&= \cos^{2}\left(\frac{\theta}{2}\right) - \Gamma\Delta t\, p_{2}\cos\theta 
+	+ \sin(\theta)\sqrt{\Gamma\Delta t}\;\text{Im}(c_{1}^{*}c_{2}), 
+	\label{eq:P_chiplus_expanded}
+\end{align}
+where we used $\cos^{2}(\theta/2)-\sin^{2}(\theta/2)=\cos\theta$. Analogously:
+\begin{equation}
+	P_{\chi_{-}^{a}} \approx \sin^{2}\left(\frac{\theta}{2}\right) + \Gamma\Delta t\, p_{2}\cos\theta 
+	- \sin(\theta)\sqrt{\Gamma\Delta t}\;\text{Im}(c_{1}^{*}c_{2}).
+	\label{eq:P_chiminus_expanded}
+\end{equation}
+As a consistency check, $P_{\chi_{+}^{a}}+P_{\chi_{-}^{a}} = \cos^{2}(\theta/2)+\sin^{2}(\theta/2) = 1$ 
+exactly, with both the $O(\Delta t)$ and $O(\sqrt{\Delta t})$ correction terms cancelling between the two branches.
+
+For brevity we use $c_{\theta}\equiv\cos(\theta/2)$, $s_{\theta}\equiv\sin(\theta/2)$, and $I \equiv \text{Im}(c_{1}^{*}c_{2})$.
+
+Writing $P_{\chi_{+}^{a}} = c_{\theta}^{2}\left[1+\varepsilon_{+}\right]$ with 
+$\varepsilon_{+} = -\dfrac{\Gamma\Delta t\, p_{2}\cos\theta}{c_{\theta}^{2}} 
++ \dfrac{\sin\theta\sqrt{\Gamma\Delta t}\,I}{c_{\theta}^{2}}$, and expanding 
+$(1+\varepsilon_{+})^{-1/2} \approx 1-\varepsilon_{+}/2+\frac{3}{8}\varepsilon_{+}^{2}$ 
+(retaining the $O(\Delta t)$ contribution generated by the square of the 
+$O(\sqrt{\Delta t})$ term), we obtain:
+\begin{align}
+	\frac{1}{\sqrt{P_{\chi_{+}^{a}}}} &\approx \frac{1}{c_{\theta}} 
+	\left[ 1 + \frac{\Gamma\Delta t\, p_{2}\cos\theta}{2c_{\theta}^{2}} 
+	- \frac{\sin\theta\, I}{2c_{\theta}^{2}}\sqrt{\Gamma\Delta t} 
+	+ \frac{3\sin^{2}\theta\, I^{2}}{8c_{\theta}^{4}}\,\Gamma\Delta t \right]
+	\label{eq:expansion_Pchiplus} \\
+	\frac{1}{\sqrt{P_{\chi_{-}^{a}}}} &\approx \frac{1}{s_{\theta}} 
+	\left[ 1 - \frac{\Gamma\Delta t\, p_{2}\cos\theta}{2s_{\theta}^{2}} 
+	+ \frac{\sin\theta\, I}{2s_{\theta}^{2}}\sqrt{\Gamma\Delta t} 
+	+ \frac{3\sin^{2}\theta\, I^{2}}{8s_{\theta}^{4}}\,\Gamma\Delta t \right]
+	\label{eq:expansion_Pchiminus}
+\end{align}
+Note the new feature compared to the exciton dimer case: the $I^{2}$ term is a genuinely nonlinear (state-dependent) correction to the normalization, structurally analogous to the nonlinear terms appearing in the standard nonlinear QSD formalism 
+(cf.\ Eq.~\eqref{eq:standard_SD_SSE}).
+
+Substituting the expansions of $\mathcal{M}_{0,\chi_{+}^{a}}$ 
+(Eq.~\eqref{eq:M0_chiplus_expanded}) and $1/\sqrt{P_{\chi_{+}^{a}}}$ 
+(Eq.~\eqref{eq:expansion_Pchiplus}), and retaining all terms up to $O(\Delta t)$ 
+(including the $O(\sqrt{\Delta t})\times O(\sqrt{\Delta t})$ cross term between the 
+$\ket{1}\bra{2}$ piece of $\mathcal{M}_{0,\chi_{+}^{a}}$ and the $I$-term of 
+$1/\sqrt{P_{\chi_{+}^{a}}}$), we obtain:
+\begin{align}
+	\frac{\mathcal{M}_{0,\chi_{+}^{a}}}{\sqrt{P_{\chi_{+}^{a}}}} &\approx 
+	\mathbb{I} - \frac{\sin\theta\, I}{2c_{\theta}^{2}}\sqrt{\Gamma\Delta t}\,\mathbb{I} 
+	- i\,\frac{s_{\theta}}{c_{\theta}}\sqrt{\Gamma\Delta t}\,\ket{1}\bra{2} \notag \\
+	&\quad + \Gamma\Delta t \left[ \frac{p_{2}\cos\theta}{2c_{\theta}^{2}}\mathbb{I} 
+	+ \frac{3\sin^{2}\theta\, I^{2}}{8c_{\theta}^{4}}\mathbb{I} 
+	- \frac{1}{2}\ket{2}\bra{2} 
+	+ i\,\frac{s_{\theta}\sin\theta\, I}{2c_{\theta}^{3}}\ket{1}\bra{2} \right]
+	\label{eq:norm_Mchiplus}
+\end{align}
+and analogously:
+\begin{align}
+	\frac{\mathcal{M}_{0,\chi_{-}^{a}}}{\sqrt{P_{\chi_{-}^{a}}}} &\approx 
+	+\mathbb{I} + \frac{\sin\theta\, I}{2s_{\theta}^{2}}\sqrt{\Gamma\Delta t}\,\mathbb{I} 
+	+ i\,\frac{c_{\theta}}{s_{\theta}}\sqrt{\Gamma\Delta t}\,\ket{1}\bra{2} \notag \\
+	&\quad + \Gamma\Delta t \left[ -  \frac{p_{2}\cos\theta}{2s_{\theta}^{2}}\mathbb{I} 
+	+ \frac{3\sin^{2}\theta\, I^{2}}{8s_{\theta}^{4}}\mathbb{I} 
+	- \frac{1}{2}\ket{2}\bra{2} 
+	+ i\,\frac{c_{\theta}\sin\theta\, I}{2s_{\theta}^{3}}\ket{1}\bra{2} \right]
+	\label{eq:norm_Mchiminus}
+\end{align}
+
+Substituting Eqs.~\eqref{eq:norm_Mchiplus} and \eqref{eq:norm_Mchiminus} into the 
+generic state update equation, the wavefunction at $t+\Delta t$ reads:
+\begin{align}
+	\ket{\psi_{S}\left(t+\Delta t\right)} &= 
+	\Bigg\{ \mathbb{I} - \frac{\sin\theta\, I}{2c_{\theta}^{2}}\sqrt{\Gamma\Delta t}\,\mathbb{I} 
+	- i\,\frac{s_{\theta}}{c_{\theta}}\sqrt{\Gamma\Delta t}\,\ket{1}\bra{2} \notag \\
+	&\hphantom{=\Bigg\{} + \Gamma\Delta t \left[ \left(\frac{p_{2}\cos\theta}{2c_{\theta}^{2}} 
+	+ \frac{3\sin^{2}\theta\, I^{2}}{8c_{\theta}^{4}}\right)\mathbb{I} 
+	- \frac{1}{2}\ket{2}\bra{2} 
+	+ i\,\frac{s_{\theta}\sin\theta\, I}{2c_{\theta}^{3}}\ket{1}\bra{2} \right] \Bigg\} 
+	\ket{\psi_{S}(t)} \left(1-dn\right) \notag \\[10pt]
+	&\quad + \Bigg\{ \mathbb{I} + \frac{\sin\theta\, I}{2s_{\theta}^{2}}\sqrt{\Gamma\Delta t}\,\mathbb{I} 
+	+ i\,\frac{c_{\theta}}{s_{\theta}}\sqrt{\Gamma\Delta t}\,\ket{1}\bra{2} \notag \\
+	&\hphantom{=\Bigg\{} + \Gamma\Delta t \left[  \left( -\frac{p_{2}\cos\theta}{2s_{\theta}^{2}} 
+	+ \frac{3\sin^{2}\theta\, I^{2}}{8s_{\theta}^{4}}\right)\mathbb{I} 
+	- \frac{1}{2}\ket{2}\bra{2} 
+	+ i\,\frac{c_{\theta}\sin\theta\, I}{2s_{\theta}^{3}}\ket{1}\bra{2} \right] \Bigg\} 
+	\ket{\psi_{S}(t)} \, dn
+	\label{eq:psi_t_plus_dt_photoemission_expanded}
+\end{align}
+
+
+\subsection{Continuous Limit: Recovering the State Diffusion Equation}
+
+To recover the standard State Diffusion limit, we set the measurement angle to $ \theta = \pi/2 $. In this regime, the trigonometric coefficients simplify to $ \cos(\theta) = 0 $, $ \sin(\theta) = 1 $, and $ c_\theta = s_\theta = 1/\sqrt{2} $. 
+
+Because $ \cos(\pi/2) = 0 $, the $ \mathcal{O}(\Delta t) $ population term proportional to $ p_2 $ identically vanishes from the probability expansions. Substituting these values into the state update equation (Eq.~\ref{eq:psi_t_plus_dt_photoemission_expanded}) and grouping the deterministic $ \mathcal{O}(\Delta t) $ and stochastic $ \mathcal{O}(\sqrt{\Delta t}) $ terms, the differential change $ d\ket{\psi_S} = \ket{\psi_S(t+\Delta t)} - \ket{\psi_S(t)} $ yields:
+
+\begin{align}
+	d\ket{\psi_{S}} &= \left[ \frac{3}{2}\Gamma I^2 \mathbb{I} - \frac{1}{2}\Gamma\ket{2}\bra{2} + i \Gamma I \ket{1}\bra{2} \right] \Delta t \ket{\psi_{S}} \notag \\
+	&\quad + \left[ -I\sqrt{\Gamma}\mathbb{I} - i\sqrt{\Gamma}\ket{1}\bra{2} \right] \sqrt{\Delta t} (1 - 2dn) \ket{\psi_{S}}
+	\label{eq:raw_SD_update}
+\end{align}
+where we have used the fact that the deterministic brackets in the two branches (multiplied by $ 1-dn $ and $ dn $) are now identical, while the stochastic brackets carry opposite signs.
+
+To connect this result to standard open quantum systems notation, we define the physical jump operator:
+\begin{equation}
+	c = i\sqrt{\Gamma}\ket{1}\bra{2} \quad \implies \quad c^\dagger = -i\sqrt{\Gamma}\ket{2}\bra{1}
+\end{equation}
+The expectation value of its Hermitian part is purely related to the imaginary part of the coherence $ I = \text{Im}(c_1^* c_2) $:
+\begin{equation}
+	\langle c + c^\dagger \rangle = i\sqrt{\Gamma}(c_1^* c_2 - c_2^* c_1) = -2\sqrt{\Gamma}\text{Im}(c_1^* c_2) = -2\sqrt{\Gamma}I \quad \implies \quad \sqrt{\Gamma}I = -\frac{1}{2}\langle c + c^\dagger \rangle
+	\label{eq:expectation_jump}
+\end{equation}
+
+In the standard framework of Itô calculus, a Stochastic Schrödinger Equation (SSE) separates the evolution of the system into a deterministic continuous evolution and a stochastic state update conditioned on a noisy measurement record $ d\tilde{Y} $:
+\begin{equation}
+	d\ket{\psi_{S}} = A_{raw} \ket{\psi_{S}} dt + B \ket{\psi_{S}} d\tilde{Y}
+	\label{eq:general_SDE_structure}
+\end{equation}
+By defining the raw homodyne measurement record as $ d\tilde{Y} = (2dn - 1)\sqrt{\Delta t} $, setting $ dt = \Delta t $, and substituting the definitions of $ c $ and $ \langle c + c^\dagger \rangle $ into Eq.~\eqref{eq:raw_SD_update}, we can explicitly identify the raw drift operator $ A_{raw} $ and the diffusion operator $ B $:
+\begin{align}
+	A_{raw} &= \frac{3}{8}\langle c + c^\dagger \rangle^2 \mathbb{I} - \frac{1}{2}c^\dagger c - \frac{1}{2}\langle c + c^\dagger \rangle c \\
+	B &= c - \frac{1}{2}\langle c + c^\dagger \rangle
+\end{align}
+
+However, $ d\tilde{Y} $ is \emph{not} a standard Wiener increment because its expected value is not zero. Using the probability of the jump branch $ P_{\chi_{-}^{a}} \approx \frac{1}{2} - \sqrt{\Gamma \Delta t}I $, the expectation value evaluates to:
+\begin{equation}
+	\mathbb{E}[d\tilde{Y}] = \left(2 P_{\chi_{-}^{a}} - 1\right)\sqrt{\Delta t} = -2\sqrt{\Gamma \Delta t}I \sqrt{\Delta t} = \langle c + c^\dagger \rangle dt
+\end{equation}
+
+To cast the equation into a proper Itô Stochastic Differential Equation, we must define a centered, zero-mean Wiener increment $ dW $:
+\begin{equation}
+	dW = d\tilde{Y} - \mathbb{E}[d\tilde{Y}] = d\tilde{Y} - \langle c + c^\dagger \rangle dt \quad \implies \quad d\tilde{Y} = dW + \langle c + c^\dagger \rangle dt
+\end{equation}
+Substituting this back into the evolution generates an Itô drift correction. The final effective drift operator $ A_{eff} $ reads:
+\begin{align}
+	A_{eff} &= A_{raw} + B \langle c + c^\dagger \rangle \notag \\
+	&= \left( -\frac{1}{2}c^\dagger c - \frac{1}{2}\langle c + c^\dagger \rangle c + \frac{3}{8}\langle c + c^\dagger \rangle^2 \right) + \left( c - \frac{1}{2}\langle c + c^\dagger \rangle \right) \langle c + c^\dagger \rangle \notag \\
+	&= -\frac{1}{2}c^\dagger c + \frac{1}{2}\langle c + c^\dagger \rangle c - \frac{1}{8}\langle c + c^\dagger \rangle^2 \notag \\
+	&= -\frac{1}{2}\left( c^\dagger c - \langle c + c^\dagger \rangle c + \frac{1}{4}\langle c + c^\dagger \rangle^2 \right)
+\end{align}
+
+Replacing $ A_{eff} $ and the true Wiener increment $ dW $ into the differential update, we exactly recover the standard nonlinear State Diffusion (Homodyne) equation:
+\begin{equation}
+	d\ket{\psi_{S}} = \left[ -\frac{1}{2}\left(c^\dagger c - \langle c + c^\dagger \rangle c + \frac{1}{4}\langle c + c^\dagger \rangle^2 \right)dt + \left(c - \frac{\langle c + c^\dagger \rangle}{2}\right)dW \right] \ket{\psi_{S}}
+\end{equation}
+
+\subsection{Continuous Limit: Recovering the Quantum Jump Equation}
+
+If we directly substitute $ \theta = 0 $ into the generalized expanded equation, some terms appear to diverge. This occurs because the Taylor expansion of $ 1/\sqrt{P_{\chi_{-}^{a}}} $ performed earlier implicitly assumed $ \sin(\theta/2) \neq 0 $ as its leading-order constant. To correctly recover the Quantum Jump (QJ) limit, we must set $ \theta = 0 $ \emph{before} expanding the normalizations.
+
+Setting $ \theta = 0 $, the measurement basis aligns with the computational basis, and the modified Kraus operators reduce directly to the standard QJ branches:
+\begin{align}
+	\mathcal{M}_{0, \chi_{+}^{a}} &= \mathcal{K}_{0,0} \approx \mathbb{I} - \frac{1}{2} c^\dagger c \Delta t \\
+	\mathcal{M}_{0, \chi_{-}^{a}} &= -\mathcal{K}_{0,1} \approx c \sqrt{\Delta t}
+\end{align}
+where we defined the jump operator $ c = i\sqrt{\Gamma}\ket{1}\bra{2} $, meaning $ c^\dagger c = \Gamma\ket{2}\bra{2} $. The corresponding expectation value yields the correct population term $ \langle c^\dagger c \rangle = p_2 \Gamma $.
+
+The occurrence probabilities evaluate exactly to:
+\begin{align}
+	P_{\chi_{+}^{a}} &= 1 - \langle c^\dagger c \rangle \Delta t \\
+	P_{\chi_{-}^{a}} &= \langle c^\dagger c \rangle \Delta t
+\end{align}
+
+We can now evaluate the state update for the two distinct branches independently.
+For the no-jump branch ($ dn = 0 $), we expand the denominator up to $ \mathcal{O}(\Delta t) $:
+\begin{align}
+	\frac{\mathcal{M}_{0, \chi_{+}^{a}}}{\sqrt{P_{\chi_{+}^{a}}}} \ket{\psi_{S}} &\approx \left( \mathbb{I} - \frac{1}{2} c^\dagger c \Delta t \right) \left( 1 + \frac{1}{2} \langle c^\dagger c \rangle \Delta t \right) \ket{\psi_{S}} \notag \\
+	&\approx \left[ \mathbb{I} - \frac{1}{2} \left( c^\dagger c - \langle c^\dagger c \rangle \right) \Delta t \right] \ket{\psi_{S}}
+\end{align}
+
+For the jump branch ($ dn = 1 $), the $ \sqrt{\Delta t} $ factors in the numerator and denominator perfectly cancel out, avoiding any divergence:
+\begin{equation}
+	\frac{\mathcal{M}_{0, \chi_{-}^{a}}}{\sqrt{P_{\chi_{-}^{a}}}} \ket{\psi_{S}} = \frac{c \sqrt{\Delta t}}{\sqrt{\langle c^\dagger c \rangle \Delta t}} \ket{\psi_{S}} = \frac{c}{\sqrt{\langle c^\dagger c \rangle}} \ket{\psi_{S}}
+\end{equation}
+
+Substituting these branches back into the differential update $ d\ket{\psi_{S}} = \ket{\psi_{S}(t+\Delta t)} - \ket{\psi_{S}(t)} $, and setting $ \Delta t \to dt $, we obtain:
+\begin{equation}
+	d\ket{\psi_{S}} = \left[ \left( \mathbb{I} - \frac{1}{2} \left( c^\dagger c - \langle c^\dagger c \rangle \right) dt \right) (1 - dn) + \frac{c}{\sqrt{\langle c^\dagger c \rangle}} dn - \mathbb{I} \right] \ket{\psi_{S}}
+\end{equation}
+
+In the Itô calculus for point processes, $ dn $ represents a macroscopic jump event ($ dn^2 = dn $), but its occurrence probability is $ \mathcal{O}(dt) $. Therefore, cross terms like $ dn \cdot dt $ scale as $ \mathcal{O}(dt^2) $ and vanish. Expanding the brackets and grouping the remaining terms, we perfectly recover the standard Quantum Jump SSE:
+\begin{equation}
+	d\ket{\psi_{S}} = \left[ -\frac{1}{2}\left(c^\dagger c - \langle c^\dagger c \rangle\right)dt + \left( \frac{c}{\sqrt{\langle c^\dagger c \rangle}} - \mathbb{I} \right)dn \right] \ket{\psi_{S}}
+	\label{eq:standard_QJ_SSE}
+\end{equation}
+
+\paragraph{Universal Wiener limit for $\theta \neq 0,\pi$.}
+We now show that the generalized stochastic update for the 3-level photoemission model converges to the \emph{same} diffusive State Diffusion equation for any fixed $\theta \in (0,\pi)$. 
+
+Let us isolate the stochastic $ \mathcal{O}(\sqrt{\Delta t}) $ fluctuations in the state update (Eq.~\ref{eq:psi_t_plus_dt_photoemission_expanded}). Denoting the $ \mathcal{O}(\sqrt{\Delta t}) $ brackets for the jump ($dn=1$) and no-jump ($dn=0$) branches as $ \mathcal{F}_{-} $ and $ \mathcal{F}_{+} $ respectively, the total stochastic term reads:
+\begin{equation}
+	\mathcal{F}_{stoch} = \mathcal{F}_{+} (1 - dn) + \mathcal{F}_{-} dn = \mathcal{F}_{+} + (\mathcal{F}_{-} - \mathcal{F}_{+}) dn
+\end{equation}
+
+By expanding $ dn = \mathbb{E}[dn] + \delta n \approx \sin^2(\theta/2) + \delta n $, the fluctuation is entirely driven by the zero-mean random variable $ \delta n $. The coefficient multiplying this fluctuation is the difference between the two branches:
+\begin{align}
+	\mathcal{F}_{-} - \mathcal{F}_{+} &= \left[ \frac{\sin\theta\, I}{2 s_{\theta}^{2}} \mathbb{I} + i\,\frac{c_{\theta}}{s_{\theta}} \ket{1}\bra{2} \right] \sqrt{\Gamma\Delta t} - \left[ -\frac{\sin\theta\, I}{2 c_{\theta}^{2}} \mathbb{I} - i\,\frac{s_{\theta}}{c_{\theta}} \ket{1}\bra{2} \right] \sqrt{\Gamma\Delta t} \notag \\
+	&= \left[ \frac{\sin\theta\, I}{2} \left( \frac{1}{s_{\theta}^{2}} + \frac{1}{c_{\theta}^{2}} \right) \mathbb{I} + i \left( \frac{c_{\theta}}{s_{\theta}} + \frac{s_{\theta}}{c_{\theta}} \right) \ket{1}\bra{2} \right] \sqrt{\Gamma\Delta t}
+\end{align}
+Using the trigonometric identities $ \frac{1}{s_{\theta}^{2}} + \frac{1}{c_{\theta}^{2}} = \frac{s_{\theta}^{2} + c_{\theta}^{2}}{s_{\theta}^{2} c_{\theta}^{2}} = \frac{4}{\sin^2\theta} $ and $ \frac{c_{\theta}}{s_{\theta}} + \frac{s_{\theta}}{c_{\theta}} = \frac{2}{\sin\theta} $, the difference dramatically simplifies to:
+\begin{equation}
+	\mathcal{F}_{-} - \mathcal{F}_{+} = \frac{2}{\sin\theta} \left[ I \sqrt{\Gamma} \mathbb{I} + i\sqrt{\Gamma} \ket{1}\bra{2} \right] \sqrt{\Delta t}
+\end{equation}
+
+Multiplying this by the fluctuation $ \delta n $ yields the pure noise term:
+\begin{equation}
+	(\mathcal{F}_{-} - \mathcal{F}_{+}) \delta n = \left[ I \sqrt{\Gamma} \mathbb{I} + i\sqrt{\Gamma} \ket{1}\bra{2} \right] \left( \frac{2}{\sin\theta} \delta n \sqrt{\Delta t} \right)
+\end{equation}
+
+We recognize the second parenthesis as the universally rescaled Wiener increment defined previously:
+\begin{equation}
+	\Delta W \equiv \frac{2}{\sin(\theta)}\,\delta n\,\sqrt{\Delta t}
+\end{equation}
+which satisfies $ \mathbb{E}[\Delta W] = 0 $ and $ \mathbb{E}[\Delta W^2] = \Delta t $. 
+
+Furthermore, substituting the physical operator definitions $ c = i\sqrt{\Gamma}\ket{1}\bra{2} $ and $ I\sqrt{\Gamma} = -\frac{1}{2}\langle c + c^\dagger \rangle $, the structural bracket perfectly reconstructs the diffusion operator $ B $:
+\begin{equation}
+	I \sqrt{\Gamma} \mathbb{I} + i\sqrt{\Gamma} \ket{1}\bra{2} = -\frac{1}{2}\langle c + c^\dagger \rangle \mathbb{I} + c = B
+\end{equation}
+
+Thus, the stochastic contribution for \emph{any} arbitrary angle $ \theta \in (0, \pi) $ is identically $ B \Delta W $. By performing the same algebraic grouping for the deterministic $ \mathcal{O}(\Delta t) $ drift terms (where all $ \theta $ dependencies rigorously cancel out against the zeroth-order terms of $ \mathbb{E}[dn] $), the full state update collapses exactly into the universal nonlinear State Diffusion equation:
+\begin{equation}
+	d\ket{\psi_{S}} = A_{eff} dt + B dW
+\end{equation}
+
+\paragraph{Singular limits: $\theta=0$ and $\theta=\pi$.}
+As established in the previous models, this universality strictly requires $ \sin\theta \neq 0 $. At the boundary points $ \theta = 0 $ and $ \theta = \pi $, the variance scaling breaks down because the probability of one branch scales as $ \mathcal{O}(\Delta t) $ rather than $ \mathcal{O}(1) $. At these isolated singularities, the noise converges to a compound Poisson process rather than a continuous Wiener process, gracefully recovering the Quantum Jump unravellings derived in Eq.~\ref{eq:standard_QJ_SSE}.
+
 
 \newpage 
 
