@@ -51,7 +51,8 @@ except FileNotFoundError:
     sys.exit(1)
 
 times = data['times']
-total_jumps = data['total_jumps']
+jumps_IC = data['jumps_IC']
+jumps_ISC = data['jumps_ISC']
 
 # -----------------------------------------------
 # Extract from rho_tot_all (3, 3, n_times, N_traj)
@@ -62,19 +63,27 @@ rho_all = data['rho_tot_all']
 pop_00 = np.real(rho_all[0, 0, :, :])
 pop_11 = np.real(rho_all[1, 1, :, :])
 pop_22 = np.real(rho_all[2, 2, :, :])
+pop_33 = np.real(rho_all[3, 3, :, :])
 
 # Coherences
 coh_01 = rho_all[0, 1, :, :]
 coh_12 = rho_all[1, 2, :, :]
 coh_02 = rho_all[0, 2, :, :]
+coh_03 = rho_all[0, 3, :, :]
+coh_13 = rho_all[1, 3, :, :]
+coh_23 = rho_all[2, 3, :, :]
 
 # Averages over all trajectories
 avg_pop_00 = pop_00.mean(axis=1)
 avg_pop_11 = pop_11.mean(axis=1)
 avg_pop_22 = pop_22.mean(axis=1)
+avg_pop_33 = pop_33.mean(axis=1)
 avg_coh_01 = coh_01.mean(axis=1)
 avg_coh_12 = coh_12.mean(axis=1)
 avg_coh_02 = coh_02.mean(axis=1)
+avg_coh_03 = coh_03.mean(axis=1)
+avg_coh_13 = coh_13.mean(axis=1)
+avg_coh_23 = coh_23.mean(axis=1)
 
 # -----------------------------------------------
 # Extract baseline: rho_trace (3, 3, n_times)
@@ -83,6 +92,7 @@ rho_trace = data['rho_trace']
 pops_trace_00 = np.real(rho_trace[0, 0, :])
 pops_trace_11 = np.real(rho_trace[1, 1, :])
 pops_trace_22 = np.real(rho_trace[2, 2, :])
+pops_trace_33 = np.real(rho_trace[3, 3, :])
 
 # ----------------------------------------------------
 # Extract Lindblad: rho_list_lindblad (n_times, 3, 3)
@@ -91,10 +101,13 @@ rho_lind = data['rho_list_lindblad']
 lindblad_00 = np.real(rho_lind[:, 0, 0])
 lindblad_11 = np.real(rho_lind[:, 1, 1])
 lindblad_22 = np.real(rho_lind[:, 2, 2])
+lindblad_33 = np.real(rho_lind[:, 3, 3])
 lindblad_12 = rho_lind[:, 1, 2]
 lindblad_01 = rho_lind[:, 0, 1]
 lindblad_02 = rho_lind[:, 0, 2]
-
+lindblad_03 = rho_lind[:, 0, 3]
+lindblad_13 = rho_lind[:, 1, 3]
+lindblad_23 = rho_lind[:, 2, 3]
 # -----------------------------------------------
 # Extract isolated system: rho_traj_isolated 
 # -----------------------------------------------
@@ -102,7 +115,7 @@ rho_iso = data['rho_traj_isolated']
 pop_traj_isolated_00 = np.real(rho_iso[0, 0, :])
 pop_traj_isolated_11 = np.real(rho_iso[1, 1, :])
 pop_traj_isolated_22 = np.real(rho_iso[2, 2, :])
-
+pop_traj_isolated_33 = np.real(rho_iso[3, 3, :])
 
 # ===========================
 # General Setup for Plotting
@@ -133,8 +146,10 @@ def save_fig(fig, filename):
 # =========================================================
 # Find trajectories that experienced a Quantum Jump
 # =========================================================
+# --- Modifica: Ora un salto può avvenire su |1> (IC) o su |3> (ISC) ---
 pop_11_diff = np.diff(pop_11, axis=0)
-jump_mask = np.any(np.abs(pop_11_diff) > 0.2, axis=0)
+pop_33_diff = np.diff(pop_33, axis=0)
+jump_mask = np.any((np.abs(pop_11_diff) > 0.2) | (np.abs(pop_33_diff) > 0.2), axis=0)
 jump_indices = np.where(jump_mask)[0]
 
 print(f"Total trajectories evaluated: {pop_11.shape[1]}")
@@ -143,7 +158,7 @@ print(f"Found {len(jump_indices)} trajectories with jumps.")
 if len(jump_indices) > 0:
     sample_idx = jump_indices[0]  
 else:
-    sample_idx = 0  # Fallback
+    sample_idx = 0  
 print(f"Selected sample_idx for plotting: {sample_idx}")
 
 
@@ -151,8 +166,11 @@ print(f"Selected sample_idx for plotting: {sample_idx}")
 # Plot 0: Plotting the Total Jump Counts
 # ==========================================
 fig_jumps, ax_jumps = plt.subplots(figsize=(10, 5))
-ax_jumps.plot(times, total_jumps, color='purple', alpha=0.8, linewidth=1.5, 
-              label=f'Jumps per step (Total: {np.sum(total_jumps)})')
+# --- Modifica: Tracciamo entrambi i canali ---
+ax_jumps.plot(times, jumps_IC, color='purple', alpha=0.8, linewidth=1.5, 
+              label=f'IC Jumps (Total: {np.sum(jumps_IC)})')
+ax_jumps.plot(times, jumps_ISC, color='orange', alpha=0.8, linewidth=1.5, 
+              label=f'ISC Jumps (Total: {np.sum(jumps_ISC)})')
 
 ax_jumps.set_title(f"Total Jumps Over Time (Theta={theta_deg}°, dt={dt})", fontsize=14)
 ax_jumps.set_xlabel("Time", fontsize=12)
@@ -168,9 +186,11 @@ populations = [
     {'lindblad': lindblad_00, 'trace': pops_trace_00, 'avg': avg_pop_00, 'label': '|0>'},
     {'lindblad': lindblad_11, 'trace': pops_trace_11, 'avg': avg_pop_11, 'label': '|1>'},
     {'lindblad': lindblad_22, 'trace': pops_trace_22, 'avg': avg_pop_22, 'label': '|2>'},
+    {'lindblad': lindblad_33, 'trace': pops_trace_33, 'avg': avg_pop_33, 'label': '|3>'} # Aggiunto
 ]
 
-fig01, axes = plt.subplots(1, 3, figsize=(18, 5), sharey=False)
+# --- Modifica: Subplots (1, 4) e larghezza aumentata (22) ---
+fig01, axes = plt.subplots(1, 4, figsize=(22, 5), sharey=False)
 
 for ax, pop in zip(axes, populations):
     lbl = pop['label']
@@ -188,7 +208,7 @@ for ax, pop in zip(axes, populations):
     ax.legend(loc='best')
 
 fig01.suptitle(f'Angle {theta_deg}° — Lindblad vs Trace vs Avg Traj | dt={dt}, N_traj={N_traj}', fontsize=15)
-save_fig(fig01, f'Comparison_3pop_Theta_{float(theta_deg):.4f}'.replace('.', 'p')) 
+save_fig(fig01, f'Comparison_4pop_Theta_{float(theta_deg):.4f}'.replace('.', 'p')) 
 
 
 # ================================================
@@ -197,10 +217,11 @@ save_fig(fig01, f'Comparison_3pop_Theta_{float(theta_deg):.4f}'.replace('.', 'p'
 plot_data_single = [
     {'single': pop_00[:, sample_idx], 'lindblad': lindblad_00, 'label': '|0>'},
     {'single': pop_11[:, sample_idx], 'lindblad': lindblad_11, 'label': '|1>'},
-    {'single': pop_22[:, sample_idx], 'lindblad': lindblad_22, 'label': '|2>'}
+    {'single': pop_22[:, sample_idx], 'lindblad': lindblad_22, 'label': '|2>'},
+    {'single': pop_33[:, sample_idx], 'lindblad': lindblad_33, 'label': '|3>'} # Aggiunto
 ]
 
-fig02, axes = plt.subplots(1, 3, figsize=(18, 5), sharey=False)
+fig02, axes = plt.subplots(1, 4, figsize=(22, 5), sharey=False)
 
 for ax, data_s in zip(axes, plot_data_single):
     lbl = data_s['label']
@@ -228,10 +249,11 @@ num_samples = 50
 plot_data_many = [
     {'samples': pop_00[:, :num_samples], 'lindblad': lindblad_00, 'avg': avg_pop_00, 'jump': pop_00[:, sample_idx], 'label': '|0>'},
     {'samples': pop_11[:, :num_samples], 'lindblad': lindblad_11, 'avg': avg_pop_11, 'jump': pop_11[:, sample_idx], 'label': '|1>'},
-    {'samples': pop_22[:, :num_samples], 'lindblad': lindblad_22, 'avg': avg_pop_22, 'jump': pop_22[:, sample_idx], 'label': '|2>'}
+    {'samples': pop_22[:, :num_samples], 'lindblad': lindblad_22, 'avg': avg_pop_22, 'jump': pop_22[:, sample_idx], 'label': '|2>'},
+    {'samples': pop_33[:, :num_samples], 'lindblad': lindblad_33, 'avg': avg_pop_33, 'jump': pop_33[:, sample_idx], 'label': '|3>'} # Aggiunto
 ]
 
-fig03, axes = plt.subplots(1, 3, figsize=(18, 5), sharey=False)
+fig03, axes = plt.subplots(1, 4, figsize=(22, 5), sharey=False)
 
 for ax, data_m in zip(axes, plot_data_many):
     lbl = data_m['label']
@@ -265,10 +287,13 @@ save_fig(fig03, f'Many_Traj_vs_Average_Theta_{float(theta_deg):.4f}'.replace('.'
 coherence_data = [
     ('01', lindblad_01, avg_coh_01),
     ('12', lindblad_12, avg_coh_12),
-    ('02', lindblad_02, avg_coh_02)
+    ('02', lindblad_02, avg_coh_02),
+    ('03', lindblad_03, avg_coh_03),
+    ('13', lindblad_13, avg_coh_13),
+    ('23', lindblad_23, avg_coh_23)
 ]
 
-fig04, axes = plt.subplots(3, 2, figsize=(16, 15))
+fig04, axes = plt.subplots(6, 2, figsize=(16, 15))
 
 for row_idx, (label, lind_data, avg_data) in enumerate(coherence_data):
     # Real Part
@@ -302,22 +327,27 @@ save_fig(fig04, f'Coherences_Theta_{float(theta_deg):.4f}'.replace('.', 'p'))
 # no_jump_indices = np.setdiff1d(all_indices, jump_indices)
 
 # if len(no_jump_indices) > 0:
-#     # Populations (Averaging only over the 'no_jump_indices')
+#     # Populations 
 #     avg_pop_00_nj = pop_00[:, no_jump_indices].mean(axis=1)
 #     avg_pop_11_nj = pop_11[:, no_jump_indices].mean(axis=1)
 #     avg_pop_22_nj = pop_22[:, no_jump_indices].mean(axis=1)
+#     avg_pop_33_nj = pop_33[:, no_jump_indices].mean(axis=1) # Aggiunto
 
 #     # Coherences
 #     avg_coh_01_nj = coh_01[:, no_jump_indices].mean(axis=1)
 #     avg_coh_12_nj = coh_12[:, no_jump_indices].mean(axis=1)
 #     avg_coh_02_nj = coh_02[:, no_jump_indices].mean(axis=1)
+#     avg_coh_03_nj = coh_03[:, no_jump_indices].mean(axis=1)
+#     avg_coh_13_nj = coh_13[:, no_jump_indices].mean(axis=1)
+#     avg_coh_23_nj = coh_23[:, no_jump_indices].mean(axis=1)
 
 #     # --- Plot Populations (No-Jump) ---
-#     fig_pop, axes_pop = plt.subplots(1, 3, figsize=(18, 5))
+#     fig_pop, axes_pop = plt.subplots(1, 4, figsize=(22, 5)) # Aumentato a (1,4)
 #     pop_data_nj = [
 #         {'lindblad': lindblad_00, 'full_avg': avg_pop_00, 'no_jump': avg_pop_00_nj, 'label': '|0>'},
 #         {'lindblad': lindblad_11, 'full_avg': avg_pop_11, 'no_jump': avg_pop_11_nj, 'label': '|1>'},
-#         {'lindblad': lindblad_22, 'full_avg': avg_pop_22, 'no_jump': avg_pop_22_nj, 'label': '|2>'}
+#         {'lindblad': lindblad_22, 'full_avg': avg_pop_22, 'no_jump': avg_pop_22_nj, 'label': '|2>'},
+#         {'lindblad': lindblad_33, 'full_avg': avg_pop_33, 'no_jump': avg_pop_33_nj, 'label': '|3>'}
 #     ]
 
 #     for ax, data_nj in zip(axes_pop, pop_data_nj):
@@ -334,11 +364,14 @@ save_fig(fig04, f'Coherences_Theta_{float(theta_deg):.4f}'.replace('.', 'p'))
 #     save_fig(fig_pop, f'NO_JUMPS_Populations_Theta_{float(theta_deg):.4f}'.replace('.', 'p'))
 
 #     # --- Plot Coherences (No-Jump) ---
-#     fig_coh, axes_coh = plt.subplots(3, 2, figsize=(16, 15))
+#     fig_coh, axes_coh = plt.subplots(6, 2, figsize=(16, 15))
 #     coh_data_nj = [
 #         ('01', lindblad_01, avg_coh_01, avg_coh_01_nj),
 #         ('12', lindblad_12, avg_coh_12, avg_coh_12_nj),
-#         ('02', lindblad_02, avg_coh_02, avg_coh_02_nj)
+#         ('02', lindblad_02, avg_coh_02, avg_coh_02_nj),
+#         ('03', lindblad_03, avg_coh_03, avg_coh_03_nj),
+#         ('13', lindblad_13, avg_coh_13, avg_coh_13_nj),
+#         ('23', lindblad_23, avg_coh_23, avg_coh_23_nj)
 #     ]
 
 #     for row_idx, (label, lind_data, full_avg, no_jump_avg) in enumerate(coh_data_nj):
