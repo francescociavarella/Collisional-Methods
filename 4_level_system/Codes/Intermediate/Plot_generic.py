@@ -33,10 +33,11 @@ dt_str = f"{dt:.6f}".replace(".", "p")
 phi_str = f"{theta_deg:.4f}".replace(".", "p")
 
 # --- Results Directory and Output Setup ---
-results_dir = "../../Results/Data/Complete_rho/"
+results_dir = "../../Results/Data/Complete_rho/prova_pop_05"
 
 # Create a specific subfolder for the current angle (e.g., Plot/Populations/180)
-Output_dir = f"../../Results/Plot/Populations/{phi_str}"
+Output_dir = f"../../Results/Plot/Populations/prova_pop_05"
+# Output_dir = f"../../Results/Plot/Populations/{phi_str}"
 os.makedirs(Output_dir, exist_ok=True)
 
 

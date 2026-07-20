@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ANGLES=(0 45 90)
+ANGLES=(90)
 
 export NUMBA_NUM_THREADS=12
 

@@ -639,9 +639,11 @@ gamma_k = [gamma_IC, gamma_ISC]
 # ======
 # System
 # ======
-pop_0 = np.sqrt(1 - 10**(-3)) # Population in |0> is close to 1, but not exactly 1 to avoid numerical issues
+pop_0 = np.sqrt(0.5)
+# pop_0 = np.sqrt(1 - 10**(-3)) # Population in |0> is close to 1, but not exactly 1 to avoid numerical issues
 pop_1 = 0.0
-pop_2 = np.sqrt(10**(-3))
+pop_2 = np.sqrt(0.5)
+# pop_2 = np.sqrt(10**(-3))
 pop_3 = 0.0
 
 psi_sys_initial = np.array([pop_0, pop_1, pop_2, pop_3], dtype=complex) # System is initialized in |0> mainly and|2> perturbatively
@@ -692,7 +694,7 @@ phi_rad = np.radians(phi_deg)
 # ======================
 # Output directory setup
 # ======================
-results_dir = "../../Results/Data/Complete_rho/"
+results_dir = "../../Results/Data/Complete_rho/prova_pop_05"
 os.makedirs(results_dir, exist_ok=True)
 BATCH_SIZE = 1000
 
