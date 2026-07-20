@@ -1250,7 +1250,7 @@ For the Ancilla instead, since every site has and independent reservoir of Ancil
 As already done for the single site, to obtain the Total \textit{Kraus Operators} we can start from the evolution of the total wf via :
 \begin{gather}
 	\mathcal{U}_{Coll}^{Tot} \left(\Delta t\right) = \exp{ -i \sum_{j}{\mathcal{H}_{Coll}^{j}} \Delta t } = \exp{-i \sum_{j}{c_{j} \sigma_{z}^{j} \otimes \left( g_{x} \sigma_{x}^{a_{j}} + g_{z} \sigma_{z}^{a_{j}} \right) \Delta t}} \notag \\
-	\exp{ \left(-i \mathcal{H}_{Coll}^{1} \Delta t\right) } \exp{ \left(-i \mathcal{H}_{Coll}^{2} \Delta t\right) } = \mathcal{U}_{Coll}^{1} \otimes \mathcal{U}_{Coll}^{2}
+	\exp{ \left(-i \mathcal{H}_{Coll}^{1} \Delta t\right) } \exp{ \left(-i \mathcal{H}_{Coll}^{2} \Delta t\right) } = \mathcal{U}_{Coll}^{1} \mathcal{U}_{Coll}^{2}
 \end{gather}
 where it's important to remember that :
 \begin{gather}
@@ -2753,8 +2753,8 @@ The probability of measuring the Ancilla's state are:
 	&= \frac{1}{2} \left( 1 + i(A^*B - AB^*) \sin \left(c \Delta t \right) \right) = \frac{1}{2} - \text{Im}(A^*B) \sin \left(c \Delta t \right) 
 \end{align}
 
-\subsection{Coccia System}
-\subsection{Collisional Methods}
+\subsection{Coccia System with Collision Methods}
+\label{sub:Coccia_system_with_CM}
 We now try to do the same unraveling but via \textit{Collisional Methods}. Note that most of the Equation used are derived in the notes MC, where we treated a simple two level system; here the dynamic will be the same, i.e relaxation of an excited state, but extending the system to 3 levels, with $ \ket{0} $ not involved in the collision.
 The initial System wave function is still : 
 \begin{equation}
@@ -2767,6 +2767,7 @@ The Hamiltonian reads :
 with $ H_{S} $ associated to the eigenenergies of the system, while the Collisional Hamiltonian reads:
 \begin{equation}
 	H_{Coll} = c \left( \ket{1}\bra{2} \otimes \sigma_{+}^{a} + \ket{2}\bra{1} \otimes \sigma_{-}^{a} \right)
+	\label{eq:H_coll_3_level_system}
 \end{equation}
 We use an ancilla always initialize in $ \ket{0_{a}} $ so that $ \rho_{a} = \begin{pmatrix} 1 & 0 \\ 0 & 0 \end{pmatrix} $. \newline
 The total wave function is $ \ket{\Psi (0)} = \ket{\Psi_{S} (0)} \otimes \ket{0_{a}} $. \newline
@@ -2790,8 +2791,6 @@ Now we can apply every single term to the total wave function :
 	X \left( \ket{\Psi_{S}} \otimes \ket{0_{a}} \right) &= \left[\left( \ket{1}\bra{2} + \ket{2}\bra{1} \right) \otimes \sigma_{x}^{a} - i \left( \ket{1}\bra{2} - \ket{2}\bra{1} \right) \otimes \sigma_{y}^{a}\right] \left( \sqrt{p_{0}} \ket{0} + \sqrt{p_{2}} \ket{2} \right) \otimes \ket{0_{a}}  \notag \\
 	&= \sqrt{p_{2}} \ket{1} \otimes \ket{1_{a}} + \sqrt{p_{2}} \ket{1} \otimes \ket{1_{a}} = 2 \sqrt{p_{2}} \ket{1} \otimes \ket{1_{a}} 
 \end{align}
-
-\newpage
 
 The total evolved wave function, including the identity term for $ \ket{0} $ now reads : 
 \begin{equation}
@@ -3005,7 +3004,7 @@ order in $\Delta t$:
 	\label{eq:sin2_cdt_expansion}
 \end{align}
 
-Substituting Eqs.~\eqref{eq:cos_cdt_expansion} and \eqref{eq:sin_cdt_expansion} into 
+Substituting Eqs.\ref{eq:cos_cdt_expansion} and \ref{eq:sin_cdt_expansion} into 
 $\mathcal{M}_{0,\chi_{+}^{a}}$ and $\mathcal{M}_{0,\chi_{-}^{a}}$:
 \begin{align}
 	\mathcal{M}_{0, \chi_{+}^{a}} &\approx \cos\left(\frac{\theta}{2}\right) 
@@ -3020,7 +3019,7 @@ $\mathcal{M}_{0,\chi_{+}^{a}}$ and $\mathcal{M}_{0,\chi_{-}^{a}}$:
 	\label{eq:M0_chiminus_expanded}
 \end{align}
 
-Similarly, substituting Eqs.~\eqref{eq:cos2_cdt_expansion} and \eqref{eq:sin2_cdt_expansion} 
+Similarly, substituting Eqs.\ref{eq:cos2_cdt_expansion} and \ref{eq:sin2_cdt_expansion} 
 into $P_{\chi_{+}^{a}}$, and using the normalization $p_{0}+p_{1}+p_{2}=1$:
 \begin{align}
 	P_{\chi_{+}^{a}} &\approx \cos^{2}\left(\frac{\theta}{2}\right) 
@@ -3064,11 +3063,11 @@ $O(\sqrt{\Delta t})$ term), we obtain:
 	\label{eq:expansion_Pchiminus}
 \end{align}
 Note the new feature compared to the exciton dimer case: the $I^{2}$ term is a genuinely nonlinear (state-dependent) correction to the normalization, structurally analogous to the nonlinear terms appearing in the standard nonlinear QSD formalism 
-(cf.\ Eq.~\eqref{eq:standard_SD_SSE}).
+(cf.\ Eq.\ref{eq:standard_SD_SSE}).
 
 Substituting the expansions of $\mathcal{M}_{0,\chi_{+}^{a}}$ 
-(Eq.~\eqref{eq:M0_chiplus_expanded}) and $1/\sqrt{P_{\chi_{+}^{a}}}$ 
-(Eq.~\eqref{eq:expansion_Pchiplus}), and retaining all terms up to $O(\Delta t)$ 
+(Eq.\ref{eq:M0_chiplus_expanded}) and $1/\sqrt{P_{\chi_{+}^{a}}}$ 
+(Eq.\ref{eq:expansion_Pchiplus}), and retaining all terms up to $O(\Delta t)$ 
 (including the $O(\sqrt{\Delta t})\times O(\sqrt{\Delta t})$ cross term between the 
 $\ket{1}\bra{2}$ piece of $\mathcal{M}_{0,\chi_{+}^{a}}$ and the $I$-term of 
 $1/\sqrt{P_{\chi_{+}^{a}}}$), we obtain:
@@ -3094,7 +3093,7 @@ and analogously:
 	\label{eq:norm_Mchiminus}
 \end{align}
 
-Substituting Eqs.~\eqref{eq:norm_Mchiplus} and \eqref{eq:norm_Mchiminus} into the 
+Substituting Eqs.\ref{eq:norm_Mchiplus} and \ref{eq:norm_Mchiminus} into the 
 generic state update equation, the wavefunction at $t+\Delta t$ reads:
 \begin{align}
 	\ket{\psi_{S}\left(t+\Delta t\right)} &= 
@@ -3144,7 +3143,7 @@ In the standard framework of Itô calculus, a Stochastic Schrödinger Equation (
 	d\ket{\psi_{S}} = A_{raw} \ket{\psi_{S}} dt + B \ket{\psi_{S}} d\tilde{Y}
 	\label{eq:general_SDE_structure}
 \end{equation}
-By defining the raw homodyne measurement record as $ d\tilde{Y} = (2dn - 1)\sqrt{\Delta t} $, setting $ dt = \Delta t $, and substituting the definitions of $ c $ and $ \langle c + c^\dagger \rangle $ into Eq.~\eqref{eq:raw_SD_update}, we can explicitly identify the raw drift operator $ A_{raw} $ and the diffusion operator $ B $:
+By defining the raw homodyne measurement record as $ d\tilde{Y} = (2dn - 1)\sqrt{\Delta t} $, setting $ dt = \Delta t $, and substituting the definitions of $ c $ and $ \langle c + c^\dagger \rangle $ into Eq.\ref{eq:raw_SD_update}, we can explicitly identify the raw drift operator $ A_{raw} $ and the diffusion operator $ B $:
 \begin{align}
 	A_{raw} &= \frac{3}{8}\langle c + c^\dagger \rangle^2 \mathbb{I} - \frac{1}{2}c^\dagger c - \frac{1}{2}\langle c + c^\dagger \rangle c \\
 	B &= c - \frac{1}{2}\langle c + c^\dagger \rangle
@@ -3254,51 +3253,624 @@ Thus, the stochastic contribution for \emph{any} arbitrary angle $ \theta \in (0
 \paragraph{Singular limits: $\theta=0$ and $\theta=\pi$.}
 As established in the previous models, this universality strictly requires $ \sin\theta \neq 0 $. At the boundary points $ \theta = 0 $ and $ \theta = \pi $, the variance scaling breaks down because the probability of one branch scales as $ \mathcal{O}(\Delta t) $ rather than $ \mathcal{O}(1) $. At these isolated singularities, the noise converges to a compound Poisson process rather than a continuous Wiener process, gracefully recovering the Quantum Jump unravellings derived in Eq.~\ref{eq:standard_QJ_SSE}.
 
-
 \newpage 
 
-\appendix
-\section{Demonstration of the presence of an Abrupt Change for the "Quantum Jump" limit}
-\label{sec:Demonstration_abrupt_change_QJ}
+\subsection{Some Results}
+\label{sub:coccia3levels_results}
+In this subsection we show some of the results of this specific case study.
 
-Starting from the probability of measuring the ancilla in the state $ \ket{1_{a}} $ given by Eq.\ref{eq:P1a_final} which reads : 
-\begin{equation*}
-	P_{1_a} = g_1^2 \cos^2(c_j \Delta t) + g_0^2 \sin^2(c_j \Delta t)
-\end{equation*}
-that given :
-\begin{gather*}
-	g_{0}^{2} + g_{1}^{2} = 1 \\
-	g_{1} = \sin \left( \phi / 2 \right) \\
-	\theta = \frac{\pi}{2} + \phi \\
-	S^{J} = \sin^{2} \left(c_{j} \Delta t\right)
-\end{gather*}
-becomes : 
+\subsubsection{Finite-Sample Convergence Analysis}
+\label{subsub:finite_sample_convergence_analysis}
+
+By comparing the numerical averages over $N = 10000$ trajectories with the exact Lindblad dynamics (and the map obtained by tracing out the ancilla's degrees of freedom), we observe distinct convergence behaviors for the two unravelings. Specifically, the State Diffusion (SD) unraveling successfully reaches convergence for all three population observables. In contrast, the Quantum Jump (QJ) unraveling struggles to converge for the populations of states $\ket{0}$ and $\ket{1}$ when the ensemble size is insufficiently large.
+
+To quantify this discrepancy, we analyzed the convergence error—measured via Trace Distance—as a function of the number of averaged trajectories $N$. This analysis reveals that the two limits are governed by fundamentally different statistical regimes: the SD limit is ruled by the \textbf{Central Limit Theorem} (CLT), whereas the QJ limit is governed by the \textbf{Law of Rare Events}, also known as the \textbf{Poisson Limit Theorem}.
+
+In the SD limit, the system's evolution is continuously driven by a Wiener process, which is characterized by normally distributed increments. Because the underlying noise is Gaussian at every time step, the statistical fluctuations of the ensemble average follow the CLT from the very beginning. Consequently, the convergence error scales symmetrically and smoothly as $1/\sqrt{N}$, even for a relatively low number of trajectories.
+
+Conversely, the QJ dynamics consist of long periods of deterministic, non-unitary evolution interrupted by abrupt, highly improbable quantum jumps. Let $p$ be the overall probability that a given trajectory undergoes at least one jump during the total simulation time. Since $p \ll 1$, the occurrence of these jumps across an ensemble of $N$ independent trajectories is perfectly described by the Poisson Limit Theorem. This theorem states that as the number of trials $N \to \infty$ and the success probability $p \to 0$, while their product $\lambda = Np$ remains constant, the binomial distribution of the events converges to a Poisson distribution with mean $\lambda$.
+
+The Poissonian nature of the QJ unraveling strictly dictates the minimum number of trajectories required to correctly sample the dissipative dynamics. If $\lambda \ll 1$, the ensemble will most likely not record a single jump, leaving the dissipative channels unpopulated and causing the numerical error to plateau at a maximum constant value. According to the Poisson distribution, the probability of observing exactly $k$ jumping trajectories in the ensemble is :
 \begin{equation}
-	P_{1_a} = S^{j} + \sin^{2} \left(\frac{\theta}{2} - \frac{\pi}{4} \right) \left[1 - 2 S^{j}\right]
+	P(k) = \frac{\lambda^k e^{-\lambda}}{k!}
 \end{equation}
-in the QJ limit we have $ \theta = \frac{\pi}{2} $ and so that :
-\begin{equation*}
-	P_{1_a}^{j} = S^{j} = \sin^{2} \left(c_{j} \Delta t\right) 
-\end{equation*}
-perturbing this therm  by moving of a small angle $\delta $ and expanding at the second order around  $\delta=0 $ we obtain that : 
-\begin{equation*}
-	P_{1_a}^{j}(0) = S^{j} + \delta^{2} (1 -2 S^{j}) \approx S^{j} + \delta^{2} 
-\end{equation*}
-since $ S^{j} << 1 $ 
-To quantify the change$ \Delta P $ in $ P_{1_a} $ from $ P_{1_a}^{j} $ for small value of $ \delta $ we can define the \textit{relative change } $ \eta $ as : 
+Thus, the probability of observing \textit{at least one} jump is:
 \begin{equation}
-	\eta = \frac{\Delta P_{1_a}}{P_{1_a}^{j}} \approx \frac{\delta ^{2}}{S^{j}}
+	P(k \ge 1) = 1 - P(0) = 1 - e^{-N p}
 \end{equation}
-Notice that theoretically $ S^{j} \rightarrow 0 $, since $ \Delta t \rightarrow 0 $; but for a computational limit the time step value can't be zero.
-Thus the relative change $ \eta \rightarrow \infty $ which no matter the strength of the perturbation $ \delta $, i.e. for every $ \delta \neq 0 $, even small, the simulation will snaps abruptly out of the Quantum Jump regime. If a transition from the QJ limit is visible is because of the discreteness of $ \Delta t $.  \newline
-So that it's possible to define te critical angle perturbation : 
+
+To ensure that the simulation captures the quantum jumps with a defined statistical confidence level, we can analytically determine the critical ensemble size. For instance, to achieve a $95\%$ probability of observing at least one jump, we require:
+\begin{align}
+	1 - e^{-N p} &= 0.95 \notag \\
+	e^{-N p} &= 0.05 \notag \\
+	N &= \frac{-\ln(0.05)}{p} \approx \frac{3}{p}
+	\label{eq:critical_trajectories}
+\end{align}
+
+This result formally explains the initial plateau observed in the Trace Distance scaling for the QJ unraveling: below this critical threshold $N$, the Monte Carlo algorithm fails to sample the rare event, yielding an incomplete representation of the system's density matrix. Only when $N \gg 3/p$ does the Poisson distribution accumulate enough events to eventually transition into a Gaussian regime, restoring the expected $1/\sqrt{N}$ convergence scaling.
+
+\subsubsection{Analysis of the presume null Variance of the Population of Site $ \ket{2} $}
+In all the regime, different from QJ, we  see that a single trajectory reproduce exactly the same Lindblad evolution, without need to average over different realizations. We try to evaluate the evolution of the population of site $ \ket{2} $ and see if we have a cancellation of the noisy part.
+We start again from the equation : 
+\begin{equation}
+	\ket{\psi_{S}(t + \Delta t)} = \frac{\mathcal{K}_{0}}{\sqrt{P_{0}}} \ket{\psi_{S}(t)} (1 - dn) + \frac{\mathcal{K}_{1}}{\sqrt{P_{1}}} \ket{\psi_{S}(t)} dn
+\end{equation}
+and define the population after the collisional time step as : 
+\begin{align}
+	&p_{2} \left( t + \Delta t \right) = \bra{\psi_{S}(t + \Delta t)} 2 \rangle \langle 2 \ket{\psi_{S}(t + \Delta t)} \notag \\ 
+	&= \bra{\psi_{S}(t)} \left( \frac{\mathcal{K}^{\dagger}_{0}}{\sqrt{P_{0}}}  (1 - dn) + \frac{\mathcal{K}^{\dagger}_{1}}{\sqrt{P_{1}} } dn\right) \ket{2} \bra{2} \left( \frac{\mathcal{K}_{0}}{\sqrt{P_{0}}} (1 - dn) + \frac{\mathcal{K}_{1}}{\sqrt{P_{1}}} dn \right) \ket{\psi_{S}(t)} \notag \\
+	&= \frac{\bra{\psi_{S}(t)} {K}^{\dagger}_{0} \ket{2} \bra{2} {K}_{0} \ket{\psi_{S}(t)} }{P_{0}} (1-dn) + \frac{\bra{\psi_{S}(t)} {K}^{\dagger}_{1} \ket{2} \bra{2} {K}_{1} \ket{\psi_{S}(t)} }{P_{1}} dn
+\end{align}
+remembering the properties of the Bernoulli variable $ dn^{2} = dn $ and so $ (1-dn)dn = 0 $.
+We can now explicit the product between the Kraus Operators and the projectors : 
 \begin{gather}
-	\delta_{Crit} = \sqrt{S^{j}} \notag \\
-	\text{where} \quad P_{1_a} \left( \delta_{Crit} \right) = 2 P_{1_a}^{j}
+	{K}^{\dagger}_{0} \ket{2} \bra{2} {K}_{0} = \cos^{2} \left( \frac{\theta}{2} \right) \cos^{2} \left( c \Delta t \right) \ket{2} \bra{2} \\
+	{K}^{\dagger}_{1} \ket{2} \bra{2} {K}_{1} = \sin^{2} \left( \frac{\theta}{2} \right) \cos^{2} \left( c \Delta t \right) \ket{2} \bra{2} 
 \end{gather}
+so that, with $ \bra{\psi_{S}(t)} 2 \rangle \langle 2 \ket{\psi_{S}(t)} = p_{2} (t) $, we got 
+\begin{align}
+	p_{2} \left( t + \Delta t \right) &= \frac{\cos^{2} \left( \frac{\theta}{2} \right) \cos^{2} \left( c \Delta t \right) p_{2} (t)}{P_{0}} (1-dn) + \frac{\sin^{2} \left( \frac{\theta}{2} \right) \cos^{2} \left( c \Delta t \right) p_{2} (t)}{P_{1}} dn \\
+	&=  \cos^{2} \left( c \Delta t \right) p_{2} (t) \Big[ \frac{\cos^{2} \left( \frac{\theta}{2} \right)}{P_{0}} + \left( \frac{\sin^{2} \left( \frac{\theta}{2} \right)}{P_{1}} - \frac{\cos^{2} \left( \frac{\theta}{2} \right)}{P_{0}} \right) dn \Big] \label{eq:general_p2_evolution}
+\end{align}
+We can now analyze the two unraveling limits : 
+\paragraph{Quantum Jump Limit}
+In this case we set $ \theta = 0 $ and so Eq.\ref{eq:general_p2_evolution} reads: 
+\begin{equation}
+	p_{2} \left( t + \Delta t \right) = \frac{\cos^{2} \left( c \Delta t \right) p_{2} (t) }{P_0} \left(1 - dn \right)
+	\label{eq:QJ_p2_evolution}
+\end{equation}
+In this case we see that $ p_2 $ evolves in time only if we measure the ancilla in state $ \ket{0_{a}} $, that corresponds to $ dn = 0 $. If we get $ dn = 1 $, i.e. a quantum jump, this totally projects the population of site $ \ket{2} $ in $ \ket{1} $. In fact $ p_{2} \left( t + \Delta t \right) = 0 $ for $ dn = 1 $.
+
+Furthermore, this evolution can be directly reconnected to the Lindblad evolution of $ p_2 $. 
+We first evaluate the conditional expectation value given the state at time t, 
+since $p_2(t)$ is a stochastic variable depending on previous jumps:
+\begin{align}
+	\mathbb{E} \Big[ p_{2}(t + \Delta t) \Big| p_{2}(t) \Big] &= \frac{\cos^{2} \left( c \Delta t \right) p_{2} (t) }{P_0} \mathbb{E} \Big[\left(1 - dn \right)\Big] \notag \\ 
+	&= \cos^{2} \left( c \Delta t \right) p_{2} (t)
+\end{align}
+By taking the total expectation (ensemble average over all trajectories), we get:
+\begin{equation}
+	\overline{p_{2} \left( t + \Delta t \right) } = \mathbb{E} \Big[ \mathbb{E} \big[ p_{2}(t + \Delta t) \big| p_{2}(t) \big] \Big] = \cos^{2} \left( c \Delta t \right) \overline{ p_{2} (t)}
+\end{equation}
+
+We now perform the Taylor expansion for small $\Delta t$, where $c^2 \Delta t^2 \approx \Gamma \Delta t$
+\begin{equation}
+	\overline{p_{2} \left( t + \Delta t \right) } \approx \left(1 - \Gamma \Delta t \right) \overline{ p_{2} (t)} =  \overline{ p_{2} (t)} - \Gamma \Delta t  \overline{ p_{2} (t)}
+\end{equation}
+Finally, we define the incremental ratio and take the limit $\Delta t \to 0$.
+Note that the derivative is only properly defined for the ensemble average, not for the stochastic single trajectory.
+\begin{gather}
+	\lim_{\Delta t \to 0} \frac{\overline{p_{2} \left( t + \Delta t \right) } - \overline{ p_{2} (t)}}{\Delta t} = - \Gamma \overline{ p_{2} (t)} \\
+	\dot{\overline{p}}_{2}(t) = -\Gamma \overline{p}_{2}(t)
+\end{gather}
+
+To verify the consistency of our result, we evaluate the evolution of the population $ p_{2}(t) = \bra{2} \rho(t) \ket{2} $ using the Lindblad master equation. Assuming a purely dissipative dynamics ($ H = 0 $) with the jump operator $ L = \sqrt{\Gamma} \ket{1}\bra{2} $, the master equation reads:
+\begin{equation}
+	\dot{\rho} = L \rho L^\dagger - \frac{1}{2} \{L^\dagger L, \rho\}
+\end{equation}
+
+By projecting the equation onto the state $ \ket{2} $, we compute the time derivative of $ p_{2}(t) $. The incoming population term $ \bra{2} L \rho L^\dagger \ket{2} $ vanishes directly due to the state orthogonality ($ \bra{2} 1 \rangle = 0 $). Using $ L^\dagger L = \Gamma \ket{2}\bra{2} $ for the anticommutator part, we straightforwardly obtain:
+\begin{align}
+	\dot{p}_2(t) &= - \frac{\Gamma}{2} \bra{2} \left( \ket{2}\bra{2} \rho + \rho \ket{2}\bra{2} \right) \ket{2} \notag \\
+	&= - \frac{\Gamma}{2} \Big( p_{2}(t) + p_{2}(t) \Big) \notag \\
+	&= - \Gamma p_{2}(t)
+\end{align}
+
+This differential equation exactly matches the ensemble average evolution previously derived from the continuous limit of the collisional model.
+\newpage
+
+\paragraph{State Diffusion Limit}
+In this case we set $ \theta = 90 $ and so Eq.\ref{eq:general_p2_evolution} reads: 
+\begin{align}
+	p_{2} \left( t + \Delta t \right) &= \frac{\cos^{2} \left( c \Delta t \right) p_{2} (t)}{2}\Big[ \frac{1}{P_{0}} + \left( \frac{1}{P_{1}} - \frac{1}{P_{0}} \right) dn \Big] \notag \\
+	&= \cos^{2} \left( c \Delta t \right) p_{2} (t)\Big[ \frac{1}{1 + 2 \sin \left(c \Delta t\right) I } + \frac{4 \sin \left(c \Delta t\right) I}{1 - 4 \sin^{2} \left(c \Delta t\right) I^{2}} dn \Big] \label{eq:SD_p2_evolution}
+\end{align}
+where $ I = Im \{ c_{1}^{*}c_{2} \} $. We can now add and subtract the same quantity $  \frac{2 \sin \left(c \Delta t\right) I}{1 - 4 \sin^{2} \left(c \Delta t\right) I^{2}} $ and get the form:
+\begin{align}
+	p_{2} \left( t + \Delta t \right) &= \cos^{2} \left( c \Delta t \right) p_{2} (t)\Big[ \frac{1}{1 + 2 \sin \left(c \Delta t\right) I } + \frac{2 \sin \left(c \Delta t\right) I}{1 - 4 \sin^{2} \left(c \Delta t\right) I^{2}} + \frac{2 \sin \left(c \Delta t\right) I}{1 - 4 \sin^{2} \left(c \Delta t\right) I^{2}} (2dn - 1) \Big] \notag \\
+	&= \cos^{2} \left( c \Delta t \right) p_{2} (t)\Big[ \frac{1}{1 - 4 \sin^{2} \left(c \Delta t\right) I^{2}} + \frac{2 \sin \left(c \Delta t\right) I}{1 - 4 \sin^{2} \left(c \Delta t\right) I^{2}} (2dn - 1) \Big] \notag \\
+	&= p_{2}(t) \frac{\cos^{2} \left( c \Delta t \right)}{1 - 4 \sin^{2} \left( c \Delta t \right) I^{2}} \Big[ 1 + 2 \sin \left(c \Delta t\right) I (2dn - 1) \Big]
+	\label{eq:SD_p2_factored}
+\end{align}
+Now we expand for $\Delta t \to 0$. Using the collisional model scaling $ c \Delta t = \sqrt{\Gamma \Delta t}$, we have:
+$ \sin(c \Delta t) \approx \sqrt{\Gamma dt}$  and $ \cos^2(c \Delta t) \approx 1 - \Gamma dt$.
+We expand the prefactor up to the first order in $dt$:
+\begin{align}
+	\frac{\cos^{2} \left( c dt \right)}{1 - 4 \sin^{2} \left( c dt \right) I^{2}} &\approx \frac{1 - \Gamma dt}{1 - 4 \Gamma dt I^{2}} \notag \\
+	&\approx (1 - \Gamma dt)(1 + 4 \Gamma dt I^{2}) \notag \\
+	&\approx 1 - \Gamma dt + 4 \Gamma dt I^{2} = 1 - \Gamma (1 - 4I^{2}) dt
+	\label{eq:SD_prefactor_expansion}
+\end{align}
+
+At this stage, the raw record $(2dn-1)$ appearing in Eq.\ref{eq:SD_p2_factored} is \emph{not} a zero-mean quantity: writing $ dn = P_{1} + \delta n $, with $ \delta n $ the zero-mean Bernoulli fluctuation ($ \mathbb{E}[\delta n] = 0 $ by construction) and $ P_{1} \approx \tfrac{1}{2} - \sin(c\Delta t) I $, one finds
+\begin{equation}
+	2dn - 1 = 2\delta n + \left(2P_{1} - 1\right) \approx 2\delta n - 2\sin(c\Delta t)\, I .
+	\label{eq:raw_record_decomposition}
+\end{equation}
+The second term is a genuine $ \mathcal{O}(\sqrt{\Delta t}) $ drift contribution hidden inside $(2dn-1)$, and must be separated out before identifying a proper Wiener increment. We therefore define the properly centered increment
+\begin{equation}
+	\Delta W \equiv 2\,\delta n\, \sqrt{\Delta t}, \qquad \mathbb{E}[\Delta W] = 0,\quad \mathbb{E}[\Delta W^{2}] = \Delta t ,
+	\label{eq:proper_wiener_increment}
+\end{equation}
+so that, using $ \sin(c\Delta t) \approx \sqrt{\Gamma \Delta t} $,
+\begin{equation}
+	\sqrt{\Gamma}\, (2dn-1)\sqrt{\Delta t} \;\approx\; \sqrt{\Gamma}\,\Delta W \;-\; 2\Gamma\, I\, \Delta t .
+	\label{eq:raw_to_wiener}
+\end{equation}
+
+Substituting Eqs.\ref{eq:SD_prefactor_expansion} and \ref{eq:raw_to_wiener} back into Eq.\ref{eq:SD_p2_factored}:
+\begin{align}
+	p_{2} \left( t + dt \right) &\approx p_{2}(t) \Big[ 1 - \Gamma (1 - 4I^{2}) dt \Big] \Big[ 1 + 2I \left( \sqrt{\Gamma}\,\Delta W - 2\Gamma I\, dt \right) \Big] \notag \\
+	&= p_{2}(t) \Big[ 1 - \Gamma (1 - 4I^{2}) dt \Big] \Big[ 1 + 2\sqrt{\Gamma}\, I\, \Delta W - 4\Gamma I^{2}\, dt \Big]
+\end{align}
+Multiplying the terms and keeping only up to order $dt$ 
+(ignoring higher order terms like $\Delta W\, dt \propto dt^{3/2}$ and $dt^2$):
+\begin{align}
+	p_{2} \left( t + dt \right) &\approx p_{2}(t) \Big[ 1 - \Gamma (1 - 4I^{2}) dt - 4\Gamma I^{2} dt + 2\sqrt{\Gamma}\, I\, \Delta W \Big] \notag \\
+	&= p_{2}(t) \Big[ 1 - \Gamma\, dt + 2\sqrt{\Gamma}\, I\, \Delta W \Big]
+\end{align}
+where the $I^2$ contributions cancel \emph{exactly} between the prefactor expansion and the drift correction generated by re-centering the raw record. Finally, writing this in terms of the stochastic differential $dp_2(t) = p_2(t + dt) - p_2(t)$, and $\Delta W \to dW$:
+\begin{equation}
+	dp_{2}(t) = - \Gamma\, p_{2}(t)\, dt + 2 \sqrt{\Gamma}\, I\, p_{2}(t)\, dW
+	\label{eq:SD_p2_final}
+\end{equation}
+We see that the stochastic fluctuation term $ dW $ is weighted by a very small factor, since during the dynamic $ I = Im \{ c_{1}^{*} c_{2} \} \approx 10^{-6} $ appears essentially identical across different stochastic trajectories.
+
+Averaging over different trajectories this quantity, $ \mathbb{E} \left[dW\right] = 0 $, so we reproduce exactly the Lindblad decay with no residual $I^2$ term.
+
+\paragraph{General angle $\theta$: universal Wiener limit}
+We now repeat the derivation keeping the ancilla angle $\theta$ generic, to show that Eq.\ref{eq:SD_p2_final} holds for any $\theta\in(0,\pi)$, not just $\theta=\pi/2$.
+
+Starting again from Eq.~\ref{eq:general_p2_evolution},
+\begin{equation}
+	p_{2}(t+\Delta t) = \cos^{2}(c\Delta t)\, p_{2}(t) \Big[ A + (B-A)\, dn \Big], \qquad A \equiv \frac{\cos^{2}(\theta/2)}{P_{0}},\quad B \equiv \frac{\sin^{2}(\theta/2)}{P_{1}},
+	\label{eq:general_bracket}
+\end{equation}
+we write $dn = P_{1} + \delta n$, with $\delta n$ the zero-mean Bernoulli fluctuation ($\mathbb{E}[\delta n]=0$ exactly). The bracket splits into a deterministic and a stochastic piece:
+\begin{equation}
+	A + (B-A)\,dn = \underbrace{\big[A + (B-A)P_{1}\big]}_{\text{deterministic}} + (B-A)\,\delta n .
+	\label{eq:general_split}
+\end{equation}
+
+\paragraph{Exact deterministic term.}
+By definition, $A P_{0} = \cos^{2}(\theta/2)$ and $B P_{1} = \sin^{2}(\theta/2)$, so
+\begin{equation}
+	A + (B-A)P_{1} = A(1-P_{1}) + B P_{1} = A P_{0} + B P_{1} = \cos^{2}(\theta/2) + \sin^{2}(\theta/2) = 1 ,
+	\label{eq:exact_deterministic}
+\end{equation}
+where we used $P_{0}+P_{1}=1$ exactly. This identity holds for \emph{any} $\theta$ and \emph{any} $\Delta t$ — no expansion needed. It immediately reproduces the exact mean found earlier, $\mathbb{E}[p_{2}(t+\Delta t)] = \cos^{2}(c\Delta t)\,p_{2}(t)$, and shows that the entire $\theta$-dependence of the update is confined to the noise term $(B-A)\delta n$.
+
+\paragraph{The noise coefficient $B-A$.}
+Using the exact probabilities
+\begin{gather*}
+	P_{0} = \cos^{2}(\theta/2) - p_{2}\sin^{2}(c\Delta t)\cos\theta + \sin\theta\sin(c\Delta t)\, I \\
+	P_{1} = \sin^{2}(\theta/2) + p_{2}\sin^{2}(c\Delta t)\cos\theta - \sin\theta\sin(c\Delta t)\, I
+\end{gather*}
+a direct calculation gives the exact numerator
+\begin{equation}
+	\sin^{2}(\theta/2)\,P_{0} - \cos^{2}(\theta/2)\,P_{1} = \sin\theta\sin(c\Delta t)\, I - p_{2}\sin^{2}(c\Delta t)\cos\theta ,
+\end{equation}
+so that
+\begin{equation}
+	B - A = \frac{\sin\theta\sin(c\Delta t)\, I - p_{2}\sin^{2}(c\Delta t)\cos\theta}{P_{0}P_{1}} .
+\end{equation}
+To leading order in $\Delta t$, using $\sin(c\Delta t)\approx\sqrt{\Gamma\Delta t}$ and $P_{0}P_{1}\approx \sin^{2}(\theta/2)\cos^{2}(\theta/2)$:
+\begin{equation}
+	B - A \;\approx\; \frac{\sin\theta\, I}{\sin^{2}(\theta/2)\cos^{2}(\theta/2)}\sqrt{\Gamma\Delta t} \;-\; \frac{p_{2}\cos\theta}{\sin^{2}(\theta/2)\cos^{2}(\theta/2)}\,\Gamma\Delta t .
+	\label{eq:general_BA}
+\end{equation}
+The second term is $\mathcal{O}(\Delta t)$ and, when multiplied by the fluctuation $\delta n$, contributes to the noise only at order $\Delta t \cdot \delta n$. Since $\delta n$ is $\mathcal{O}(1)$, this term produces a stochastic contribution of order $\Delta t$, which combines with the $\sqrt{\Delta t}$ scaling of the Wiener increment to give a term of order $\Delta t^{3/2}$ — negligible in the Itô limit, exactly like the $dW\, dt$ terms discarded above. We therefore keep only the leading $\mathcal{O}(\sqrt{\Delta t})$ piece.
+
+\paragraph{Universal Wiener increment.}
+Since $\mathrm{Var}(\delta n) = P_{0}P_{1} \approx \sin^{2}(\theta/2)\cos^{2}(\theta/2) = \sin^{2}\theta/4$, the properly centered, unit-variance increment is
+\begin{equation}
+	\Delta W \equiv \frac{2}{\sin\theta}\,\delta n\,\sqrt{\Delta t}, \qquad \mathbb{E}[\Delta W]=0,\quad \mathbb{E}[\Delta W^{2}]=\Delta t ,
+	\label{eq:general_wiener}
+\end{equation}
+which reduces to $\Delta W = 2\delta n\sqrt{\Delta t}$ at $\theta=\pi/2$, consistent with the earlier case. Substituting Eq.\ref{eq:general_wiener} into the leading term of Eq.\ref{eq:general_BA}:
+\begin{equation}
+	(B-A)\,\delta n \;\approx\; \frac{\sin(\theta)\, I}{\sin^{2}(\theta/2)\cos^{2}(\theta/2)}\,\sqrt{\Gamma}\left(\frac{\sin(\theta)}{2}\,\Delta W\right)
+	= \sqrt{\Gamma}\, I\, \Delta W\cdot\frac{\sin^{2}\theta}{2\sin^{2}(\theta/2)\cos^{2}(\theta/2)} = 2\sqrt{\Gamma}\, I\, \Delta W ,
+\end{equation}
+where we used $\sin^{2}\theta = 4\sin^{2}(\theta/2)\cos^{2}(\theta/2)$. Remarkably, \emph{all} explicit $\theta$-dependence cancels: the coefficient of $\Delta W$ is exactly $2\sqrt{\Gamma}\,I$, independent of $\theta$.
+
+\paragraph{Result.}
+Collecting the deterministic (Eq.~\ref{eq:exact_deterministic}) and stochastic pieces, and expanding $\cos^{2}(c\Delta t)\approx1-\Gamma\Delta t$:
+\begin{equation}
+	p_{2}(t+\Delta t) \approx p_{2}(t)\big(1-\Gamma\Delta t\big)\big(1+2\sqrt{\Gamma}\,I\,\Delta W\big) \approx p_{2}(t)\big[1-\Gamma\Delta t + 2\sqrt{\Gamma}\,I\,\Delta W\big] ,
+\end{equation}
+so that, for \emph{any} $\theta\in(0,\pi)$,
+\begin{equation}
+	dp_{2}(t) = -\Gamma\, p_{2}(t)\, dt + 2\sqrt{\Gamma}\, I\, p_{2}(t)\, dW ,
+	\label{eq:general_theta_p2_final}
+\end{equation}
+identical to the $\theta=\pi/2$ result of Eq.\ref{eq:SD_p2_final}. This confirms that the smallness of the stochastic fluctuations in $p_2$ — controlled by $I\approx10^{-6}$ — is a universal feature of the diffusive-type unravelings, valid for the entire family $\theta\in(0,\pi)$, and not a special property of the homodyne ($\theta=\pi/2$) case alone.
+
+\paragraph{Breakdown at $\theta=0,\pi$.}
+The derivation above relies on $P_{0}P_{1}\approx\sin^{2}(\theta/2)\cos^{2}(\theta/2)$ being $\mathcal{O}(1)$, which fails as $\theta\to0$ or $\theta\to\pi$: there, one of $P_0,P_1$ vanishes as $\mathcal{O}(\Delta t)$ rather than staying finite, the coefficient $B-A$ diverges, and $\delta n$ ceases to behave as an $\mathcal{O}(1)$ Gaussian-type fluctuation, becoming instead a rare, $\mathcal{O}(1)$-amplitude event of $\mathcal{O}(\Delta t)$ probability. This is precisely the Wiener-to-Poisson crossover discussed earlier, recovering the Quantum Jump equation for $p_2$ in that limit.
 
 \newpage
 
+\subsubsection{Analysis of the variance of site $\ket{1}$ population}
+
+We start again from the equation : 
+\begin{equation}
+	\ket{\psi_{S}(t + \Delta t)} = \frac{\mathcal{K}_{0}}{\sqrt{P_{0}}} \ket{\psi_{S}(t)} (1 - dn) + \frac{\mathcal{K}_{1}}{\sqrt{P_{1}}} \ket{\psi_{S}(t)} dn
+\end{equation}
+and define the population after the collisional time step as : 
+\begin{align}
+	&p_{1} \left( t + \Delta t \right) = \bra{\psi_{S}(t + \Delta t)} \ket{1} \bra{1} \ket{\psi_{S}(t + \Delta t)} \notag \\ 
+	&= \bra{\psi_{S}(t)} \left( \frac{\mathcal{K}^{\dagger}_{0}}{\sqrt{P_{0}}}  (1 - dn) + \frac{\mathcal{K}^{\dagger}_{1}}{\sqrt{P_{1}} } dn\right) \ket{1} \bra{1} \left( \frac{\mathcal{K}_{0}}{\sqrt{P_{0}}} (1 - dn) + \frac{\mathcal{K}_{1}}{\sqrt{P_{1}}} dn \right) \ket{\psi_{S}(t)} \notag \\
+	&= \frac{\bra{\psi_{S}(t)} {K}^{\dagger}_{0} \ket{1} \bra{1} {K}_{0} \ket{\psi_{S}(t)} }{P_{0}} (1-dn) + \frac{\bra{\psi_{S}(t)} {K}^{\dagger}_{1} \ket{1} \bra{1} {K}_{1} \ket{\psi_{S}(t)} }{P_{1}} dn
+\end{align}
+remembering the properties of the Bernoulli variable $ dn^{2} = dn $ and so $ (1-dn)dn = 0 $.
+We can now explicit the product between the Kraus Operators and the projectors : 
+\begin{align}
+	\mathcal{K}_{0,0}^{\dagger} \ket{1}\bra{1} \mathcal{K}_{0,0} &= \cos^{2}\left(\frac{\theta}{2}\right) \ket{1}\bra{1} + \sin^{2}\left(\frac{\theta}{2}\right) \sin^{2}\left(c\Delta t\right) \ket{2}\bra{2} \notag \\
+	&\quad + \frac{i}{2}\sin \left(\theta\right) \sin\left(c\Delta t\right) \Big( \ket{2}\bra{1} - \ket{1}\bra{2} \Big) \\[2mm]
+	\mathcal{K}_{0,1}^{\dagger} \ket{1}\bra{1} \mathcal{K}_{0,1} &= \sin^{2}\left(\frac{\theta}{2}\right) \ket{1}\bra{1} + \cos^{2}\left(\frac{\theta}{2}\right) \sin^{2}\left(c\Delta t\right) \ket{2}\bra{2} \notag \\
+	&\quad + \frac{i}{2}\sin \left(\theta\right) \sin\left(c\Delta t\right) \Big( \ket{1}\bra{2} - \ket{2}\bra{1} \Big)
+	\label{eq:K01_1_projection}
+\end{align}
+so that, with $ \bra{\psi_{S}(t)} \ket{i} \bra{i} \ket{\psi_{S}(t)} = p_{i} (t) $, we got 
+\begin{align}
+	p_1(t+\Delta t) &= \frac{\cos^{2}(\theta/2)p_1(t) + \sin^{2}(\theta/2)\sin^{2}(c\Delta t)p_2(t) + \sin\theta\sin(c\Delta t)I}{P_0} \, (1-dn) \notag \\
+	&\quad + \frac{\sin^{2}(\theta/2)p_1(t) + \cos^{2}(\theta/2)\sin^{2}(c\Delta t)p_2(t) - \sin\theta\sin(c\Delta t)I}{P_1} \, dn
+	\label{eq:general_p1_evolution}
+\end{align}
+with $ I = \textit{Im} \{ c_{1}^{*} c_{2} \} $.
+We can now analyze the two unraveling limits : 
+
+\paragraph{Quantum Jump Limit $ \theta =  0 $}
+In this case we get : 
+\begin{equation}
+	p_1(t+\Delta t) = \frac{p_{1} \left(t\right)}{P_{0}} \left(1 - dn\right) + \frac{\sin^{2}(c\Delta t) p_{2} \left(t\right)}{P_{1}} dn
+\end{equation} 
+and remembering that:
+\begin{gather*}
+	P_{0} = \cos^{2}(\theta/2) - p_{2}\sin^{2}(c\Delta t)\cos\theta + \sin\theta\sin(c\Delta t)\, I \\
+	P_{1} = \sin^{2}(\theta/2) + p_{2}\sin^{2}(c\Delta t)\cos\theta - \sin\theta\sin(c\Delta t)\, I
+\end{gather*}
+
+So for $ dn = 0 $ $ p_1(t+\Delta t) = \frac{p_{1} \left(t\right)}{P_{0}} $, so if $ p_{1} (t) = 0 $ it stays zero, and if we already get a jump the population rema0ins 1 ; for $ dn = 1 $, $ p_1(t+\Delta t) = 1 $ all the population is transferred to $ \ket{1} $.
+
+\paragraph{State Diffusion Limit $ \theta = \frac{\pi}{2} $}
+In this case we get : 
+\begin{align}
+	p_1(t+\Delta t) &= \frac{\frac{1}{2} p_1(t) + \frac{1}{2} \sin^{2}(c\Delta t) p_2(t) + \sin(c\Delta t)I}{ \frac{1}{2} + \sin \left( c \Delta t \right) I } \, (1-dn) \notag \\
+	&\quad + \frac{ \frac{1}{2} p_1(t) + \frac{1}{2} \sin^{2}(c\Delta t)p_2(t) - \sin(c\Delta t)I}{\frac{1}{2} - \sin \left( c \Delta t \right) I} \, dn
+\end{align} 
+that becomes : 
+\begin{align}
+	p_1(t+\Delta t) &= \frac{ p_1(t) +  \sin^{2}(c\Delta t) p_2(t) + 2 \sin(c\Delta t)I}{ 1 + 2 \sin \left( c \Delta t \right) I } \, (1-dn) \notag \\
+	&\quad + \frac{ p_1(t) + \sin^{2}(c\Delta t)p_2(t) - 2 \sin(c\Delta t)I}{1 - 2 \sin \left( c \Delta t \right) I} \, dn
+\end{align} 
+
+% We introduce the following auxiliary variables to simplify the algebraic manipulation
+\begin{align}
+	A &= p_1(t) \\
+	B &= p_2(t) \sin^2(c\Delta t) \\
+	C &= 2I \sin(c\Delta t)
+\end{align}
+Substituting these into the population evolution equation, we obtain:
+\begin{equation}
+	p_1(t+\Delta t) = \frac{A + B + C}{1 + C} (1 - dn) + \frac{A + B - C}{1 - C} dn
+\end{equation}
+
+% Introducing the stochastic variable xi
+We now introduce the stochastic variable $\xi = 2dn - 1$, which takes values in $\{-1, 1\}$. We can express the projectors as $dn = \frac{1 + \xi}{2}$ and $1 - dn = \frac{1 - \xi}{2}$. Substituting this into our equation yields:
+\begin{align}
+	p_1(t+\Delta t) &= \frac{A + B + C}{1 + C} \left( \frac{1 - \xi}{2} \right) + \frac{A + B - C}{1 - C} \left( \frac{1 + \xi}{2} \right) \notag \\
+	&= \frac{A + B - C^2}{1 - C^2} + \frac{C(A + B - 1)}{1 - C^2} \xi
+\end{align}
+
+% Calculating the exact increment for a 3-level system
+To find the exact increment $\Delta p_1 = p_1(t+\Delta t) - A$, we subtract $A$ from the deterministic part:
+\begin{equation}
+	\frac{A + B - C^2}{1 - C^2} - A = \frac{B - C^2(1 - A)}{1 - C^2}
+\end{equation}
+For a 3-level system, the trace preservation implies $p_0 + p_1 + p_2 = 1$, thus $1 - A = 1 - p_1 = p_0 + p_2$. 
+Recalling that $B = p_2\sin^2(c\Delta t)$ and $C = 2I\sin(c\Delta t)$, we can evaluate the numerators exactly:
+\begin{align}
+	B - C^2(1 - A) &= p_2\sin^2(c\Delta t) - 4I^2\sin^2(c\Delta t)(1 - p_1) \notag \\
+	&= \sin^2(c\Delta t) \Big[ p_2 - 4I^2(1 - p_1) \Big] \\
+	A + B - 1 &= -(1 - p_1) + p_2\sin^2(c\Delta t) = -(p_0 + p_2) + p_2\sin^2(c\Delta t) \notag \\
+	&= -p_0 - p_2\cos^2(c\Delta t)
+\end{align}
+Thus, the exact difference equation becomes:
+\begin{equation}
+	\Delta p_1 = \frac{\sin^2(c\Delta t) \big[ p_2 - 4I^2(1 - p_1) \big]}{1 - 4I^2\sin^2(c\Delta t)} - \frac{2I\sin(c\Delta t) \big[ p_0 + p_2\cos^2(c\Delta t) \big]}{1 - 4I^2\sin^2(c\Delta t)} \xi
+\end{equation}
+
+% Taking the continuous limit
+We now consider the continuous limit for $\Delta t \to 0$. We apply the scaling $\sin^2(c\Delta t) \to \gamma \Delta t$ and $\sin(c\Delta t) \to \sqrt{\gamma \Delta t}$. The denominator approaches $1$, and $\cos^2(c\Delta t) \to 1$. The expansion up to order $\mathcal{O}(\Delta t)$ is:
+\begin{equation}
+	\Delta p_1 = \gamma \Delta t \Big[ p_2 - 4I^2(1 - p_1) \Big] - 2I (1 - p_1) \sqrt{\gamma \Delta t} \, \xi
+\end{equation}
+
+% Defining the centered Wiener increment and canceling terms
+The expected value of the random variable $\xi$ is $\mathbb{E}[\xi] = -2I\sqrt{\gamma\Delta t}$. We can define a standard centered Wiener increment $\Delta W$ (such that $\mathbb{E}[\Delta W] = 0$ and $\Delta W^2 = \Delta t$) as:
+\begin{equation}
+	\Delta W = \xi \sqrt{\Delta t} + 2I\sqrt{\gamma}\Delta t \quad \implies \quad \xi \sqrt{\Delta t} = \Delta W - 2I\sqrt{\gamma}\Delta t
+\end{equation}
+Substituting this back into the increment equation:
+\begin{align}
+	\Delta p_1 &= \gamma \Delta t \Big[ p_2 - 4I^2(1 - p_1) \Big] - 2I (1 - p_1) \sqrt{\gamma} \left( \Delta W - 2I\sqrt{\gamma}\Delta t \right) \notag \\
+	&= \gamma p_2 \Delta t - 4\gamma I^2 (1 - p_1) \Delta t - 2\sqrt{\gamma} I (1 - p_1) \Delta W + 4\gamma I^2 (1 - p_1) \Delta t \notag \\
+	&= \gamma p_2 \Delta t - 2\sqrt{\gamma} I (1 - p_1) \Delta W
+\end{align}
+Taking the differential limit $dt \to 0$, the $I^2$ terms perfectly cancel out, leading to the final stochastic differential equation:
+\begin{equation}
+	dp_1 = \gamma p_2 dt - 2\sqrt{\gamma} I (1 - p_1) dW
+\end{equation}
+On average, remembering that $ \mathbb{E}\big[dW\big] = 0 $, we get back the Lindblad dissipator evolution: 
+\begin{equation}
+	\dot{p}_{1} (t) = \gamma p_{2} (t)
+\end{equation}
+
+
+\newpage
+
+\subsection{Universality of the Wiener increment in collisional models}
+\label{sub:universal_wiener}
+
+We show that the specific form of the stochastic increment $dW$ derived in the two case studies above — the exciton dimer with pure dephasing and the three-level photoemission model — is not a coincidence of those particular models, but a direct consequence of the generic structure of a collisional (repeated-interaction) unraveling with a two-outcome ancilla qubit.
+
+\paragraph{Generic setup.}
+Consider any collisional model in which, at each time step $\Delta t$, a fresh ancilla qubit is initialized in $\ket{0}_a$, interacts weakly with the system $S$ for a time $\Delta t$, and is subsequently measured in a fixed two-outcome basis $\{\ket{0}_a,\ket{1}_a\}$ (or any other orthonormal two-outcome basis obtained by a fixed unitary rotation of the ancilla, which is equivalent up to relabeling). This yields exactly two possible measurement outcomes, encoded in the binary random variable $dn\in\{0,1\}$, and the conditional (unnormalized) system Kraus operators
+\begin{equation}
+	K_{0} \equiv {}_{a}\!\bra{0} U_{Sa}(\Delta t) \ket{0}_{a}, \qquad K_{1} \equiv {}_{a}\!\bra{1} U_{Sa}(\Delta t) \ket{0}_{a},
+	\label{eq:generic_Kraus_def}
+\end{equation}
+where $U_{Sa}(\Delta t)$ is the system-ancilla interaction unitary. Unitarity of $U_{Sa}$ guarantees the exact completeness relation
+\begin{equation}
+	K_{0}^{\dagger}K_{0} + K_{1}^{\dagger}K_{1} = \mathbb{I}_{S},
+	\label{eq:generic_completeness}
+\end{equation}
+independent of the specific interaction. The occurrence probabilities and the post-measurement state update follow the same generic form used throughout this work:
+\begin{equation}
+	P_{k} = \bra{\psi_{S}(t)} K_{k}^{\dagger}K_{k} \ket{\psi_{S}(t)}, \qquad
+	\ket{\psi_{S}(t+\Delta t)} = \frac{K_{0}}{\sqrt{P_{0}}}\ket{\psi_{S}(t)}\,(1-dn) + \frac{K_{1}}{\sqrt{P_{1}}}\ket{\psi_{S}(t)}\,dn.
+	\label{eq:generic_update}
+\end{equation}
+No assumption is made yet on the explicit form of $K_{0}, K_{1}$, or on how $P_{0},P_{1}$ depend on the physical parameters of the model (coupling strength, measurement angle, dephasing rate, etc.).
+
+\paragraph{Weak-measurement scaling.}
+For the collisional model to admit a well-defined continuous-time limit, both branches must reduce to the identity as $\Delta t\to0$ (a "weak measurement" condition). We therefore posit the generic expansion
+\begin{equation}
+	K_{0} = \mathbb{I} + \sqrt{\Delta t}\, X_{0} + \Delta t\, Y_{0} + O(\Delta t^{3/2}), \qquad
+	K_{1} = \sqrt{\Delta t}\, X_{1} + \Delta t\, Y_{1} + O(\Delta t^{3/2}),
+	\label{eq:generic_weak_expansion}
+\end{equation}
+where $X_{0,1}, Y_{0,1}$ are system operators independent of $\Delta t$. This scaling — one branch starting at $O(1)$ (the "no-click" branch) and the other at $O(\sqrt{\Delta t})$ (the "click" branch, which is rare per step) — is the standard collisional-model scaling used to recover continuous-time open dynamics, and includes both diffusive ($\theta \in (0,\pi)$, where $X_1$ has an $O(1)$ piece hidden in $\sqrt{P_1}$ upon normalization) and jump-type ($\theta=0$) unravelings as special cases, as clarified below.
+
+Substituting Eq.\ref{eq:generic_weak_expansion} into the completeness relation Eq.\ref{eq:generic_completeness} order by order in $\Delta t$ fixes $X_{0}+X_{0}^{\dagger}=0$, i.e. $X_0$ is anti-Hermitian at leading order — consistent with $K_0$ generating a (sub-)unitary no-click evolution.
+
+\paragraph{Bernoulli statistics of $dn$.}
+Regardless of the physical origin of $K_0,K_1$, the random variable $dn$ is by construction Bernoulli-distributed with parameter $P_{1}=1-P_{0}$. Writing $dn = P_{1} + \delta n$, where $\delta n$ is the exactly zero-mean fluctuation ($\mathbb{E}[\delta n]=0$ for any $\Delta t$), its variance is the elementary Bernoulli result
+\begin{equation}
+	\mathrm{Var}(\delta n) = P_{0}P_{1},
+	\label{eq:generic_bernoulli_variance}
+\end{equation}
+a purely probabilistic fact, independent of any operator content. The unique zero-mean, unit-variance-rate increment constructible from $\delta n$ is therefore
+\begin{equation}
+	\boxed{\Delta W \equiv \frac{\delta n}{\sqrt{P_{0}P_{1}}}\,\sqrt{\Delta t}}, \qquad \mathbb{E}[\Delta W]=0, \quad \mathbb{E}[\Delta W^{2}] = \Delta t \quad \text{(exactly, for any } \Delta t \text{)}.
+	\label{eq:generic_wiener_def}
+\end{equation}
+This is the model-independent form of the Wiener increment: it holds for \emph{any} collisional model of the type Eq.\ref{eq:generic_update}, prior to specifying any parametrization of $P_0, P_1$.
+
+\paragraph{Recovering the $\theta$-dependent form.}
+The angle-based parametrization used throughout this work, $P_{1}=\sin^{2}(\theta/2)$, $P_{0}=\cos^2(\theta/2)$ (the standard Wiseman--Milburn interpolation between quantum-jump and homodyne unravelings \cite{WisemanMilburn1993}), is a particular \emph{choice} of coordinate on the one-parameter family of two-outcome measurements, not an additional physical assumption. Substituting it into Eq.\ref{eq:generic_wiener_def}:
+\begin{equation}
+	\sqrt{P_{0}P_{1}} = \sin(\theta/2)\cos(\theta/2) = \frac{\sin\theta}{2} \quad\Longrightarrow\quad \Delta W = \frac{2}{\sin\theta}\,\delta n\,\sqrt{\Delta t},
+	\label{eq:generic_to_theta}
+\end{equation}
+recovering exactly the form found independently in both the exciton-dimer dephasing model and the three-level photoemission model. Any other model built on the same two-outcome Bernoulli structure, Eq.\ref{eq:generic_update}, but with a different parametrization of $P_1$ (e.g. $P_1=g(\lambda)$ for some other physical control parameter $\lambda$), would instead yield $\Delta W = \delta n\sqrt{\Delta t}/\sqrt{g(\lambda)(1-g(\lambda))}$ — the \emph{functional form} $1/\sqrt{P_0P_1}$ is universal, while its explicit expression in terms of physical parameters depends on the chosen parametrization.
+
+\paragraph{Universal diffusion operator.}
+Substituting Eq.\ref{eq:generic_weak_expansion} into the state update Eq.\ref{eq:generic_update}, expanding $1/\sqrt{P_0}, 1/\sqrt{P_1}$ to the order needed, and using $dn = P_1+\delta n$, the $O(\sqrt{\Delta t})$ stochastic part of $d\ket{\psi_S}$ takes the model-independent form
+\begin{equation}
+	d\ket{\psi_S}\Big|_{\text{stoch}} = \sqrt{P_{0}P_{1}}\,\big(\tilde X_{1}-\tilde X_{0}\big)\,\delta n\,\ket{\psi_S} = B\,\Delta W\,\ket{\psi_S}, \qquad B \equiv \sqrt{P_{0}P_{1}}\,\big(\tilde X_{1}-\tilde X_{0}\big),
+	\label{eq:generic_B_operator}
+\end{equation}
+where $\tilde X_{0,1}$ denote the leading normalized generators ($\tilde X_1 \equiv X_1/\sqrt{P_1}$, etc.). Both cases treated in this work — the pure-dephasing dimer and the photoemission jump operator $c=i\sqrt\Gamma\ket1\bra2$ — are simply particular realizations of $B$ within this generic construction, which explains why the \emph{kinematic} prefactor of the noise ($2/\sin\theta$, or equivalently $1/\sqrt{P_0P_1}$) coincides across the two models, while the \emph{operator content} of $B$ differs.
+
+\paragraph{Breakdown at the boundary $P_0P_1\to0$.}
+Equation\ref{eq:generic_wiener_def} requires $P_0P_1=O(1)$ as $\Delta t\to0$ for $\Delta W$ to remain a well-behaved, finite-variance Gaussian-type increment. If instead $P_1\to0$ as $\Delta t\to0$ (i.e. the ``click'' branch becomes rare rather than $O(1)$-probable — the quantum-jump limit, $\theta\to0$ in the angle parametrization), then $\delta n$ is no longer a small fluctuation around an $O(1)$-probability mean: it is almost always $-P_1\approx0$, punctuated by rare $O(1)$ excursions of probability $O(\Delta t)$. In this regime $\sqrt{P_0P_1}\to0$ and the normalization in Eq.\ref{eq:generic_wiener_def} diverges, signaling — rather than curing — the breakdown of the diffusive (Wiener) description; the correct continuous-time limit is instead a compensated Poisson process, as derived separately in the quantum-jump case.
+
+\newpage
+
+\section{4 Level System : adding Inter System Crossing}
+\label{sec:4_Level_System}
+In this section we try to break down the symmetry of the three level system studied above, with the objective of creating a dynamics where the population of state $ \ket{2} $ has significant variance.
+We define a generic 4 level system described by the wavefunction: 
+\begin{equation}
+	\ket{\Psi_{S}(t)} = \sqrt{p_{0}}(t) \ket{0} + \sqrt{p_{1}}(t) \ket{1} + \sqrt{p_{2}}(t) \ket{2} + \sqrt{p_{3}}(t) \ket{3}
+\end{equation}
+The system Hamiltonian reads: 
+\begin{equation}
+	H_{Sys} = \varepsilon_{0} \ket{0}\bra{0} + \varepsilon_{1} \ket{1}\bra{1} + \varepsilon_{2} \ket{2}\bra{2} + \varepsilon_{3} \ket{3}\bra{3}
+\end{equation}
+where $ \varepsilon_{i} $ are the site energies.
+The collisional Hamiltonian is instead composed of two different element, associated to two distinct ancilla's reservoir that collide independently. In this way we want to simulate two different physical processes: 
+\begin{itemize}
+	\item an \textit{Internal Conversion} from $ \ket{2} $ that relax to $ \ket{1} $;
+	\item an \textit{Inter System Crossing} from $ \ket{2} $ that relax to $ \ket{3} $
+\end{itemize}
+
+In the Collisional formulation these two processes are independent and so described by the sum of two Collisional Hamiltonians:
+\begin{equation}
+	H_{Coll} = H_{IC} \otimes \mathbb{I}^{b} + \mathbb{I}^{a} \otimes H_{ISC}
+\end{equation}
+where the single components, acting on the respective ancillae $ a $ and $ b $, read:
+\begin{gather}
+	H_{IC} = c_{IC} \left( \ket{1}\bra{2} \otimes \sigma_{+}^{a} + \ket{2}\bra{1} \otimes \sigma_{-}^{a} \right) \\
+	H_{ISC} = c_{ISC} \left( \ket{3}\bra{2} \otimes \sigma_{+}^{b} + \ket{2}\bra{3} \otimes \sigma_{-}^{b} \right)
+\end{gather}
+
+We use two ancillae always initialized in $ \ket{0_{a}} $ and $ \ket{0_{b}} $ so that the initial total state is pure.
+The total wave function is $ \ket{\Psi (0)} = \ket{\Psi_{S} (0)} \otimes \ket{0_{a}} \otimes \ket{0_{b}} $. \newline
+Since the two Hamiltonians do not commute, for a short collision time $ \Delta t \to 0 $ we use the Suzuki-Trotter approximation to factorize the collisional step of evolution:
+\begin{equation}
+	\mathcal{U}_{Coll} \left( \Delta t \right) \approx \mathcal{U}_{IC} \left( \Delta t \right) \mathcal{U}_{ISC} \left( \Delta t \right)
+\end{equation}
+
+First, we compute the action of the Intersystem Crossing (ISC) collision. The evolution operator reads:
+\begin{equation}
+	\mathcal{U}_{ISC} \left( \Delta t \right) = \left( \ket{0}\bra{0} + \ket{1}\bra{1} \right) \otimes \mathbb{I}^{b} + P_{ISC} + \cos \left( c_{ISC} \Delta t \right) Z_{ISC} - i \sin \left( c_{ISC} \Delta t \right) \frac{X_{ISC}}{2} 
+\end{equation} 
+where the first term is the identity acting on the uncoupled states $ \ket{0} $ and $ \ket{1} $ in this step, and the other terms read:
+\begin{gather}
+	P_{ISC} = \frac{\left( \ket{3}\bra{3} + \ket{2}\bra{2} \right) \otimes \mathbb{I}^{b} + \left( \ket{3}\bra{3} - \ket{2}\bra{2} \right) \otimes \sigma_{z}^{b} }{2} \\
+	Z_{ISC} = \frac{\left( \ket{3}\bra{3} + \ket{2}\bra{2} \right) \otimes \mathbb{I}^{b} - \left( \ket{3}\bra{3} - \ket{2}\bra{2} \right) \otimes \sigma_{z}^{b} }{2} \\
+	X_{ISC} = \left( \ket{3}\bra{2} + \ket{2}\bra{3} \right) \otimes \sigma_{x}^{b} - i \left( \ket{3}\bra{2} - \ket{2}\bra{3} \right) \otimes \sigma_{y}^{b}
+\end{gather}
+
+Applying every single term to the initial total wave function (ignoring the spectator ancilla $ a $ for a moment) yields: 
+\begin{align}
+	P_{ISC} \left( \ket{\Psi_{S}} \otimes \ket{0_{b}} \right) &= 0 \\
+	Z_{ISC} \left( \ket{\Psi_{S}} \otimes \ket{0_{b}} \right) &= \sqrt{p_{2}} \ket{2} \otimes \ket{0_{b}} \\
+	X_{ISC} \left( \ket{\Psi_{S}} \otimes \ket{0_{b}} \right) &= 2 \sqrt{p_{2}} \ket{3} \otimes \ket{1_{b}} 
+\end{align}
+
+The intermediate wave function after the ISC collision reads:
+\begin{align}
+	\ket{\Psi_{int}} = \mathcal{U}_{ISC} \ket{\Psi (0)} &= \sqrt{p_{0}} \ket{0} \otimes \ket{0_{a}} \otimes \ket{0_{b}} + \sqrt{p_{1}} \ket{1} \otimes \ket{0_{a}} \otimes \ket{0_{b}} \notag \\
+	&\quad + \cos \left( c_{ISC} \Delta t \right) \sqrt{p_{2}} \ket{2} \otimes \ket{0_{a}} \otimes \ket{0_{b}} + \sqrt{p_{3}} \ket{3} \otimes \ket{0_{a}} \otimes \ket{0_{b}} \notag \\
+	&\quad - i \sin \left( c_{ISC} \Delta t \right) \sqrt{p_{2}} \ket{3} \otimes \ket{0_{a}} \otimes \ket{1_{b}}
+\end{align}
+
+Now we apply the Internal Conversion (IC) collision to $ \ket{\Psi_{int}} $. In this step, $ \ket{0} $ and $ \ket{3} $ are uncoupled. The evolution operator reads:
+\begin{equation}
+	\mathcal{U}_{IC} \left( \Delta t \right) = \left( \ket{0}\bra{0} + \ket{3}\bra{3} \right) \otimes \mathbb{I}^{a} + P_{IC} + \cos \left( c_{IC} \Delta t \right) Z_{IC} - i \sin \left( c_{IC} \Delta t \right) \frac{X_{IC}}{2} 
+\end{equation} 
+with the respective terms for the $ \{ \ket{1}, \ket{2} \} $ subspace:
+\begin{gather}
+	P_{IC} = \frac{\left( \ket{1}\bra{1} + \ket{2}\bra{2} \right) \otimes \mathbb{I}^{a} + \left( \ket{1}\bra{1} - \ket{2}\bra{2} \right) \otimes \sigma_{z}^{a} }{2} \\
+	Z_{IC} = \frac{\left( \ket{1}\bra{1} + \ket{2}\bra{2} \right) \otimes \mathbb{I}^{a} - \left( \ket{1}\bra{1} - \ket{2}\bra{2} \right) \otimes \sigma_{z}^{a} }{2} \\
+	X_{IC} = \left( \ket{1}\bra{2} + \ket{2}\bra{1} \right) \otimes \sigma_{x}^{a} - i \left( \ket{1}\bra{2} - \ket{2}\bra{1} \right) \otimes \sigma_{y}^{a}
+\end{gather}
+
+Applying the identity mapping to the $ \ket{0} $ and $ \ket{3} $ components, and operating on the $ \ket{2} $ component as previously demonstrated:
+\begin{align}
+	P_{IC} \left( \ket{2} \otimes \ket{0_{a}} \right) &= 0 \\
+	Z_{IC} \left( \ket{2} \otimes \ket{0_{a}} \right) &= \ket{2} \otimes \ket{0_{a}} \\
+	X_{IC} \left( \ket{2} \otimes \ket{0_{a}} \right) &= 2 \ket{1} \otimes \ket{1_{a}}
+\end{align}
+
+The final total evolved wave function, combining both effects, now reads: 
+\begin{align}
+	\ket{\Psi \left( \Delta t \right)} &= \mathcal{U}_{IC} \ket{\Psi_{int}} \notag \\
+	&= \sqrt{p_{0}} \ket{0} \otimes \ket{0_{a}} \otimes \ket{0_{b}} + \sqrt{p_{1}} \ket{1} \otimes \ket{0_{a}} \otimes \ket{0_{b}} \notag \\
+	&\quad + \cos \left( c_{IC} \Delta t \right) \cos \left( c_{ISC} \Delta t \right) \sqrt{p_{2}} \ket{2} \otimes \ket{0_{a}} \otimes \ket{0_{b}} + \sqrt{p_{3}} \ket{3} \otimes \ket{0_{a}} \otimes \ket{0_{b}} \notag \\
+	&\quad - i \sin \left( c_{IC} \Delta t \right) \cos \left( c_{ISC} \Delta t \right) \sqrt{p_{2}} \ket{1} \otimes \ket{1_{a}} \otimes \ket{0_{b}} \notag \\
+	&\quad - i \sin \left( c_{ISC} \Delta t \right) \sqrt{p_{2}} \ket{3} \otimes \ket{0_{a}} \otimes \ket{1_{b}}
+\end{align}
+
+\subsection{Kraus Operators for the Four-Level System}
+\label{sub:Kraus_Operators_ISC}
+
+By measuring the joint state of the two ancillae in the computational basis \newline
+$ \{ \ket{0_a, 0_b}, \ket{1_a, 0_b}, \ket{0_a, 1_b}, \ket{1_a, 1_b} \} $, we extract the corresponding Kraus operators. Operating on a generic system state, they are defined as:
+\begin{equation}
+	\mathcal{K}_{i_a, j_b} = \bra{i_a, j_b} \mathcal{U}_{IC} \mathcal{U}_{ISC} \ket{0_a, 0_b}
+\end{equation}
+
+Using the total evolved wave function derived in the previous step, we can explicitly write the four operators:
+\begin{align}
+	\mathcal{K}_{0_a, 0_b} &= \ket{0}\bra{0} + \ket{1}\bra{1} + \ket{3}\bra{3} + \cos \left( c_{IC} \Delta t \right) \cos \left( c_{ISC} \Delta t \right) \ket{2}\bra{2} \\
+	\mathcal{K}_{1_a, 0_b} &= -i \sin \left( c_{IC} \Delta t \right) \cos \left( c_{ISC} \Delta t \right) \ket{1}\bra{2} \\
+	\mathcal{K}_{0_a, 1_b} &= -i \sin \left( c_{ISC} \Delta t \right) \ket{3}\bra{2} \\
+	\mathcal{K}_{1_a, 1_b} &= 0
+\end{align}
+
+Notice that $ \mathcal{K}_{1_a, 1_b} $ is exactly zero. This reflects the physical constraint that a single quantum of excitation in $ \ket{2} $ cannot simultaneously decay into both $ \ket{1} $ and $ \ket{3} $. Once the ISC transition occurs, the system state is mapped to $ \ket{3} $, which is uncoupled from the IC ancilla.
+
+We can now verify that this new set of operators satisfies the completeness relation (Trace Preservation):
+\begin{align}
+	\sum_{i,j} \mathcal{K}_{i_a, j_b}^{\dagger} \mathcal{K}_{i_a, j_b} &= \mathcal{K}_{0_a, 0_b}^{\dagger} \mathcal{K}_{0_a, 0_b} + \mathcal{K}_{1_a, 0_b}^{\dagger} \mathcal{K}_{1_a, 0_b} + \mathcal{K}_{0_a, 1_b}^{\dagger} \mathcal{K}_{0_a, 1_b} \notag \\
+	&= \ket{0}\bra{0} + \ket{1}\bra{1} + \ket{3}\bra{3} \notag \\
+	&\quad + \left[ \cos^2 \left( c_{IC} \Delta t \right) \cos^2 \left( c_{ISC} \Delta t \right) \right] \ket{2}\bra{2} \notag \\
+	&\quad + \left[ \sin^2 \left( c_{IC} \Delta t \right) \cos^2 \left( c_{ISC} \Delta t \right) \right] \ket{2}\bra{2} \notag \\
+	&\quad + \left[ \sin^2 \left( c_{ISC} \Delta t \right) \right] \ket{2}\bra{2} \notag \\
+	&= \ket{0}\bra{0} + \ket{1}\bra{1} + \ket{3}\bra{3} \notag \\
+	&\quad + \cos^2 \left( c_{ISC} \Delta t \right) \underbrace{\left[ \cos^2 \left( c_{IC} \Delta t \right) + \sin^2 \left( c_{IC} \Delta t \right) \right]}_{= 1} \ket{2}\bra{2} \notag \\
+	&\quad + \sin^2 \left( c_{ISC} \Delta t \right) \ket{2}\bra{2} \notag \\
+	&= \ket{0}\bra{0} + \ket{1}\bra{1} + \ket{3}\bra{3} + \left[ \cos^2 \left( c_{ISC} \Delta t \right) + \sin^2 \left( c_{ISC} \Delta t \right) \right] \ket{2}\bra{2} \notag \\
+	&= \ket{0}\bra{0} + \ket{1}\bra{1} + \ket{2}\bra{2} + \ket{3}\bra{3} = \mathbb{I}
+\end{align}
+
+\subsubsection{Factorization of Kraus Operators}
+
+As a direct consequence of the Suzuki-Trotter approximation, the total Kraus operators can be obtained as the matrix product of the single-channel operators.
+First, we define the individual sets of Kraus operators for the two independent collisional channels. 
+For the Intersystem Crossing (ISC) channel, where the ancilla $ b $ interacts with the system, the operators are:
+\begin{gather}
+	\mathcal{K}_{0_b}^{ISC} = \ket{0}\bra{0} + \ket{1}\bra{1} + \ket{3}\bra{3} + \cos \left( c_{ISC} \Delta t \right) \ket{2}\bra{2} \\
+	\mathcal{K}_{1_b}^{ISC} = -i \sin \left( c_{ISC} \Delta t \right) \ket{3}\bra{2}
+\end{gather}
+
+Similarly, for the Internal Conversion (IC) channel involving ancilla $ a $, the operators read:
+\begin{gather}
+	\mathcal{K}_{0_a}^{IC} = \ket{0}\bra{0} + \ket{3}\bra{3} + \ket{1}\bra{1} + \cos \left( c_{IC} \Delta t \right) \ket{2}\bra{2} \\
+	\mathcal{K}_{1_a}^{IC} = -i \sin \left( c_{IC} \Delta t \right) \ket{1}\bra{2}
+\end{gather}
+
+We can now construct the total Kraus operators $ \mathcal{K}_{i_a, j_b}^{tot} = \mathcal{K}_{i_a}^{IC} \mathcal{K}_{j_b}^{ISC} $ by directly multiplying the matrices. 
+Since the operators $ \mathcal{K}_{i_a}^{IC} $ act as the identity on the states $ \ket{0} $ and $ \ket{3} $, the products yield:
+\begin{align}
+	\mathcal{K}_{0_a, 0_b}^{tot} &= \mathcal{K}_{0_a}^{IC} \mathcal{K}_{0_b}^{ISC} \notag \\
+	&= \Big( \ket{0}\bra{0} + \ket{1}\bra{1} + \ket{3}\bra{3} + \cos \left( c_{IC} \Delta t \right) \ket{2}\bra{2} \Big) \Big( \dots + \cos \left( c_{ISC} \Delta t \right) \ket{2}\bra{2} \Big) \notag \\
+	&= \ket{0}\bra{0} + \ket{1}\bra{1} + \ket{3}\bra{3} + \cos \left( c_{IC} \Delta t \right) \cos \left( c_{ISC} \Delta t \right) \ket{2}\bra{2} \\
+	\notag \\
+	\mathcal{K}_{1_a, 0_b}^{tot} &= \mathcal{K}_{1_a}^{IC} \mathcal{K}_{0_b}^{ISC} \notag \\
+	&= \Big( -i \sin \left( c_{IC} \Delta t \right) \ket{1}\bra{2} \Big) \Big( \dots + \cos \left( c_{ISC} \Delta t \right) \ket{2}\bra{2} \Big) \notag \\
+	&= -i \sin \left( c_{IC} \Delta t \right) \cos \left( c_{ISC} \Delta t \right) \ket{1}\bra{2} \\
+	\notag \\
+	\mathcal{K}_{0_a, 1_b}^{tot} &= \mathcal{K}_{0_a}^{IC} \mathcal{K}_{1_b}^{ISC} \notag \\
+	&= \Big( \dots + \ket{3}\bra{3} + \dots \Big) \Big( -i \sin \left( c_{ISC} \Delta t \right) \ket{3}\bra{2} \Big) \notag \\
+	&= -i \sin \left( c_{ISC} \Delta t \right) \ket{3}\bra{2} \\
+	\notag \\
+	\mathcal{K}_{1_a, 1_b}^{tot} &= \mathcal{K}_{1_a}^{IC} \mathcal{K}_{1_b}^{ISC} \notag \\
+	&= \Big( -i \sin \left( c_{IC} \Delta t \right) \ket{1}\bra{2} \Big) \Big( -i \sin \left( c_{ISC} \Delta t \right) \ket{3}\bra{2} \Big) \notag \\
+	&= 0 \quad (\text{since } \braket{2|3} = 0)
+\end{align}
+The results perfectly match the explicit derivation from the total unitary evolution.
+
+\subsubsection{Measurement Probabilities}
+
+We consider a general system state during the evolution at time $ t $ , populated in all four levels: $ \ket{\Psi_{S}} = c_{0} \ket{0} + c_{1} \ket{1} + c_{2} \ket{2} + c_{3} \ket{3} $, with populations $ p_{k} = |c_{k}|^{2} $.
+The probability of obtaining each specific measurement outcome is given by the expectation value $ P_{i_a, j_b} = \bra{\Psi_{S}} \mathcal{K}_{i_a, j_b}^{\dagger} \mathcal{K}_{i_a, j_b} \ket{\Psi_{S}} $.
+
+Calculating the exact probabilities for each measurement outcome:
+\begin{align}
+	P_{0_a, 0_b} &= \bra{\Psi_{S}} \mathcal{K}_{0_a, 0_b}^{\dagger} \mathcal{K}_{0_a, 0_b} \ket{\Psi_{S}} \notag \\
+	&= p_{0} + p_{1} + p_{3} + p_{2} \cos^2 \left( c_{IC} \Delta t \right) \cos^2 \left( c_{ISC} \Delta t \right) \\
+	\notag \\
+	P_{1_a, 0_b} &= \bra{\Psi_{S}} \mathcal{K}_{1_a, 0_b}^{\dagger} \mathcal{K}_{1_a, 0_b} \ket{\Psi_{S}} \notag \\
+	&= p_{2} \sin^2 \left( c_{IC} \Delta t \right) \cos^2 \left( c_{ISC} \Delta t \right) \\
+	\notag \\
+	P_{0_a, 1_b} &= \bra{\Psi_{S}} \mathcal{K}_{0_a, 1_b}^{\dagger} \mathcal{K}_{0_a, 1_b} \ket{\Psi_{S}} \notag \\
+	&= p_{2} \sin^2 \left( c_{ISC} \Delta t \right) \\
+	\notag \\
+	P_{1_a, 1_b} &= \bra{\Psi_{S}} \mathcal{K}_{1_a, 1_b}^{\dagger} \mathcal{K}_{1_a, 1_b} \ket{\Psi_{S}} \notag \\
+	&= 0
+\end{align}
+
+As expected, the sum of these probabilities is strictly equal to 1, confirming the conservation of probability at each time step. Factoring out $ p_2 $ yields:
+\begin{align}
+	P_{tot} &= P_{0_a, 0_b} + P_{1_a, 0_b} + P_{0_a, 1_b} \notag \\
+	&= p_{0} + p_{1} + p_{3} + p_{2} \Big[ \cos^2 \left( c_{ISC} \Delta t \right) \underbrace{\left( \cos^2 \left( c_{IC} \Delta t \right) + \sin^2 \left( c_{IC} \Delta t \right) \right)}_{= 1} + \sin^2 \left( c_{ISC} \Delta t \right) \Big] \notag \\
+	&= p_{0} + p_{1} + p_{3} + p_{2} \Big[ \cos^2 \left( c_{ISC} \Delta t \right) + \sin^2 \left( c_{ISC} \Delta t \right) \Big] \notag \\
+	&= p_{0} + p_{1} + p_{2} + p_{3} = 1
+\end{align}
+
+\newpage
+
+\section{FMO Complex}
+\label{sec:FMO_complex}
+
+\newpage
 \printbibliography
 
 \end{document}
