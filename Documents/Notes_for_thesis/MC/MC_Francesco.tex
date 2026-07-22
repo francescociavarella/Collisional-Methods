@@ -1430,12 +1430,10 @@ The comparison between these two cases highlights that the nature of the stochas
 
 To describe the transition between the Quantum Jump and the State Diffusion limits, we generalize the measurement scheme by rotating the basis in the $x-z$ plane of the ancilla's Bloch sphere. This approach allows us to interpolate between the two regimes without modifying the collisional Hamiltonian $H_{coll} = c (\sigma_z \otimes \sigma_x^a)$ or the initial state of the ancilla $|\phi_a\rangle = |0_a\rangle$. We define a generalized orthonormal measurement basis $\{|\varphi_0\rangle, |\varphi_1\rangle\}$ parameterized by an angle $\theta$:
 
-\begin{equation}
-	|\varphi_0\rangle = \cos(\theta/2)|0_a\rangle + \sin(\theta/2)|1_a\rangle
-\end{equation}
-\begin{equation}
-	|\varphi_1\rangle = \sin(\theta/2)|0_a\rangle - \cos(\theta/2)|1_a\rangle
-\end{equation}
+\begin{gather}
+	\ket{\varphi_0} = \cos(\theta/2)\ket{0_a} + \sin(\theta/2)\ket{1_a} \\
+	\ket{\varphi_1} = \sin(\theta/2)\ket{0_a} - \cos(\theta/2)\ket{1_a}
+\end{gather}
 
 By projecting the entangled state $|\Psi(\Delta t)\rangle = \cos(c\Delta t) |\psi_S\rangle \otimes |0_a\rangle - i \sin(c\Delta t) \sigma_z |\psi_S\rangle \otimes |1_a\rangle$ onto this basis, we derive the generalized Kraus operators $M_0$ and $M_1$:
 
@@ -2314,13 +2312,13 @@ Most of this section in based on the article from Ciccarello\cite{ciccarelloQuan
 The generic Hamiltonian for a Collisional Model describes the mutual exchange in energy and information between System and environment (represented by the Ancilla); since the model have to reproduce the QME dynamics it's plausible to usa the same Jump Operator on the System, while since the Ancilla is a qubit we can assume two possible evolution of its state, given by the operators : $ \sigma_{-} = \begin{pmatrix} 0 & 1 \\ 0 & 0 \end{pmatrix} $ and $ \sigma_{+} = \begin{pmatrix} 0 & 0 \\ 1 & 0 \end{pmatrix} $, that represent the relaxation to the ground state $ \ket{0_{a}} = \begin{pmatrix} 1 \\ 0 \end{pmatrix} $ and the excitation to $ \ket{1_{a}} = \begin{pmatrix} 0 \\ 1 \end{pmatrix} $. \newline
 With this elements we can compose the \textit{Collisional Hamiltonian}, as reported in Cattaneo's article\cite{cattaneoCollisionModelsCan2021} : 
 \begin{equation}
-	\mathcal{H}_{Coll} = c_{k} \left(\mathcal{L}_{k} \otimes \sigma_{-}^{a} + \mathcal{L}_{k}^{\dagger} \otimes \sigma_{+}^{a} \right)
+	\mathcal{H}_{Coll} = c_{k} \left(\mathcal{L}_{k} \otimes \sigma_{+}^{a} + \mathcal{L}_{k}^{\dagger} \otimes \sigma_{-}^{a} \right)
 	\label{eq:general_H_CM}
 \end{equation}
 with $ c_{k} = \sqrt{\frac{\gamma_{k}}{\Delta t}} $ the coefficient that defines the Intensity of the Collision, $ \mathcal{L}_{k} $ the Lindblad Jump Operator, defining the $ k-th $ dissipation channel acting on the System, while $ \sigma_{-}^{a} $ and $ \sigma_{+}^{a} $ act on the Ancilla. 
 
 This is the most general form of the \textit{Collisional Hamiltonian} that can represent any CPTP QME; by choosing different Ancilla's initial state one can model the action of the operator, i.e. with $ \ket{\phi_{a}} = \ket{0_{a}} $ the second term in Eq.\ref{eq:general_H_CM} vanishes. \newline
-In general we can take $ \ket{\phi_{a}} = p_{a} \ket{0_{a}} + \left(\ 1 - p_{a }\right) \ket{1_{a}} $.
+In general we can take $ \ket{\phi_{a}} = \sqrt{p_{a}} \ket{0_{a}} + \sqrt{1 - p_{a }} \ket{1_{a}} $.
 
 \subsection{Unitary Evolution Operator}
 Once we defined $ \mathcal{H}_{Coll} $ we can build up the \textit{Unitary Evolution Operator} as : 
@@ -2334,7 +2332,7 @@ Separating and analyzing separately the even and odd term we obtain:
 	&= \cos{\left(c \Delta t \sqrt{\mathcal{L}_{k} \mathcal{L}_{k}^{\dagger} }\right) } \otimes P_{11}^{a} + \cos{\left(c \Delta t \sqrt{\mathcal{L}_{k}^{\dagger} \mathcal{L}_{k} } \right) } \otimes P_{00}^{a}
 \end{align} 
 
-with $P_{00}^{a} = \ket{0_{a}} \bra{0_{a}} = \sigma_{+}\sigma_{-}$ and $ P_{11}^{a} = \ket{1_{a}} \bra{1_{a}} = \sigma_{-}\sigma_{+}  $
+with $P_{00}^{a} = \ket{0_{a}} \bra{0_{a}} = \sigma_{-}\sigma_{+}$ and $ P_{11}^{a} = \ket{1_{a}} \bra{1_{a}} = \sigma_{+}\sigma_{-}  $
 
 \begin{align}
 	\sum_{m=0}^{\infty}{ \frac{\left( -i \mathcal{H}_{Coll} \Delta t \right)^{2m+1}}{(2m+1)!} } &= \sum_{m=0}^{\infty}{ \frac{\left( -i c \Delta t \right)^{2m+1}}{(2m+1)!} \left( \mathcal{L}_{k} \otimes \sigma_{+}^{a} + \mathcal{L}_{k}^{\dagger} \otimes \sigma_{-}^{a} \right)^{2m+1}} \notag \\
@@ -3869,6 +3867,196 @@ As expected, the sum of these probabilities is strictly equal to 1, confirming t
 
 \section{FMO Complex}
 \label{sec:FMO_complex}
+
+\paragraph{System Hamiltonian} 
+
+\begin{equation}
+	H^{\text{exc}} = \begin{pmatrix}
+		200 & -96 & 5 & -4.4 & 4.7 & -12.6 & -6.2 \\
+		-96 & 320 & 33.1 & 6.8 & 4.5 & 7.4 & -0.3 \\
+		5 & 33.1 & 0 & -51.1 & 0.8 & -8.4 & 7.6 \\
+		-4.4 & 6.8 & -51.1 & 110 & -76.6 & -14.2 & -67 \\
+		4.7 & 4.5 & 0.8 & -76.6 & 270 & 78.3 & -0.1 \\
+		-12.6 & 7.4 & -8.4 & -14.2 & 78.3 & 420 & 38.3 \\
+		-6.2 & -0.3 & 7.6 & -67 & -0.1 & 38.3 & 230 
+	\end{pmatrix} \text{cm}^{-1}.
+\end{equation}
+
+The \textit{Interaction Hamiltonian} reads: $H_{\text{int}} = \sum_{i=1}^{N} B_{i}S_{i}$, where $B_{i}$ acts on the bath, while $S_{i} = \Ket{i} \Bra{i}$ is an operator acting on the system, projecting the effect of the environment on the $i$-th site.
+The environment is described by a spectral function, which in this case is the Drude-Lorentz spectral function: 
+\begin{equation}
+	C(\omega) = 4 \lambda \omega \, \frac{\Omega}{\omega^{2} + \Omega^{2}} \, \frac{1}{1 - e^{-\omega\beta}}
+\end{equation}
+where $\lambda$ is the reorganization energy of the environmental phonons, $\Omega$ is the cutoff frequency of the environment (the reciprocal of the relaxation time), and $\beta$ is the inverse temperature.
+
+\paragraph{Full Secular Redfield Master Equation}
+The generic Master Equation using the full secular approximation reads
+\begin{align}
+	\frac{d \rho(t)}{dt} = & -\text{i} \left[ H^{\text{exc}} + H^{\text{LS,sec}}, \rho(t) \right] + \sum_{i=1}^{N} C(0) \left\{ S_i(0)\rho(t)S_i(0) - \frac{1}{2} \left[ S_i(0)S_i(0), \rho(t) \right]_+ \right\} \notag \\
+	& + \sum_{\substack{\alpha, \beta \\ \alpha \neq \beta}} C(\varepsilon_\beta - \varepsilon_\alpha) w_{\alpha\beta} \left\{ \Ket{\alpha}\Bra{\beta}\rho(t)\Ket{\beta}\Bra{\alpha} - \frac{1}{2} \left[ \Ket{\beta}\Bra{\beta}, \rho(t) \right]_+ \right\} \label{eq:full_secular_redfield}
+\end{align}
+where $S_{i}(\omega) = \Bra{\alpha}S_{i}\Ket{\beta}\Ket{\alpha}\Bra{\beta}$ are the system's operators in the excitonic basis; $\omega = \varepsilon_{\beta} - \varepsilon_{\alpha}$ is the transition frequency (setting $\hbar = 1$), and $w_{\alpha\beta} = \sum_{i=1}^{N} \Bra{\alpha}S_{i}\Ket{\beta}\Bra{\beta}S_{i}\Ket{\alpha}$ is a geometric factor representing the spatial coupling.
+
+\subsection{Collision Model}
+
+We can identify the collisional Hamiltonians associated with Eq.~\eqref{eq:full_secular_redfield} as:
+\begin{itemize}
+	\item \textbf{Pure Dephasing} 
+	\begin{gather*}
+		H_{i}^{\text{PD}} = \sqrt{\frac{C(0)}{\Delta t}} \left( S_{i}(0) \otimes \sigma_{x}^{a} \right) \\
+		U^{\text{PD}} = \prod_{i=1}^{N} \exp \left( -i H_{i}^{\text{PD}} \Delta t \right)
+	\end{gather*} 
+	\item \textbf{Eigenstate Transition} 
+	\begin{gather*}
+		H_{\alpha\beta}^{\text{Trans}} = \sqrt{\frac{C(\varepsilon_{\beta} - \varepsilon_{\alpha}) w_{\alpha\beta}}{\Delta t}} \left( \Ket{\alpha}\Bra{\beta} \otimes \sigma_{+}^{a} + \Ket{\beta}\Bra{\alpha} \otimes \sigma_{-}^{a} \right) \\ 
+		U^{\text{Trans}} = \prod_{\substack{\alpha,\beta \\ \alpha \neq \beta}} \exp \left( -i H_{\alpha\beta}^{\text{Trans}} \Delta t \right)
+	\end{gather*} 
+\end{itemize}
+
+	We can identify some specific \textit{Jump Operators} acting on the system, associated with the generic form of the collisional Hamiltonian $H_{\text{Coll}} = c \left(\mathcal{L} \otimes \sigma_{+}^{a} + \mathcal{L}^{\dagger} \otimes \sigma_{-}^{a}\right)$. Specifically: 
+\begin{itemize}
+	\item \textbf{Pure Dephasing:} $ \mathcal{L}_{i}^{\text{PD}} =\equiv S_{i}(0) $ and $ c_{i} \equiv \sqrt{\frac{C(0)}{\Delta t}} $
+	\item \textbf{Eigenstate Transition:} $ \mathcal{L}_{\alpha\beta}^{\text{Trans}} \equiv \Ket{\alpha}\Bra{\beta} $ and $ c_{\alpha\beta} \equiv \sqrt{\frac{C(\varepsilon_{\beta}-\varepsilon_{\alpha})\, w_{\alpha\beta}}{\Delta t}} $
+\end{itemize}
+
+\subsection{Explicit Form of the Kraus Operators}
+
+From the study in Section \ref{sec:General_Treatment_for_Collisional Methods}, we can define the Kraus Operators, given the ancilla's measurement basis $ \{ \ket{0_{a}}, \ket{1_{a}} \} $ and the initialization in $ \ket{0_{a}} $ : 
+\begin{align}
+	\mathcal{K}_{0} &= \cos{\left(c \Delta t \sqrt{\mathcal{L}_{k}^{\dagger} \mathcal{L}_{k} } \right)} \\
+	\mathcal{K}_{1} &= -i \sin{\left( c \Delta t \sqrt{\mathcal{L}_{k} \mathcal{L}_{k}^{\dagger}} \right)} \frac{\mathcal{L}_{k}}{\sqrt{\mathcal{L}_{k} \mathcal{L}_{k}^{\dagger}}}
+\end{align}
+
+We now define the specific jump operators in this case:
+\begin{equation}
+	\mathcal{L}_{i}^{\text{PD}} \equiv S_{i}(0), \qquad \mathcal{L}_{\alpha\beta}^{\text{Trans}} \equiv \Ket{\alpha}\Bra{\beta},
+\end{equation}
+together with the collision parameters
+\begin{equation}
+	g_{i} \equiv c_{i}\,\Delta t = \sqrt{C(0)\,\Delta t}, \qquad g_{\alpha\beta} \equiv c_{\alpha\beta}\,\Delta t = \sqrt{C(\varepsilon_{\beta}-\varepsilon_{\alpha})\, w_{\alpha\beta}\, \Delta t}.
+\end{equation}
+
+Both substitutions rely on the same elementary fact: for any orthogonal projector $P$ (i.e. $P^{2}=P$, $P^{\dagger}=P$), 
+\begin{equation}
+	\cos(\theta P) = \mathbb{I} - (1-\cos\theta)\,P, \qquad \sin(\theta P) = \sin(\theta)\, P,
+	\label{eq:projector_function_identity}
+\end{equation}
+which follows directly from expanding the Taylor series and using $P^{n}=P$ for all $n\geq1$.
+
+\subsubsection{Pure Dephasing Kraus Operators}
+Since $S_{i}(0)$ is Hermitian and diagonal in the excitonic basis, $S_{i}(0) = \sum_{\alpha} s_{\alpha}^{(i)} \Ket{\alpha}\Bra{\alpha}$ with $s_{\alpha}^{(i)} = |\langle\alpha|i\rangle|^{2}$, one has $\mathcal{L}_{i}^{\text{PD}\dagger}\mathcal{L}_{i}^{\text{PD}} = \mathcal{L}_{i}^{\text{PD}}\mathcal{L}_{i}^{\text{PD}\dagger} = S_{i}(0)^{2}$, and therefore $\sqrt{\mathcal{L}_{i}^{\text{PD}\dagger}\mathcal{L}_{i}^{\text{PD}}} = S_{i}(0)$ itself (its eigenvalues $s_\alpha^{(i)}\geq0$). Substituting into the general Kraus formula,
+\begin{equation}
+	\mathcal{K}_{0}^{(i)} = \cos\!\left(g_{i}\, S_{i}(0)\right), \qquad
+	\mathcal{K}_{1}^{(i)} = -i\sin\!\left(g_{i}\, S_{i}(0)\right)\frac{S_{i}(0)}{S_{i}(0)} = -i\sin\!\left(g_{i}\, S_{i}(0)\right),
+\end{equation}
+and, applying any analytic function eigenvalue-wise on the diagonal operator $S_i(0)$,
+\begin{align}
+	\mathcal{K}_{0}^{(i)} &= \sum_{\alpha} \cos\!\left(g_{i}\, s_{\alpha}^{(i)}\right) \Ket{\alpha}\Bra{\alpha}, \\
+	\mathcal{K}_{1}^{(i)} &= -i \sum_{\alpha} \sin\!\left(g_{i}\, s_{\alpha}^{(i)}\right) \Ket{\alpha}\Bra{\alpha}.
+	\label{eq:kraus_dephasing_explicit}
+\end{align}
+
+\subsubsection{Eigenstate Transition Kraus Operators}
+For $\mathcal{L}_{\alpha\beta}^{\text{Trans}} = \Ket{\alpha}\Bra{\beta}$, direct computation gives
+\begin{equation}
+	\mathcal{L}_{\alpha\beta}^{\text{Trans}\dagger}\mathcal{L}_{\alpha\beta}^{\text{Trans}} = \Ket{\beta}\Bra{\beta} \equiv P_{\beta}, \qquad
+	\mathcal{L}_{\alpha\beta}^{\text{Trans}}\mathcal{L}_{\alpha\beta}^{\text{Trans}\dagger} = \Ket{\alpha}\Bra{\alpha} \equiv P_{\alpha},
+\end{equation}
+i.e. two rank-one projectors, so $\sqrt{\mathcal{L}^{\text{Trans}\dagger}\mathcal{L}^{\text{Trans}}} = P_{\beta}$ and $\sqrt{\mathcal{L}^{\text{Trans}}\mathcal{L}^{\text{Trans}\dagger}} = P_{\alpha}$. Note that $P_{\alpha}\,\mathcal{L}_{\alpha\beta}^{\text{Trans}} = \Ket{\alpha}\Bra{\alpha}\alpha\rangle\Bra{\beta} = \Ket{\alpha}\Bra{\beta} = \mathcal{L}_{\alpha\beta}^{\text{Trans}}$, so the ratio $\mathcal{L}_{\alpha\beta}^{\text{Trans}}/\sqrt{\mathcal{L}^{\text{Trans}}\mathcal{L}^{\text{Trans}\dagger}} = \mathcal{L}_{\alpha\beta}^{\text{Trans}}/P_\alpha$ simply leaves $\mathcal{L}_{\alpha\beta}^{\text{Trans}}$ unchanged (it already lies entirely in the range of $P_{\alpha}$). Substituting into the general Kraus formula and using Eq.~\eqref{eq:projector_function_identity},
+\begin{gather}
+	\mathcal{K}_{0}^{(\alpha\beta)} = \cos\!\left(g_{\alpha\beta}\, P_{\beta}\right) = \mathbb{I} - \left(1-\cos g_{\alpha\beta}\right)\Ket{\beta}\Bra{\beta} \\
+	\mathcal{K}_{1}^{(\alpha\beta)} = -i \sin\!\left(g_{\alpha\beta}\, P_{\alpha}\right)\Ket{\alpha}\Bra{\beta} = -i \sin(g_{\alpha\beta})\, \Ket{\alpha}\Bra{\beta}.
+	\label{eq:kraus_transition_explicit}
+\end{gather}
+
+$\mathcal{K}_{1}^{(\alpha\beta)}$ realizes the population jump $\beta\to\alpha$; $\mathcal{K}_{0}^{(\alpha\beta)}$ is the associated no-jump operator. Since the ancilla is always reset to $\Ket{0_{a}}$, the reverse transition $\alpha\to\beta$ is obtained from the companion collision $H_{\beta\alpha}^{\text{Trans}}$, with parameter $g_{\beta\alpha}=\sqrt{C(\varepsilon_\alpha-\varepsilon_\beta)\,w_{\beta\alpha}\,\Delta t}$; detailed balance between the two directions follows from $C(-\omega)=C(\omega)e^{-\beta\omega}$.
+
+\subsection{Generalized Unravelling: Rotated Measurement Basis}
+
+We now generalize the previous result by measuring the ancilla in a rotated basis
+\begin{equation}
+	\Ket{\varphi_{0}} = \cos(\theta/2)\Ket{0_{a}} + \sin(\theta/2)\Ket{1_{a}}, \qquad
+	\Ket{\varphi_{1}} = \sin(\theta/2)\Ket{0_{a}} - \cos(\theta/2)\Ket{1_{a}},
+\end{equation}
+with $\theta \in [0,\pi]$ a free parameter, while keeping the ancilla initialized in $\Ket{0_{a}}$ before each collision. Since $\Bra{\varphi_{0}} = \cos(\theta/2)\Bra{0_{a}} + \sin(\theta/2)\Bra{1_{a}}$ and $\Bra{\varphi_{1}} = \sin(\theta/2)\Bra{0_{a}} - \cos(\theta/2)\Bra{1_{a}}$, the generalized Kraus operators $\mathcal{M}_{j}(\theta) = \Bra{\varphi_{j}}U\Ket{0_{a}}$ follow directly by linearity as
+\begin{equation}
+	\mathcal{M}_{0}(\theta) = \cos(\theta/2)\,\mathcal{K}_{0} + \sin(\theta/2)\,\mathcal{K}_{1}, \qquad
+	\mathcal{M}_{1}(\theta) = \sin(\theta/2)\,\mathcal{K}_{0} - \cos(\theta/2)\,\mathcal{K}_{1}.
+	\label{eq:rotated_kraus_general}
+\end{equation}
+Since the coefficient matrix is orthogonal for every $\theta$, completeness is automatically preserved, $\mathcal{M}_{0}^{\dagger}\mathcal{M}_{0}+\mathcal{M}_{1}^{\dagger}\mathcal{M}_{1} = \mathcal{K}_{0}^{\dagger}\mathcal{K}_{0}+\mathcal{K}_{1}^{\dagger}\mathcal{K}_{1} = \mathbb{I}$, independently of $\theta$: every choice of $\theta$ generates a different unravelling of the \emph{same} average dynamical map. The two limiting cases are the standard quantum-jump unravelling ($\theta=0$, $\mathcal{M}_{j}=\mathcal{K}_{j}$) and a diffusive-type unravelling ($\theta=\pi/2$, corresponding to measuring the ancilla in the $\{(\Ket{0_{a}}\pm\Ket{1_{a}})/\sqrt{2}\}$ basis).
+
+\paragraph{Pure Dephasing}
+Substituting Eqs.\ref{eq:kraus_dephasing_explicit} into Eq.\ref{eq:rotated_kraus_general},
+\begin{align}
+	\mathcal{M}_{0}^{(i)}(\theta) &= \sum_{\alpha} \left[\cos(\theta/2)\cos\!\left(g_{i}s_{\alpha}^{(i)}\right) - i\sin(\theta/2)\sin\!\left(g_{i}s_{\alpha}^{(i)}\right)\right]\Ket{\alpha}\Bra{\alpha}, \\
+	\mathcal{M}_{1}^{(i)}(\theta) &= \sum_{\alpha} \left[\sin(\theta/2)\cos\!\left(g_{i}s_{\alpha}^{(i)}\right) + i\cos(\theta/2)\sin\!\left(g_{i}s_{\alpha}^{(i)}\right)\right]\Ket{\alpha}\Bra{\alpha}.
+\end{align}
+
+\paragraph{Eigenstate Transition}
+Substituting Eq.\ref{eq:kraus_transition_explicit},
+\begin{align}
+	\mathcal{M}_{0}^{(\alpha\beta)}(\theta) &= \cos(\theta/2)\left[\mathbb{I} - \left(1-\cos g_{\alpha\beta}\right)\Ket{\beta}\Bra{\beta}\right] - i\sin(\theta/2)\sin(g_{\alpha\beta})\,\Ket{\alpha}\Bra{\beta}, \\
+	\mathcal{M}_{1}^{(\alpha\beta)}(\theta) &= \sin(\theta/2)\left[\mathbb{I} - \left(1-\cos g_{\alpha\beta}\right)\Ket{\beta}\Bra{\beta}\right] + i\cos(\theta/2)\sin(g_{\alpha\beta})\,\Ket{\alpha}\Bra{\beta}.
+\end{align}
+
+\subsection{Measurement Probabilities for the Rotated Basis}
+
+Given the system wavefunction $\Ket{\psi}=\sum_{\gamma}c_{\gamma}\Ket{\gamma}$, the probability of measuring outcome $j$ 
+after a collision is $p_{j}(\theta) = \Bra{\psi}\mathcal{M}_{j}^{\dagger}(\theta)\mathcal{M}_{j}(\theta)\Ket{\psi}$. 
+Substituting Eq.~\eqref{eq:rotated_kraus_general} gives, for either channel,
+\begin{equation}
+	p_{0}(\theta) = \cos^{2}(\theta/2)\,p_{0}^{\text{std}} + \sin^{2}(\theta/2)\,p_{1}^{\text{std}} + \tfrac{1}{2}\sin(\theta)\,\chi, 
+	\qquad p_{1}(\theta) = 1-p_{0}(\theta),
+	\label{eq:rotated_probabilities}
+\end{equation}
+where $p_{0}^{\text{std}}=\Bra{\psi}\mathcal{K}_{0}^{\dagger}\mathcal{K}_{0}\Ket{\psi}$, $p_{1}^{\text{std}}=\Bra{\psi}\mathcal{K}_{1}^{\dagger}\mathcal{K}_{1}\Ket{\psi}$ 
+are the standard ($\theta=0$) jump probabilities, and $\chi \equiv \Bra{\psi}\left(\mathcal{K}_{0}^{\dagger}\mathcal{K}_{1}+\mathcal{K}_{1}^{\dagger}\mathcal{K}_{0}\right)\Ket{\psi}$ 
+is a real interference term.
+
+\paragraph{Pure Dephasing} Since $\mathcal{K}_{0}^{(i)}$ and $\mathcal{K}_{1}^{(i)}$ are simultaneously diagonal in the excitonic basis, with purely real and purely imaginary eigenvalues respectively, one finds $\mathcal{K}_{0}^{(i)\dagger}\mathcal{K}_{1}^{(i)}+\mathcal{K}_{1}^{(i)\dagger}\mathcal{K}_{0}^{(i)}=0$ identically, so $\chi^{(i)}=0$ for any state. Hence
+\begin{gather}
+	p_{0}^{(i)}(\theta) = \cos^{2}(\theta/2)\,p_{0}^{\text{std},i} + \sin^{2}(\theta/2)\,p_{1}^{\text{std},i} \\
+	p_{0}^{\text{std},i} = \sum_{\alpha} \cos^{2}\!\left(g_{i}\,s_{\alpha}^{(i)}\right)|c_{\alpha}|^{2}, \quad p_{1}^{\text{std},i} = \sum_{\alpha} \sin^{2}\!\left(g_{i}\,s_{\alpha}^{(i)}\right)|c_{\alpha}|^{2}
+\end{gather}
+
+\paragraph{Eigenstate Transition} Using $P_{\beta}\Ket{\alpha}\Bra{\beta}=0$ for $\alpha\neq\beta$, direct computation gives
+\begin{equation}
+	p_{0}^{\text{std},\alpha\beta} = 1-\sin^{2}(g_{\alpha\beta})|c_{\beta}|^{2}, \qquad
+	p_{1}^{\text{std},\alpha\beta} = \sin^{2}(g_{\alpha\beta})|c_{\beta}|^{2},
+\end{equation}
+\begin{equation}
+	\chi_{\alpha\beta} = -2\sin(g_{\alpha\beta})\,\text{Im}\!\left(c_{\beta}^{*}c_{\alpha}\right),
+\end{equation}
+so that, from Eq.\ref{eq:rotated_probabilities},
+\begin{equation}
+	p_{0}^{(\alpha\beta)}(\theta) = \cos^{2}(\theta/2)\left[1-\sin^{2}(g_{\alpha\beta})|c_{\beta}|^{2}\right] + \sin^{2}(\theta/2)\sin^{2}(g_{\alpha\beta})|c_{\beta}|^{2} - \sin(\theta)\sin(g_{\alpha\beta})\,\text{Im}\!\left(c_{\beta}^{*}c_{\alpha}\right).
+	\label{eq:p0_transition_explicit}
+\end{equation}
+Unlike the pure dephasing channel, this probability depends on the instantaneous coherence $c_{\beta}^{*}c_{\alpha}$ between the two excitonic states involved in the transition: measuring in the rotated basis mixes the "jump occurred" information with the relative phase between $\Ket{\alpha}$ and $\Ket{\beta}$, which is the origin of the diffusive character of the trajectories at $\theta\neq0$.
+
+\subsection{Implementation}
+For $N=7$ sites, at each time step $\Delta t$ the interaction propagator is Trotterized as a product of 
+$N$ pure-dephasing collisions and $N(N-1)$ eigenstate-transition collisions, each with an independently 
+reset ancilla:
+\begin{equation}
+	U^{\text{f-sec}}(\Delta t) = \left(\prod_{\substack{\alpha,\beta \\ \alpha\neq\beta}} e^{-iH_{\alpha\beta}^{\text{Trans}}\Delta t}\right)\left(\prod_{i=1}^{7} e^{-iH_{i}^{\text{PD}}\Delta t}\right).
+\end{equation}
+Since $[S_i(0),S_j(0)]=0$ for all $i,j$ (all diagonal in the same excitonic eigenbasis), the ordering of the 
+dephasing collisions is immaterial and introduces no approximation. The transition collisions, associated 
+with $\mathcal{L}_{\alpha\beta}=\Ket{\alpha}\Bra{\beta}$, do not commute pairwise in general; their sequential 
+application constitutes a first-order Lie–Trotter splitting of the transition dissipator, with local error 
+$\mathcal{O}(\Delta t^{2})$ — the same order already discarded in the collisional derivation of the Lindblad 
+limit (cf. Eq.\ref{eq:general_kraus_operators} et seq.), and therefore consistent with the overall accuracy 
+of the scheme as $\Delta t \to 0^{+}$.
+
+\paragraph{Technical Note} $ H_{exc} $ is in $ cm^{-1} $. We can change the dimension using the relation: 
+\begin{equation}
+	\omega \left[\nicefrac{rad}{fs}\right] = E \left[cm^{-1}\right] \, \text{x} \, 2 \pi c \left[ \nicefrac{cm}{fs} \right]
+\end{equation}
+with $ c = 2.99792458 \, \text{x} \, 10^{-5} \, \nicefrac{cm}{fs} $
+
+
 
 \newpage
 \printbibliography
