@@ -314,26 +314,10 @@ def collisional_trace_evo(rho0_exc, channels, U_H, times):
 # Kraus operators 
 # ================
 
-# ---------------------------------------------------------------------------
-# Closed-form Kraus operators (projection on rho spctral decomposition basis)
-# ---------------------------------------------------------------------------
 def build_kraus_operators(eigenenergies, s_weights, w_ab, C_func, dt):
     """
-    Builds the closed-form Kraus operators (K0, K1) for each of the N + N(N-1)
-    collisional channels of the full secular Redfield model, using the
-    analytic formulas:
-
-      Pure Dephasing (per site i):
-        K0_i = sum_alpha cos(g_i * s_alpha^(i)) |alpha><alpha|
-        K1_i = -i sum_alpha sin(g_i * s_alpha^(i)) |alpha><alpha|
-        with g_i = sqrt(C(0) * dt)
-
-      Eigenstate Transition (per ordered pair alpha != beta):
-        K0_ab = I - (1 - cos(g_ab)) |beta><beta|
-        K1_ab = -i sin(g_ab) |alpha><beta|
-        with g_ab = sqrt(C(eps_b - eps_a) * w_ab * dt)
-
-    Returns: list of dicts with keys 'K0', 'K1', 'type', 'label'
+    Closed-form Kraus operators (K0, K1) for each of the N + N(N-1) collisional
+    channels of the full secular Redfield model (exciton basis).
     """
     N = len(eigenenergies)
     I_sys = np.eye(N, dtype=complex)
@@ -371,70 +355,244 @@ def build_kraus_operators(eigenenergies, s_weights, w_ab, C_func, dt):
     return kraus_list
 
 
-# ----------------------------------------------------------------------------------------
-# Alternative construction: extract K0, K1 directly from U_channel via ancilla projection 
-# ----------------------------------------------------------------------------------------
 def extract_kraus_from_unitary(channels, dim_sys):
     """
     Cross-check: extracts K0 = <0_a|U|0_a>, K1 = <1_a|U|0_a> directly from the
-    (2*dim_sys, 2*dim_sys) collisional unitaries built in Block 3b, by
-    projecting onto the ancilla basis states.
-
-    Returns: list of dicts with keys 'K0', 'K1', 'type', 'label' (same order as `channels`)
+    collisional unitaries built by build_channel_unitaries.
     """
     kraus_list = []
     for ch in channels:
         U = ch['U']
-        U_reshaped = U.reshape(dim_sys, 2, dim_sys, 2)   # (i, k_out, j, k_in)
-        K0 = U_reshaped[:, 0, :, 0]   # <0_a| U |0_a>
-        K1 = U_reshaped[:, 1, :, 0]   # <1_a| U |0_a>
+        U_reshaped = U.reshape(dim_sys, 2, dim_sys, 2)
+        K0 = U_reshaped[:, 0, :, 0]
+        K1 = U_reshaped[:, 1, :, 0]
         kraus_list.append({'K0': K0, 'K1': K1, 'type': ch['type'], 'label': ch['label']})
     return kraus_list
 
 
-# -------------------
-# Completeness check
-# -------------------
-def check_kraus_completeness(kraus_list, N, tol=1e-10):
-    """
-    Verifies K0^dag K0 + K1^dag K1 = I for every channel.
-    Returns the maximum deviation found (should be ~0).
-    """
+def check_kraus_completeness(kraus_list, N):
     I_sys = np.eye(N, dtype=complex)
     max_dev = 0.0
     for ch in kraus_list:
         completeness = ch['K0'].conj().T @ ch['K0'] + ch['K1'].conj().T @ ch['K1']
-        dev = np.max(np.abs(completeness - I_sys))
-        max_dev = max(max_dev, dev)
+        max_dev = max(max_dev, np.max(np.abs(completeness - I_sys)))
     return max_dev
 
 
-# --------------------------------------------
-# Generalized (rotated-basis) Kraus operators
-# --------------------------------------------
 def rotate_kraus_operators(kraus_list, theta):
     """
-    Applies the generalized measurement-basis rotation to every channel's
-    Kraus operators (single global angle theta for all 49 channels):
-
-        M0(theta) = cos(theta/2) K0 + sin(theta/2) K1
-        M1(theta) = sin(theta/2) K0 - cos(theta/2) K1
-
-    theta = 0   -> standard quantum-jump unravelling (M0=K0, M1=K1)
-    theta = pi/2 -> diffusive-type unravelling
-
-    Returns: list of dicts with keys 'M0', 'M1', 'type', 'label'
+    M0(theta) = cos(theta/2) K0 + sin(theta/2) K1
+    M1(theta) = sin(theta/2) K0 - cos(theta/2) K1
+    theta = 0 -> standard quantum jump; theta = pi/2 -> diffusive-type unravelling.
     """
     c = np.cos(theta / 2.0)
     s = np.sin(theta / 2.0)
-
     rotated_list = []
     for ch in kraus_list:
         M0 = c * ch['K0'] + s * ch['K1']
         M1 = s * ch['K0'] - c * ch['K1']
         rotated_list.append({'M0': M0, 'M1': M1, 'type': ch['type'], 'label': ch['label']})
-
     return rotated_list
+
+
+# =================================
+# Monte Carlo trajectory algorithm
+# (pure-Python reference version)
+# =================================
+
+def sample_trajectory(psi0_exc, U_H, kraus_list, n_steps, theta=0.0, rng=None):
+    """
+    Single pure-state trajectory: at each step, free evolution U_H then
+    sequential stochastic application of all channels in kraus_list.
+    """
+    if rng is None:
+        rng = np.random.default_rng()
+
+    c = np.cos(theta / 2.0)
+    s = np.sin(theta / 2.0)
+
+    N = psi0_exc.shape[0]
+    psi_traj = np.zeros((n_steps + 1, N), dtype=complex)
+    psi_traj[0] = psi0_exc
+
+    psi = psi0_exc.copy()
+
+    for t in range(1, n_steps + 1):
+        psi = U_H @ psi
+
+        for ch in kraus_list:
+            K0, K1 = ch['K0'], ch['K1']
+            M0 = c * K0 + s * K1
+            M1 = s * K0 - c * K1
+
+            psi_M0 = M0 @ psi
+            p0 = np.real(np.vdot(psi_M0, psi_M0))
+            p0 = min(max(p0, 0.0), 1.0)
+
+            if rng.random() < p0:
+                psi = psi_M0 / np.sqrt(p0)
+            else:
+                psi_M1 = M1 @ psi
+                p1 = np.real(np.vdot(psi_M1, psi_M1))
+                psi = psi_M1 / np.sqrt(p1)
+
+        psi_traj[t] = psi
+
+    return psi_traj
+
+
+def average_trajectories(psi0_exc, U_H, kraus_list, n_steps, n_traj, theta=0.0, seed=None):
+    """
+    Ensemble average of n_traj independent Monte Carlo trajectories.
+    """
+    N = psi0_exc.shape[0]
+    rho_sum = np.zeros((n_steps + 1, N, N), dtype=complex)
+
+    ss = np.random.SeedSequence(seed)
+    child_seeds = ss.spawn(n_traj)
+
+    for k in range(n_traj):
+        rng = np.random.default_rng(child_seeds[k])
+        psi_traj = sample_trajectory(psi0_exc, U_H, kraus_list, n_steps, theta=theta, rng=rng)
+        rho_sum += np.einsum('ti,tj->tij', psi_traj, psi_traj.conj())
+
+    return rho_sum / n_traj
+
+
+# ==========================================
+# Monte Carlo trajectory algorithm (Numba)
+# Stores psi (not full rho) for every single
+# trajectory and time step. Per-trajectory
+# seeds depend ONLY on (master_seed, n_traj),
+# NOT on theta -> reproducible across angles.
+# ==========================================
+
+def kraus_list_to_arrays(kraus_list, N):
+    """
+    Converts the list-of-dicts Kraus representation into stacked arrays,
+    required as input for the Numba JIT core.
+
+    Returns: K0_arr, K1_arr, each of shape (n_channels, N, N), complex128
+    """
+    n_channels = len(kraus_list)
+    K0_arr = np.zeros((n_channels, N, N), dtype=np.complex128)
+    K1_arr = np.zeros((n_channels, N, N), dtype=np.complex128)
+    for k, ch in enumerate(kraus_list):
+        K0_arr[k] = ch['K0']
+        K1_arr[k] = ch['K1']
+    return K0_arr, K1_arr
+
+
+def rotate_kraus_arrays(K0_arr, K1_arr, theta):
+    """
+    Applies the generalized measurement-basis rotation to the stacked
+    Kraus arrays: M0(theta) = cos(theta/2) K0 + sin(theta/2) K1, etc.
+    """
+    c = np.cos(theta / 2.0)
+    s = np.sin(theta / 2.0)
+    M0_arr = (c * K0_arr + s * K1_arr).astype(np.complex128)
+    M1_arr = (s * K0_arr - c * K1_arr).astype(np.complex128)
+    return M0_arr, M1_arr
+
+
+@njit(parallel=True, cache=True, fastmath=True)
+def _mc_trajectories_core(psi0, U_H, M0_arr, M1_arr, n_traj, n_times, seeds):
+    """
+    Computes n_traj independent quantum-jump trajectories in parallel.
+    Each trajectory: free evolution U_H, then sequential stochastic
+    application of all channels (M0_arr[k], M1_arr[k]).
+
+    Returns: psi_traj, shape (N, n_times, n_traj), complex128
+    """
+    N = psi0.shape[0]
+    n_channels = M0_arr.shape[0]
+    psi_traj = np.zeros((N, n_times, n_traj), dtype=np.complex128)
+
+    for traj in prange(n_traj):
+        np.random.seed(seeds[traj])
+        psi = psi0.copy()
+
+        for i in range(N):
+            psi_traj[i, 0, traj] = psi[i]
+
+        for t in range(1, n_times):
+            # 1. Free evolution
+            psi = np.dot(U_H, psi)
+
+            # 2. Sequential collisional channels
+            for k in range(n_channels):
+                psi_M0 = np.dot(M0_arr[k], psi)
+                p0 = np.real(np.vdot(psi_M0, psi_M0))
+                if p0 > 1.0:
+                    p0 = 1.0
+                elif p0 < 0.0:
+                    p0 = 0.0
+
+                r = np.random.rand()
+                if r < p0:
+                    psi = psi_M0 / np.sqrt(p0)
+                else:
+                    psi_M1 = np.dot(M1_arr[k], psi)
+                    p1 = np.real(np.vdot(psi_M1, psi_M1))
+                    psi = psi_M1 / np.sqrt(p1)
+
+            for i in range(N):
+                psi_traj[i, t, traj] = psi[i]
+
+    return psi_traj
+
+
+def compute_trajectories_numba(psi0_exc, U_H, kraus_list, theta, n_traj, n_times, master_seed=42):
+    """
+    Computes n_traj Monte Carlo trajectories via the Numba JIT core.
+
+    Per-trajectory seeds are generated from a FIXED master_seed and depend
+    ONLY on (master_seed, n_traj) -- NOT on theta. This guarantees that
+    trajectory #k uses the identical random seed across different theta
+    values, exactly as in the reference implementation.
+
+    Returns: psi_traj (N, n_times, n_traj), seeds (n_traj,)
+    """
+    N = psi0_exc.shape[0]
+    K0_arr, K1_arr = kraus_list_to_arrays(kraus_list, N)
+    M0_arr, M1_arr = rotate_kraus_arrays(K0_arr, K1_arr, theta)
+
+    rng_master = np.random.RandomState(master_seed)
+    seeds = rng_master.randint(0, 2**30, size=n_traj)
+
+    psi0 = psi0_exc.astype(np.complex128)
+    U_H_np = U_H.astype(np.complex128)
+
+    psi_traj = _mc_trajectories_core(psi0, U_H_np, M0_arr, M1_arr, n_traj, n_times, seeds)
+    return psi_traj, seeds
+
+
+def psi_traj_to_rho_avg(psi_traj):
+    """
+    Ensemble-averaged density matrix at each time step, from stored psi.
+    Returns: rho_avg (n_times, N, N)
+    """
+    return np.einsum('itk,jtk->tij', psi_traj, np.conj(psi_traj)) / psi_traj.shape[2]
+
+
+def site_population_stats(psi_traj, eigenvectors):
+    """
+    Computes mean and standard error of the SITE-basis populations across
+    trajectories, at each time step.
+
+    Returns: pop_mean (n_times, N_site), pop_stderr (n_times, N_site)
+    """
+    N, n_times, n_traj = psi_traj.shape
+    # Transform each trajectory to the site basis: psi_site = D @ psi_exc
+    psi_site_traj = np.einsum('ia,atk->itk', eigenvectors, psi_traj)
+    pop_traj = np.abs(psi_site_traj) ** 2   # (N_site, n_times, n_traj)
+
+    pop_mean = np.mean(pop_traj, axis=2).T          # (n_times, N_site)
+    pop_std = np.std(pop_traj, axis=2, ddof=1).T     # (n_times, N_site)
+    pop_stderr = pop_std / np.sqrt(n_traj)
+
+    return pop_mean, pop_stderr
+
 
 # ====================
 # Physical parameters
@@ -510,6 +668,8 @@ if __name__ == "__main__":
     dt = 1.0    # fs
     tf = 1000.0 # fs
     times = np.arange(0.0, tf, dt)
+    n_times = len(times)
+    n_steps = n_times - 1
 
     print("--- Inizializzazione ---")
     
@@ -517,6 +677,10 @@ if __name__ == "__main__":
     rho0_site = np.zeros((N_site, N_site), dtype=complex)
     rho0_site[0, 0] = 1.0
     rho0_exc = eigenvectors.conj().T @ rho0_site @ eigenvectors
+
+    psi0_site = np.zeros(N_site, dtype=complex)
+    psi0_site[0] = 1.0
+    psi0_exc = eigenvectors.conj().T @ psi0_site
 
     # 2. Setup Modello Collisionale
     channels = build_channel_unitaries(eigenergies, s_weights, w_ab, C_func, dt)
@@ -527,34 +691,82 @@ if __name__ == "__main__":
     L_list, gamma_list = build_redfield_jump_operators(eigenergies, s_weights, w_ab, C_func)
     H_tot_exc = np.diag(eigenergies).astype(complex) # (Ignoriamo il Lamb Shift per questo test veloce)
 
+    # 4. Setup Kraus operators (closed form)
+    kraus_closed = build_kraus_operators(eigenergies, s_weights, w_ab, C_func, dt)
+
     # ==========================
     # EVOLUZIONE E CONFRONTO
     # ==========================
     
-    print("\n--- Calcolo dinamica Collisionale... ---")
+    print("\n--- Calcolo dinamica Collisionale (trace ancilla, deterministico)... ---")
     rho_traj_coll_exc = collisional_trace_evo(rho0_exc, channels, U_H, times)
-    # Ritorno alla base dei siti
     rho_traj_coll_site = np.einsum('ia,tab,jb->tij', eigenvectors, rho_traj_coll_exc, eigenvectors.conj())
     pop_site_coll = np.real(np.diagonal(rho_traj_coll_site, axis1=1, axis2=2))
 
     print("--- Calcolo dinamica Master Equation (Redfield)... ---")
     rho_traj_redfield_exc = Redfield_evo(rho0_exc, H_tot_exc, gamma_list, L_list, times)
-    # Ritorno alla base dei siti
     rho_traj_redfield_site = np.einsum('ia,tab,jb->tij', eigenvectors, rho_traj_redfield_exc, eigenvectors.conj())
     pop_site_redfield = np.real(np.diagonal(rho_traj_redfield_site, axis1=1, axis2=2))
 
     # ==========================
+    # KRAUS: completeness + cross-check vs U extraction
+    # ==========================
+    print("\n--- Verifica Kraus operators... ---")
+    kraus_extracted = extract_kraus_from_unitary(channels, N_site)
+    max_dev_closed = check_kraus_completeness(kraus_closed, N_site)
+    max_diff_K0 = max(np.max(np.abs(c['K0'] - e['K0'])) for c, e in zip(kraus_closed, kraus_extracted))
+    max_diff_K1 = max(np.max(np.abs(c['K1'] - e['K1'])) for c, e in zip(kraus_closed, kraus_extracted))
+    print(f"Kraus completeness deviation: {max_dev_closed:.3e}")
+    print(f"Max |K0_closed - K0_extracted|: {max_diff_K0:.3e}")
+    print(f"Max |K1_closed - K1_extracted|: {max_diff_K1:.3e}")
+
+    # ==========================
+    # MONTE CARLO (Numba)
+    # ==========================
+    print("\n--- Calcolo dinamica Monte Carlo (Numba, traiettorie complete)... ---")
+    n_traj = 200
+
+    # Cross-check: seeds independent of theta
+    _, seeds_theta0 = compute_trajectories_numba(psi0_exc, U_H, kraus_closed, 0.0, n_traj, n_times, master_seed=42)
+    _, seeds_theta90 = compute_trajectories_numba(psi0_exc, U_H, kraus_closed, np.pi/2, n_traj, n_times, master_seed=42)
+    print("Seeds identical across theta:", np.array_equal(seeds_theta0, seeds_theta90))
+
+    # Timing + cross-check vs pure-Python MC
+    t0 = time.time()
+    psi_traj_numba, _ = compute_trajectories_numba(psi0_exc, U_H, kraus_closed, 0.0, n_traj, n_times, master_seed=42)
+    t_numba = time.time() - t0
+
+    t0 = time.time()
+    rho_avg_python_exc = average_trajectories(psi0_exc, U_H, kraus_closed, n_steps, n_traj, theta=0.0, seed=42)
+    t_python = time.time() - t0
+
+    rho_avg_numba_exc = psi_traj_to_rho_avg(psi_traj_numba)
+    pop_numba = np.real(np.einsum('ia,tab,jb->tij', eigenvectors, rho_avg_numba_exc, eigenvectors.conj())
+                         .diagonal(axis1=1, axis2=2))
+    pop_python = np.real(np.einsum('ia,tab,jb->tij', eigenvectors, rho_avg_python_exc, eigenvectors.conj())
+                          .diagonal(axis1=1, axis2=2))
+
+    print(f"\nNumba time: {t_numba:.2f} s   |   Pure-Python time: {t_python:.2f} s   |   Speedup: {t_python/t_numba:.1f}x")
+    print("Max abs diff (Numba vs pure-Python MC, same seeds):", np.max(np.abs(pop_numba[-1] - pop_python[-1])))
+
+    # Population statistics directly from stored trajectories
+    pop_mean, pop_stderr = site_population_stats(psi_traj_numba, eigenvectors)
+
+    # ==========================
     # RISULTATI
     # ==========================
-    print("\n--- Risultati ---")
+    print("\n--- Risultati finali ---")
     print(f"Trace at t=0 (Collisional): {np.real(np.trace(rho_traj_coll_site[0])):.5f}")
     print(f"Trace at t_f (Collisional): {np.real(np.trace(rho_traj_coll_site[-1])):.5f}")
-    
-    print("\nFinal-time site populations (Collisional):")
+
+    print("\nFinal-time site populations (Collisional, deterministic):")
     print(np.round(pop_site_coll[-1], 5))
-    
+
     print("\nFinal-time site populations (Redfield):")
     print(np.round(pop_site_redfield[-1], 5))
-    
+
+    print("\nFinal-time site populations (Monte Carlo, Numba, theta=0):")
+    print(np.round(pop_mean[-1], 5), "+/-", np.round(pop_stderr[-1], 5))
+
     max_diff = np.max(np.abs(pop_site_coll[-1] - pop_site_redfield[-1]))
-    print(f"\n=> Max abs difference at t_f: {max_diff:.3e}")
+    print(f"\n=> Max abs difference (Collisional vs Redfield) at t_f: {max_diff:.3e}")
