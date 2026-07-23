@@ -310,6 +310,132 @@ def collisional_trace_evo(rho0_exc, channels, U_H, times):
 
     return rho_traj
 
+# ================
+# Kraus operators 
+# ================
+
+# ---------------------------------------------------------------------------
+# Closed-form Kraus operators (projection on rho spctral decomposition basis)
+# ---------------------------------------------------------------------------
+def build_kraus_operators(eigenenergies, s_weights, w_ab, C_func, dt):
+    """
+    Builds the closed-form Kraus operators (K0, K1) for each of the N + N(N-1)
+    collisional channels of the full secular Redfield model, using the
+    analytic formulas:
+
+      Pure Dephasing (per site i):
+        K0_i = sum_alpha cos(g_i * s_alpha^(i)) |alpha><alpha|
+        K1_i = -i sum_alpha sin(g_i * s_alpha^(i)) |alpha><alpha|
+        with g_i = sqrt(C(0) * dt)
+
+      Eigenstate Transition (per ordered pair alpha != beta):
+        K0_ab = I - (1 - cos(g_ab)) |beta><beta|
+        K1_ab = -i sin(g_ab) |alpha><beta|
+        with g_ab = sqrt(C(eps_b - eps_a) * w_ab * dt)
+
+    Returns: list of dicts with keys 'K0', 'K1', 'type', 'label'
+    """
+    N = len(eigenenergies)
+    I_sys = np.eye(N, dtype=complex)
+    C0 = np.real(C_func(0.0))
+    g_i_global = np.sqrt(C0 * dt)
+
+    kraus_list = []
+
+    # --- Pure Dephasing ---
+    for i in range(N):
+        s_alpha = s_weights[i]
+        K0_i = np.diag(np.cos(g_i_global * s_alpha)).astype(complex)
+        K1_i = -1j * np.diag(np.sin(g_i_global * s_alpha)).astype(complex)
+        kraus_list.append({'K0': K0_i, 'K1': K1_i, 'type': 'PD', 'label': i})
+
+    # --- Eigenstate Transition ---
+    for alpha in range(N):
+        for beta in range(N):
+            if alpha == beta:
+                continue
+            omega = eigenenergies[beta] - eigenenergies[alpha]
+            gamma_ab = np.real(C_func(omega)) * w_ab[alpha, beta]
+            g_ab = np.sqrt(gamma_ab * dt)
+
+            P_beta = np.zeros((N, N), dtype=complex)
+            P_beta[beta, beta] = 1.0
+
+            K0_ab = I_sys - (1.0 - np.cos(g_ab)) * P_beta
+
+            K1_ab = np.zeros((N, N), dtype=complex)
+            K1_ab[alpha, beta] = -1j * np.sin(g_ab)
+
+            kraus_list.append({'K0': K0_ab, 'K1': K1_ab, 'type': 'Trans', 'label': (alpha, beta)})
+
+    return kraus_list
+
+
+# ----------------------------------------------------------------------------------------
+# Alternative construction: extract K0, K1 directly from U_channel via ancilla projection 
+# ----------------------------------------------------------------------------------------
+def extract_kraus_from_unitary(channels, dim_sys):
+    """
+    Cross-check: extracts K0 = <0_a|U|0_a>, K1 = <1_a|U|0_a> directly from the
+    (2*dim_sys, 2*dim_sys) collisional unitaries built in Block 3b, by
+    projecting onto the ancilla basis states.
+
+    Returns: list of dicts with keys 'K0', 'K1', 'type', 'label' (same order as `channels`)
+    """
+    kraus_list = []
+    for ch in channels:
+        U = ch['U']
+        U_reshaped = U.reshape(dim_sys, 2, dim_sys, 2)   # (i, k_out, j, k_in)
+        K0 = U_reshaped[:, 0, :, 0]   # <0_a| U |0_a>
+        K1 = U_reshaped[:, 1, :, 0]   # <1_a| U |0_a>
+        kraus_list.append({'K0': K0, 'K1': K1, 'type': ch['type'], 'label': ch['label']})
+    return kraus_list
+
+
+# -------------------
+# Completeness check
+# -------------------
+def check_kraus_completeness(kraus_list, N, tol=1e-10):
+    """
+    Verifies K0^dag K0 + K1^dag K1 = I for every channel.
+    Returns the maximum deviation found (should be ~0).
+    """
+    I_sys = np.eye(N, dtype=complex)
+    max_dev = 0.0
+    for ch in kraus_list:
+        completeness = ch['K0'].conj().T @ ch['K0'] + ch['K1'].conj().T @ ch['K1']
+        dev = np.max(np.abs(completeness - I_sys))
+        max_dev = max(max_dev, dev)
+    return max_dev
+
+
+# --------------------------------------------
+# Generalized (rotated-basis) Kraus operators
+# --------------------------------------------
+def rotate_kraus_operators(kraus_list, theta):
+    """
+    Applies the generalized measurement-basis rotation to every channel's
+    Kraus operators (single global angle theta for all 49 channels):
+
+        M0(theta) = cos(theta/2) K0 + sin(theta/2) K1
+        M1(theta) = sin(theta/2) K0 - cos(theta/2) K1
+
+    theta = 0   -> standard quantum-jump unravelling (M0=K0, M1=K1)
+    theta = pi/2 -> diffusive-type unravelling
+
+    Returns: list of dicts with keys 'M0', 'M1', 'type', 'label'
+    """
+    c = np.cos(theta / 2.0)
+    s = np.sin(theta / 2.0)
+
+    rotated_list = []
+    for ch in kraus_list:
+        M0 = c * ch['K0'] + s * ch['K1']
+        M1 = s * ch['K0'] - c * ch['K1']
+        rotated_list.append({'M0': M0, 'M1': M1, 'type': ch['type'], 'label': ch['label']})
+
+    return rotated_list
+
 # ====================
 # Physical parameters
 # ====================
