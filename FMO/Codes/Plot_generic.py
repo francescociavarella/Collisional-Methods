@@ -8,6 +8,39 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
+from numba import njit
+
+# =================================
+# NUMBA OPTIMIZED METRIC FUNCTIONS
+# =================================
+
+@njit
+def fidelity_generic_njit(rho, sigma):
+    """Numba-compatible generalized fidelity."""
+    evals_rho, evecs_rho = np.linalg.eigh(rho)
+    evals_rho = np.maximum(evals_rho, 0.0) 
+    
+    diag_matrix = np.diag(np.sqrt(evals_rho)).astype(np.complex128)
+    
+    sqrt_rho = evecs_rho @ diag_matrix @ evecs_rho.conj().T
+    inner_matrix = sqrt_rho @ sigma.astype(np.complex128) @ sqrt_rho
+    inner_matrix = 0.5 * (inner_matrix + inner_matrix.conj().T)
+    
+    evals_inner = np.linalg.eigvalsh(inner_matrix)
+    evals_inner = np.maximum(evals_inner, 0.0)
+    
+    fidelity = np.sum(np.sqrt(evals_inner))**2
+    return min(1.0, fidelity)
+
+@njit
+def trace_distance_generic_njit(rho, sigma):
+    """Numba-compatible generalized trace distance."""
+    diff = rho - sigma
+    diff = 0.5 * (diff + diff.conj().T)
+    
+    eigenvalues = np.linalg.eigvalsh(diff)
+    t_dist = 0.5 * np.sum(np.abs(eigenvalues))
+    return min(1.0, t_dist)
 
 # ==========================
 # Input Parsing from Bash
@@ -252,5 +285,55 @@ ax6.set_title(f'Theta={theta_deg} deg - Distribution of Total Jumps per Trajecto
 ax6.set_xlabel('Number of jumps (over full trajectory)')
 ax6.set_ylabel('Number of trajectories')
 save_fig(fig6, f'Jumps_Histogram_Theta_{theta_str}')
+
+# ==========================================
+# Plot 7: All populations in a single plot (Redfield vs Avg Trajectories)
+# ==========================================
+fig7, ax7 = plt.subplots(figsize=(10, 6))
+
+# Generiamo colori distinti per ogni sito
+colors = plt.cm.tab10(np.linspace(0, 1, N_site))
+
+for i in range(N_site):
+    # Plot Redfield (tratteggiato)
+    ax7.plot(times, pop_redfield_site[:, i], color=colors[i], linestyle='--', 
+             linewidth=2, label=f'Redfield S{i+1}')
+    # Plot Average MC (linea continua)
+    ax7.plot(times, pop_traj_avg_site[:, i], color=colors[i], linestyle='-', 
+             linewidth=2, alpha=0.7, label=f'Avg MC S{i+1}')
+
+ax7.set_title(f'All Populations: Redfield vs Avg Trajectories (Theta={theta_deg} deg)')
+ax7.set_xlabel('Time (fs)')
+ax7.set_ylabel('Population')
+
+# Spostiamo la legenda fuori dal grafico perché 14 etichette occupano molto spazio
+ax7.legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=9)
+save_fig(fig7, f'All_Populations_Together_Theta_{theta_str}')
+
+
+# ==========================================
+# Plot 8: Trace distance (Redfield vs Avg Trajectories)
+# ==========================================
+# Calcoliamo la trace distance istante per istante
+td_time = np.zeros(n_times)
+fid_time = np.zeros(n_times)
+
+for t in range(n_times):
+    td_time[t] = trace_distance_generic_njit(rho_redfield_site[t], rho_traj_avg_site[t])
+    # Se vuoi calcolare anche la fidelity, decommenta la riga sotto:
+    # fid_time[t] = fidelity_generic_njit(rho_redfield_site[t], rho_traj_avg_site[t])
+
+fig8, ax8 = plt.subplots(figsize=(8, 5))
+ax8.plot(times, td_time, color='red', linewidth=2, label='Trace Distance')
+ax8.set_title(f'Trace Distance: Redfield vs Avg Trajectories (Theta={theta_deg} deg)')
+ax8.set_xlabel('Time (fs)')
+ax8.set_ylabel('Trace Distance')
+
+# È spesso utile usare scala logaritmica per vedere bene la convergenza asintotica
+# Se preferisci lineare, rimuovi semplicemente la riga sottostante
+ax8.set_yscale('log') 
+
+ax8.legend(loc='best')
+save_fig(fig8, f'Trace_Distance_Theta_{theta_str}')
 
 print("All plots generated and saved successfully.")

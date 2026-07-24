@@ -572,7 +572,7 @@ if __name__ == "__main__":
     # ---------------------------------------------------
     # 3. Monte Carlo trajectories (Numba)
     # ---------------------------------------------------
-    print(f"\n--- Calcolo dinamica Monte Carlo (Numba, {n_traj} traiettorie)... ---")
+    print(f"\n--- Calcolo dinamica Monte Carlo, theta {theta_deg} deg, {n_traj} traiettorie)... ---")
     t0 = time.time()
     psi_traj, jump_counts, seeds = compute_trajectories_numba(
         psi0_exc, U_H, kraus_closed, theta, n_traj, n_times,
