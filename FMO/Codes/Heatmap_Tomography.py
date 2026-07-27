@@ -23,8 +23,8 @@ N_traj = 10000
 dt_str = f"{dt:.2f}".replace(".", "p")
 theta_str = f"{theta_deg:.3f}".replace(".", "p")
 
-results_dir = "../Results/Data/FMO_CollisionModel/"
-Output_dir = f"../Results/Plot/GIFs/{theta_str}"
+results_dir = "../Results/Data/"
+Output_dir = f"../Results/Heatmaps/{theta_str}"
 os.makedirs(Output_dir, exist_ok=True)
 
 fname = os.path.join(results_dir, f"result_FMO_theta{theta_str}_dt{dt_str}_Ntraj{N_traj}.npz")
