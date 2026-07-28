@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')  # Forza il backend non interattivo per salvare i file
 import matplotlib.pyplot as plt
+from matplotlib.colors import LogNorm
 from numba import njit
 from scipy.optimize import curve_fit
 from scipy.stats import poisson, norm
@@ -333,11 +334,11 @@ for i in range(N_site):
     
     # Disegniamo l'istogramma 2D con la colormap 'magma'
     h, xedges, yedges, im = axD.hist2d(X_times, Y_pops, bins=[time_bins, pop_bins], 
-                                      cmap='magma', density=False)
+                                      cmap='Blues', norm=LogNorm(), density=False)
     
     # Sovrapponiamo la dinamica media deterministica esatta di Redfield
     if has_redfield:
-        axD.plot(times, pop_redfield[:, i], color='cyan', linewidth=2.5, linestyle='--', 
+        axD.plot(times, pop_redfield[:, i], color='red', linewidth=2.5, linestyle='--', 
                  label='Redfield Exact (Mean Path)')
     
     axD.set_xlabel('Time (fs)')
