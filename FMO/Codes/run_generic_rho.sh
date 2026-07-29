@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# ANGLES=(0.0 0.1 0.5 1.0 45.0 90.0)
-ANGLES=(0.1 0.5 1.0)
+ANGLES=(0.0 0.1 0.5 1.0 45.0 90.0)
+# ANGLES=(0.1 0.5 1.0)
 
 PYTHON_SCRIPT="generic_rho_trajectories.py" 
 PLOT_SCRIPT="Plot_generic.py"    
@@ -21,7 +21,7 @@ do
     echo "Launching Python scripts for Theta = $THETA in background..."
     
     # ( python -u $PYTHON_SCRIPT $THETA "batch_run" && python -u $PLOT_SCRIPT $THETA && python -u $HEATMAP_SCRIPT $THETA && python -u $VARIANCE_SCRIPT $THETA )  # & (add & for parallel execution, may be too expensive)
-    (python -u $PYTHON_SCRIPT $THETA "batch_run" && python -u $VARIANCE_SCRIPT $THETA )  # & (add & for parallel execution, may be too expensive)
+    python -u $TIME_SLICE_SCRIPT $THETA # & 
 
 done
 

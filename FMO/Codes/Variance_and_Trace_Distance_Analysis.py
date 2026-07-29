@@ -3,14 +3,18 @@
 
 import sys
 import os
+import warnings
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')  # Forza il backend non interattivo per salvare i file
+matplotlib.use('Agg')  # Force non-interactive backend to save files
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 from numba import njit
 from scipy.optimize import curve_fit
-from scipy.stats import poisson, norm
+from scipy.stats import poisson, norm, skew, kurtosis
+
+# Suppress the specific scipy warning about catastrophic cancellation at t=0
+warnings.filterwarnings("ignore", message="Precision loss occurred in moment calculation")
 
 # =================================
 # NUMBA OPTIMIZED METRIC FUNCTIONS
@@ -72,7 +76,7 @@ except FileNotFoundError:
     print(f"Error: File {fname} not found. Ensure the simulation for this angle has completed.")
     sys.exit(1)
 
-# Estrazione Dati
+# Data Extraction
 times = data['times']
 dt_val = float(data['dt'])
 N_site = int(data['N_site'])
@@ -81,9 +85,9 @@ eigenvectors = data['eigenvectors']
 psi0_exc = data['psi0_exc']
 
 psi_traj_exc = data['psi_traj']         # (N_site, n_times, n_traj), exciton basis, complex64
-jump_counts = data['jump_counts']       # (n_times, n_traj) - CONTEGGIO APPLICAZIONI M1
+jump_counts = data['jump_counts']       # (n_times, n_traj) - M1 APPLICATIONS COUNT
 
-# Carichiamo le matrici di densità per l'analisi di convergenza della Trace Distance
+# Load density matrices for Trace Distance convergence analysis
 if 'rho_redfield_site' in data and 'rho_traj_avg_site' in data:
     rho_redfield_site = data['rho_redfield_site']
     rho_traj_avg_site = data['rho_traj_avg_site']
@@ -106,10 +110,13 @@ psi_traj_site = np.einsum('ia,atk->itk', eigenvectors, psi_traj_exc)   # (N_site
 pop_traj_site = np.abs(psi_traj_site) ** 2                             # (N_site, n_times, n_traj)
 
 # ==========================
-# STATISTICAL ANALYSIS: MEAN & VARIANCE OVER TIME
+# STATISTICAL ANALYSIS: MEAN, VARIANCE, SKEWNESS, KURTOSIS
 # ==========================
-mean_pop_time = np.mean(pop_traj_site, axis=2)  # (N_site, n_times)
-var_pop_time = np.var(pop_traj_site, axis=2)    # (N_site, n_times)
+print("Computing Statistical Moments over time...")
+mean_pop_time = np.mean(pop_traj_site, axis=2)
+var_pop_time = np.var(pop_traj_site, axis=2)
+skew_pop_time = skew(pop_traj_site, axis=2, nan_policy='omit')
+kurt_pop_time = kurtosis(pop_traj_site, axis=2, fisher=True, nan_policy='omit')
 
 # ===========================
 # General plot setup
@@ -131,61 +138,86 @@ SITE_LABELS = [f"Site {i+1}" for i in range(N_site)]
 colors = plt.cm.viridis(np.linspace(0, 1, N_site))
 
 # ==========================================
-# PLOT 1: Popolazione Media e Varianza nel Tempo
+# PLOT 1: All Statistical Moments over Time
 # ==========================================
-fig1, (ax_mean, ax_var) = plt.subplots(2, 1, figsize=(9, 7), sharex=True)
+fig1, axes = plt.subplots(4, 1, figsize=(10, 12), sharex=True)
+ax_mean, ax_var, ax_skew, ax_kurt = axes
 
 for i in range(N_site):
     ax_mean.plot(times, mean_pop_time[i, :], color=colors[i], linewidth=2, label=SITE_LABELS[i])
     ax_var.plot(times, var_pop_time[i, :], color=colors[i], linewidth=2, label=SITE_LABELS[i])
-
-ax_mean.set_title(f'Mean Population Dynamics (Theta = {theta_deg}°)')
-ax_mean.set_ylabel('Mean Population')
-ax_mean.legend(loc='center left', bbox_to_anchor=(1.02, 0.5))
-
-ax_var.set_title(f'Population Variance over Trajectories (Theta = {theta_deg}°)')
-ax_var.set_xlabel('Time (fs)')
-ax_var.set_ylabel('Variance')
-
-save_fig(fig1, f'Mean_and_Variance_Time_Theta_{theta_str}')
-
-from scipy.stats import skew, kurtosis
-
-# ==========================================
-# PLOT 1b: Higher-Order Moments (Skewness & Kurtosis) over Time
-# ==========================================
-print("Computing Skewness and Kurtosis over time...")
-
-# Calculate skewness and Fisher's kurtosis (normal distribution = 0) along the trajectory axis (axis=2)
-# We add a small epsilon to variance to avoid division by zero in deterministic points (t=0)
-eps = 1e-15
-skew_pop_time = skew(pop_traj_site, axis=2, nan_policy='omit')
-# Fisher=True subtracts 3, so a perfect Gaussian has Kurtosis = 0
-kurt_pop_time = kurtosis(pop_traj_site, axis=2, fisher=True, nan_policy='omit') 
-
-fig1b, (ax_skew, ax_kurt) = plt.subplots(2, 1, figsize=(9, 7), sharex=True)
-
-for i in range(N_site):
     ax_skew.plot(times, skew_pop_time[i, :], color=colors[i], linewidth=2, label=SITE_LABELS[i])
     ax_kurt.plot(times, kurt_pop_time[i, :], color=colors[i], linewidth=2, label=SITE_LABELS[i])
 
+# --- Mean Subplot ---
+ax_mean.set_title(f'Statistical Moments over Trajectories (Theta = {theta_deg}°)')
+ax_mean.set_ylabel('Mean')
+ax_mean.legend(loc='center left', bbox_to_anchor=(1.02, 0.5))
+
+# --- Variance Subplot ---
+ax_var.set_ylabel('Variance')
+
 # --- Skewness Subplot ---
-ax_skew.set_title(f'Population Skewness over Trajectories (Theta = {theta_deg}°)')
 ax_skew.set_ylabel('Skewness ($\\gamma_1$)')
-ax_skew.axhline(0, color='black', linestyle='--', linewidth=1.5, alpha=0.6) # Reference for symmetric distribution
-ax_skew.legend(loc='center left', bbox_to_anchor=(1.02, 0.5))
+ax_skew.axhline(0, color='black', linestyle='--', linewidth=1.5, alpha=0.6) 
+ax_skew.set_ylim(-5, 5)
 
 # --- Kurtosis Subplot ---
-ax_kurt.set_title(f'Population Excess Kurtosis (Fisher) over Trajectories (Theta = {theta_deg}°)')
-ax_kurt.set_xlabel('Time (fs)')
 ax_kurt.set_ylabel('Excess Kurtosis ($K - 3$)')
-ax_kurt.axhline(0, color='black', linestyle='--', linewidth=1.5, alpha=0.6) # Reference for Gaussian tail
-
-# Fix potential Y-axis spikes caused by division by near-zero variance at t=0
-ax_skew.set_ylim(-5, 5)
+ax_kurt.set_xlabel('Time (fs)')
+ax_kurt.axhline(0, color='black', linestyle='--', linewidth=1.5, alpha=0.6) 
 ax_kurt.set_ylim(-5, 15)
 
-save_fig(fig1b, f'Skewness_and_Kurtosis_Time_Theta_{theta_str}')
+save_fig(fig1, f'All_Statistical_Moments_Time_Theta_{theta_str}')
+
+# ==========================
+# STATISTICAL ANALYSIS: EXCITON BASIS
+# ==========================
+print("Computing Statistical Moments over time (Exciton Basis)...")
+
+# Calculate populations directly from the exciton basis trajectories
+pop_traj_exc = np.abs(psi_traj_exc) ** 2
+
+# Compute the four statistical moments for the exciton basis
+mean_pop_exc_time = np.mean(pop_traj_exc, axis=2)
+var_pop_exc_time = np.var(pop_traj_exc, axis=2)
+skew_pop_exc_time = skew(pop_traj_exc, axis=2, nan_policy='omit')
+kurt_pop_exc_time = kurtosis(pop_traj_exc, axis=2, fisher=True, nan_policy='omit')
+
+# ==========================================
+# PLOT 1B: All Statistical Moments over Time (Exciton Basis)
+# ==========================================
+fig1b, axes_exc = plt.subplots(4, 1, figsize=(10, 12), sharex=True)
+ax_mean_e, ax_var_e, ax_skew_e, ax_kurt_e = axes_exc
+
+EXC_LABELS = [f"Exciton {i+1}" for i in range(N_site)]
+
+for i in range(N_site):
+    ax_mean_e.plot(times, mean_pop_exc_time[i, :], color=colors[i], linewidth=2, label=EXC_LABELS[i])
+    ax_var_e.plot(times, var_pop_exc_time[i, :], color=colors[i], linewidth=2, label=EXC_LABELS[i])
+    ax_skew_e.plot(times, skew_pop_exc_time[i, :], color=colors[i], linewidth=2, label=EXC_LABELS[i])
+    ax_kurt_e.plot(times, kurt_pop_exc_time[i, :], color=colors[i], linewidth=2, label=EXC_LABELS[i])
+
+# --- Mean Subplot ---
+ax_mean_e.set_title(f'Exciton Statistical Moments over Trajectories (Theta = {theta_deg}°)')
+ax_mean_e.set_ylabel('Mean')
+ax_mean_e.legend(loc='center left', bbox_to_anchor=(1.02, 0.5))
+
+# --- Variance Subplot ---
+ax_var_e.set_ylabel('Variance')
+
+# --- Skewness Subplot ---
+ax_skew_e.set_ylabel('Skewness ($\\gamma_1$)')
+ax_skew_e.axhline(0, color='black', linestyle='--', linewidth=1.5, alpha=0.6) 
+ax_skew_e.set_ylim(-5, 5)
+
+# --- Kurtosis Subplot ---
+ax_kurt_e.set_ylabel('Excess Kurtosis ($K - 3$)')
+ax_kurt_e.set_xlabel('Time (fs)')
+ax_kurt_e.axhline(0, color='black', linestyle='--', linewidth=1.5, alpha=0.6) 
+ax_kurt_e.set_ylim(-5, 15)
+
+save_fig(fig1b, f'All_Statistical_Moments_EXCITON_Time_Theta_{theta_str}')
 
 # # ==========================================
 # # PLOT 2: Trace distance (Redfield vs Avg Trajectories)
@@ -212,21 +244,21 @@ save_fig(fig1b, f'Skewness_and_Kurtosis_Time_Theta_{theta_str}')
 # mean_td_values = []
 # max_td_values = []
 
-# print("Calcolo la convergenza della Trace Distance per vari N...")
+# print("Computing Trace Distance convergence for various N...")
 # for N_sub in N_list:
-#     # ATTENZIONE: per coerenza con rho_redfield_exc, usiamo psi_traj_exc!
+#     # WARNING: for consistency with rho_redfield_exc, we use psi_traj_exc!
 #     psi_sub = psi_traj_exc[:, :, :N_sub]
 #     rho_sub_avg = np.einsum('itk, jtk -> tij', psi_sub, np.conjugate(psi_sub)) / N_sub
     
-#     # Calcoliamo la Trace Distance nel tempo
+#     # Calculate Trace Distance over time
 #     td_time_sub = np.zeros(n_times)
 #     for t in range(n_times):
 #         td_time_sub[t] = trace_distance_generic_njit(rho_redfield_exc[t], rho_sub_avg[t])
         
-#     # Definiamo quanti step iniziali ignorare per evitare il transiente di t=0
-#     skip_steps = 100  # Ignora i primi 100 fs (assumendo dt=1 fs)
+#     # Define how many initial steps to ignore to avoid the t=0 transient
+#     skip_steps = 100  # Ignore the first 100 fs (assuming dt=1 fs)
         
-#     # Calcoliamo Media e Massimo SOLO sui dati a regime e aggiungiamo alla lista
+#     # Calculate Mean and Maximum ONLY on steady-state data and append to the list
 #     mean_td_values.append(np.mean(td_time_sub[skip_steps:]))
 #     max_td_values.append(np.max(td_time_sub[skip_steps:]))
 
@@ -261,11 +293,11 @@ save_fig(fig1b, f'Skewness_and_Kurtosis_Time_Theta_{theta_str}')
 # save_fig(fig3, f'Convergence_CLT_Theta_{theta_str}')
 
 # # ==========================================
-# # PLOT 4: DISTRIBUZIONE STATISTICA DEGLI ESITI DI MISURA (M1)
+# # PLOT 4: STATISTICAL DISTRIBUTION OF MEASUREMENT OUTCOMES (M1)
 # # ==========================================
-# print("Calcolo la distribuzione statistica universale dei conteggi M1...")
+# print("Computing universal statistical distribution of M1 counts...")
 
-# # Somma di tutte le applicazioni di M1 lungo il tempo per singola traiettoria
+# # Sum of all M1 applications over time per single trajectory
 # n_jumps_total = jump_counts.sum(axis=0)  
 # mean_jumps = np.mean(n_jumps_total)
 # var_jumps = np.var(n_jumps_total)
@@ -273,7 +305,7 @@ save_fig(fig1b, f'Skewness_and_Kurtosis_Time_Theta_{theta_str}')
 # fig4, ax4 = plt.subplots(figsize=(8, 5))
 
 # if theta_deg == 0.0:
-#     # --- REGIME QUANTUM JUMP (Fit di Poisson) ---
+#     # --- QUANTUM JUMP REGIME (Poisson Fit) ---
 #     max_jumps = int(np.max(n_jumps_total))
 #     bins = np.arange(-0.5, max_jumps + 1.5, 1) 
     
@@ -289,7 +321,7 @@ save_fig(fig1b, f'Skewness_and_Kurtosis_Time_Theta_{theta_str}')
 #         ax4.set_xticks(k_values) 
 
 # else:
-#     # --- REGIME DIFFUSIVO (Fit Gaussiano / De Moivre-Laplace) ---
+#     # --- DIFFUSIVE REGIME (Gaussian / De Moivre-Laplace Fit) ---
 #     bins_c = np.linspace(np.min(n_jumps_total), np.max(n_jumps_total), 50)
     
 #     ax4.hist(n_jumps_total, bins=bins_c, density=True, alpha=0.6, color='lightgreen', edgecolor='black', label='Simulated Omodyne Clicks (M1)')
@@ -309,9 +341,9 @@ save_fig(fig1b, f'Skewness_and_Kurtosis_Time_Theta_{theta_str}')
 # save_fig(fig4, f'M1_Counts_Distribution_Theta_{theta_str}')
 
 # # ==========================================
-# # PLOT 5: EVOLUZIONE DEL RAPPORTO DI FANO (Var/Media) NEL TEMPO
+# # PLOT 5: FANO FACTOR EVOLUTION (Var/Mean) OVER TIME
 # # ==========================================
-# print("Calcolo l'evoluzione del Rapporto di Fano nel tempo...")
+# print("Computing Fano Factor evolution over time...")
 
 # cumulative_jumps = np.cumsum(jump_counts, axis=0) 
 # mean_t = np.mean(cumulative_jumps, axis=1)
@@ -321,7 +353,7 @@ save_fig(fig1b, f'Skewness_and_Kurtosis_Time_Theta_{theta_str}')
 # mask = mean_t > 0
 # fano_t[mask] = var_t[mask] / mean_t[mask]
 
-# # Impostiamo il primo punto al limite teorico atteso per non rovinare il grafico
+# # Set the first point to the expected theoretical limit to avoid ruining the plot
 # fano_t[~mask] = 1.0 if theta_deg == 0.0 else 0.5  
 
 # fig5, ax5 = plt.subplots(figsize=(8, 5))
@@ -331,7 +363,7 @@ save_fig(fig1b, f'Skewness_and_Kurtosis_Time_Theta_{theta_str}')
 # if theta_deg == 0.0:
 #     ax5.axhline(1.0, color='red', linestyle='--', linewidth=2, label='Poisson Theoretical Limit (1.0)')
 # else:
-#     # Per una Binomiale con p=0.5, Var/Media = (Np(1-p)) / (Np) = 1-p = 0.5
+#     # For a Binomial with p=0.5, Var/Mean = (Np(1-p)) / (Np) = 1-p = 0.5
 #     ax5.axhline(0.5, color='green', linestyle='--', linewidth=2, label='Binomial Theoretical Limit (0.5)')
 
 # ax5.set_xlabel('Time (fs)')
@@ -349,40 +381,40 @@ save_fig(fig1b, f'Skewness_and_Kurtosis_Time_Theta_{theta_str}')
 # save_fig(fig5, f'Statistical_Index_Evolution_Theta_{theta_str}')
 
 # # ==========================================
-# # PLOT 6: HEATMAP DELLA DENSITÀ (UN GRAFICO PER OGNI SITO)
+# # PLOT 6: DENSITY HEATMAP (ONE PLOT PER SITE)
 # # ==========================================
-# print("Calcolo le Heatmap singole della distribuzione delle traiettorie per ogni sito...")
+# print("Computing independent Density Heatmaps for each site...")
 
-# # Definiamo i bin per l'asse Y (la popolazione va rigorosamente da 0 a 1)
+# # Define bins for the Y-axis (population goes strictly from 0 to 1)
 # n_pop_bins = 100
 # pop_bins = np.linspace(0.0, 1.0, n_pop_bins + 1)
 
-# # Per hist2d di Matplotlib, ci servono gli "edges" dei bin temporali
+# # For Matplotlib hist2d, we need the "edges" of the time bins
 # dt_plot = times[1] - times[0]
 # time_bins = np.append(times, times[-1] + dt_plot)
 
-# # Creiamo un array X che ripete l'asse dei tempi per ogni traiettoria.
+# # Create an X array repeating the time axis for each trajectory
 # X_times = np.repeat(times, n_traj)
 
-# # Se l'array di Redfield è stato caricato con successo all'inizio, calcoliamo le sue popolazioni
+# # If the Redfield array was loaded successfully at the beginning, calculate its populations
 # has_redfield = False
 # if 'rho_redfield_site' in locals():
-#     # Estraiamo gli elementi diagonali della matrice di densità in ogni istante di tempo
+#     # Extract the diagonal elements of the density matrix at each time step
 #     pop_redfield = np.real(np.diagonal(rho_redfield_site, axis1=1, axis2=2))
 #     has_redfield = True
 
-# # Creiamo un plot indipendente per ciascuno dei 7 siti
+# # Create an independent plot for each of the 7 sites
 # for i in range(N_site):
 #     figD, axD = plt.subplots(figsize=(8, 5))
     
-#     # Appiattiamo l'asse delle traiettorie per il sito i
+#     # Flatten the trajectories axis for site i
 #     Y_pops = pop_traj_site[i, :, :].flatten()
     
-#     # Disegniamo l'istogramma 2D con la colormap 'Blues' in scala logaritmica
+#     # Draw the 2D histogram with 'Blues' colormap in logarithmic scale
 #     h, xedges, yedges, im = axD.hist2d(X_times, Y_pops, bins=[time_bins, pop_bins], 
 #                                       cmap='Blues', norm=LogNorm(), density=False)
     
-#     # Sovrapponiamo la dinamica media deterministica esatta di Redfield in rosso
+#     # Overlay the exact deterministic mean Redfield dynamics in red
 #     if has_redfield:
 #         axD.plot(times, pop_redfield[:, i], color='red', linewidth=2.5, linestyle='--', 
 #                  label='Redfield Exact (Mean Path)')
@@ -392,14 +424,14 @@ save_fig(fig1b, f'Skewness_and_Kurtosis_Time_Theta_{theta_str}')
 #     axD.set_ylim(0, 1)
 #     axD.set_title(f'Trajectory Density: Site {i+1} ($\\Theta = {theta_deg}^\\circ$)')
     
-#     # Aggiungiamo la colorbar
+#     # Add the colorbar
 #     cbar = figD.colorbar(im, ax=axD, pad=0.02)
 #     cbar.set_label('Number of Trajectories')
     
 #     if has_redfield:
 #         axD.legend(loc='upper right')
         
-#     # Salviamo il grafico con l'indice del sito nel nome del file
+#     # Save the plot with the site index in the filename
 #     save_fig(figD, f'Population_Heatmap_Site_{i+1}_Theta_{theta_str}')
 
-print("Analisi statistiche e salvataggio immagini completati con successo!")
+print("Statistical analysis and image saving successfully completed!")
