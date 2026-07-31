@@ -18,7 +18,7 @@
 # fi
 
 # ANGLES=(0 0.001 0.005 0.1 0.2 0.5 0.7 1 3)
-ANGLES=(0.1 0.2 0.5 0.7 1 3)
+ANGLES=(0 60 90 120)
 
 # Loop through each angle in the array
 for THETA in "${ANGLES[@]}"
@@ -37,7 +37,7 @@ do
     echo "Launching Python scripts for Theta = $THETA in background..."
     
     # Run only the populations analysis in the background for each angle
-    python -u Generic_Populations_Analysis.py $THETA &
+    python -u Total_Variance_Analysis.py $THETA &
 
 done
 

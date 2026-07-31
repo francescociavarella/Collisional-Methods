@@ -4056,7 +4056,133 @@ of the scheme as $\Delta t \to 0^{+}$.
 \end{equation}
 with $ c = 2.99792458 \, \text{x} \, 10^{-5} \, \nicefrac{cm}{fs} $
 
+\section{Fundamental Probability Distributions}
 
+The evolution of quantum trajectories through collision models relies on the connection between three fundamental probability distributions.
+
+\subsection{Binomial Distribution}
+Models the number of successes $k$ in $n$ independent trials, each with success probability $p$.
+\begin{align}
+	P(X = k) &= \binom{n}{k} p^k (1-p)^{n-k} \\
+	E[X] &= np \\
+	Var(X) &= np(1-p)
+\end{align}
+
+\subsection{Poisson Distribution}
+Models the number of events $k$ occurring in a fixed interval with an average rate $\lambda$.
+\begin{align}
+	P(X = k) &= \frac{\lambda^k e^{-\lambda}}{k!} \\
+	E[X] &= \lambda \\
+	Var(X) &= \lambda
+\end{align}
+
+\subsection{Normal (Gaussian) Distribution}
+A continuous distribution defined by its mean $\mu$ and variance $\sigma^2$.
+\begin{align}
+	f(x) &= \frac{1}{\sigma \sqrt{2\pi}} \exp\left(-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2\right) \\
+	E[X] &= \mu \\
+	Var(X) &= \sigma^2
+\end{align}
+
+\section{Asymptotic Limits and Connections}
+
+\subsection{Law of Rare Events (Binomial to Poisson)}
+As $n \to \infty$ and $p \to 0$ such that $np = \lambda$ remains constant, the Binomial distribution converges to the Poisson distribution:
+\begin{equation}
+	\lim_{n \to \infty} \binom{n}{k} p^k (1-p)^{n-k} = \frac{\lambda^k e^{-\lambda}}{k!}
+\end{equation}
+
+\subsection{De Moivre-Laplace Theorem (Binomial to Normal)}
+For large $n$ and fixed $p$, the Binomial distribution can be approximated by a Normal distribution with $\mu = np$ and $\sigma^2 = np(1-p)$. To obtain a zero-mean standard Normal distribution, we apply standardization:
+\begin{equation}
+	Z = \frac{X - np}{\sqrt{np(1-p)}} \xrightarrow{n \to \infty} \mathcal{N}(0,1)
+\end{equation}
+
+\section{Quantum Collision Models and Unraveling}
+
+In collision models, the system interacts with identically prepared ancillas in the ground state $|0\rangle_A$ for a time interval $\Delta t$.
+
+\subsection{Discrete Evolution}
+In a time $t$, the number of collisions is $n = t/\Delta t$. If the state remains constant, the number of clicks (ancillas measured in $|1\rangle_A$) follows a Binomial distribution.
+
+\subsection{Derivation of the Jump Probability}
+The unitary interaction operator at the first order in $\Delta t$ is:
+\begin{equation}
+	U_{SA} \approx I - i \sqrt{\gamma \Delta t} \left( L \otimes \sigma_+ + L^\dagger \otimes \sigma_- \right)
+\end{equation}
+Applying this to the initial joint state $|\psi\rangle_S \otimes |0\rangle_A$:
+\begin{equation}
+	|\Psi_{after}\rangle \approx |\psi\rangle_S \otimes |0\rangle_A - i \sqrt{\gamma \Delta t} L |\psi\rangle_S \otimes |1\rangle_A
+\end{equation}
+The probability $p$ of a quantum jump (measuring the ancilla in $|1\rangle_A$) is the squared norm of the projection:
+\begin{equation}
+	p = \Big\| \langle 1|_A \Psi_{after}\rangle \Big\|^2 = \gamma \Delta t \langle \psi | L^\dagger L | \psi \rangle
+\end{equation}
+
+\subsection{From Probability to Jump Rate}
+The expected total number of jumps $\Lambda$ in time $t$ is the product of the number of steps and the probability per step:
+\begin{equation}
+	\Lambda = n p = \left(\frac{t}{\Delta t}\right) \left(\gamma \Delta t \langle \psi | L^\dagger L | \psi \rangle\right) = t \left(\gamma \langle \psi | L^\dagger L | \psi \rangle\right)
+\end{equation}
+Since for a Poisson process $\Lambda = \lambda t$, the instantaneous jump rate is:
+\begin{equation}
+	\lambda(t) = \gamma \langle \psi(t) | L^\dagger L | \psi(t) \rangle
+\end{equation}
+This defines a Doubly Stochastic Poisson Process (Cox process), where the rate $\lambda$ is itself a stochastic variable depending on the system's history.
+
+\subsection{Diffusive Limit and the Wiener Process}
+Under weak continuous measurement, the measurement record $dy$ in an interval $dt$ is defined as the sum of a deterministic drift and a zero-mean stochastic fluctuation $dW$:
+\begin{equation}
+	dy = \left( \sqrt{\gamma} \langle \psi | L + L^\dagger | \psi \rangle dt \right) + dW
+\end{equation}
+where $dW \sim \mathcal{N}(0, dt)$. The non-zero mean of the physical process is entirely absorbed by the drift term.
+
+\section{Law of Total Variance in Quantum Trajectories}
+
+Let $\rho = \mathbb{E}_{traj}[|\psi\rangle\langle\psi|]$ be the unconditional density matrix evolving under the Redfield/Lindblad master equation. The total variance of an observable $\hat{O}$ is decomposed as:
+\begin{equation}
+	Var(\hat{O}_{\rho}) = \mathbb{E}_{traj}[Var(\hat{O}_{|\psi\rangle})] + Var_{traj}(\langle\hat{O}\rangle_{|\psi\rangle})
+\end{equation}
+
+\subsection{Variance Terms Explicitly}
+Total Variance (Unconditional System):
+\begin{equation}
+	Var(\hat{O}_{\rho}) = \text{Tr}(\hat{O}^2\rho) - (\text{Tr}(\hat{O}\rho))^2
+\end{equation}
+Quantum Variance (Intrinsic uncertainty of the pure states):
+\begin{equation}
+	\mathbb{E}_{traj}[Var(\hat{O}_{|\psi\rangle})] = \mathbb{E}_{traj}[\langle\psi|\hat{O}^2|\psi\rangle - \langle\psi|\hat{O}|\psi\rangle^2]
+\end{equation}
+Classical Variance (Statistical dispersion of the means):
+\begin{equation}
+	Var_{traj}(\langle\hat{O}\rangle_{|\psi\rangle}) = \mathbb{E}_{traj}[\langle\psi|\hat{O}|\psi\rangle^2] - (\mathbb{E}_{traj}[\langle\psi|\hat{O}|\psi\rangle])^2
+\end{equation}
+
+\subsection{Application to a Projection Operator}
+Let $\hat{\Pi}_i = |i\rangle\langle i|$ be the projector for the population of site $i$. Using the idempotence property $\hat{\Pi}_i^2 = \hat{\Pi}_i$, we define the unconditional population $P_i = \text{Tr}(\hat{\Pi}_i \rho)$ and the conditional population $p_i = \langle\psi|\hat{\Pi}_i|\psi\rangle$. The total variance is $Var(\hat{\Pi}_{\rho}) = P_i - P_i^2$. The decomposition yields:
+\begin{equation}
+	P_i - P_i^2 = \underbrace{\mathbb{E}_{traj}[p_i - p_i^2]}_{\text{Quantum}} + \underbrace{\mathbb{E}_{traj}[p_i^2] - P_i^2}_{\text{Classical}}
+\end{equation}
+
+\section{Impact on Finite Sampling and the Central Limit Theorem}
+
+The Central Limit Theorem dictates that the statistical error in estimating the mean population from $N$ trajectories scales as:
+\begin{equation}
+	\text{Error} \propto \frac{\sqrt{Var_{traj}(p_i)}}{\sqrt{N}}
+\end{equation}
+
+In a quantum jump unraveling where the jump operator aligns with the projector $\hat{\Pi}_i$, the measurement forces the conditional state to abruptly collapse into populations $p_i \in \{0, 1\}$. 
+Consequently, $p_i^2 \approx p_i$, causing the Quantum Term to vanish:
+\begin{equation}
+	\mathbb{E}_{traj}[p_i - p_i^2] \approx 0
+\end{equation}
+
+Because the Total Variance is fixed by the deterministic master equation, the Classical Term must absorb all the uncertainty:
+\begin{equation}
+	Var_{traj}(p_i) \approx P_i - P_i^2
+\end{equation}
+
+Since the classical stochastic variance is maximized, the standard error for a finite number of samples $N$ is also maximized. Diffusive unraveling, conversely, preserves partial superpositions, maintaining a non-zero quantum variance. This strictly reduces the classical variance term $Var_{traj}(p_i)$, leading to faster convergence and reduced statistical noise for the same number of simulated trajectories $N$.
 
 \newpage
 \printbibliography

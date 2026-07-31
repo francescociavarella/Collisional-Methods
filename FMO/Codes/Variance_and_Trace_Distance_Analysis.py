@@ -48,6 +48,78 @@ def trace_distance_generic_njit(rho, sigma):
     t_dist = 0.5 * np.sum(np.abs(eigenvalues))
     return min(1.0, t_dist)
 
+# =================================
+# GENERALIZED VARIANCE FUNCTIONS
+# =================================
+
+def compute_total_variance(observable_matrix, psi_traj):
+    """
+    Computes the Total Variance decomposition for a generic Hermitian observable.
+    
+    Parameters:
+    -----------
+    observable_matrix : ndarray, shape (N, N)
+        The Hermitian matrix representing the quantum observable (O).
+    psi_traj : ndarray, shape (N, n_times, n_traj)
+        The pure state trajectories (must be in the same basis as observable_matrix).
+        
+    Returns:
+    --------
+    var_total : ndarray, shape (n_times,)
+        The total variance of the observable over time.
+    var_quant : ndarray, shape (n_times,)
+        The intrinsic quantum variance (mean of internal variances).
+    var_stat  : ndarray, shape (n_times,)
+        The classical statistical variance (variance of the expected values).
+    """
+    
+    # 1. Compute the square of the observable operator (O^2)
+    observable_sq = observable_matrix @ observable_matrix
+    
+    # 2. Apply operators to the state vectors across all times and trajectories
+    O_psi = np.tensordot(observable_matrix, psi_traj, axes=([1], [0]))
+    O2_psi = np.tensordot(observable_sq, psi_traj, axes=([1], [0]))
+    
+    # 3. Compute conditional expectation values for each trajectory and time step
+    E_k = np.real(np.sum(np.conj(psi_traj) * O_psi, axis=0))
+    E2_k = np.real(np.sum(np.conj(psi_traj) * O2_psi, axis=0))
+    
+    # 4. Compute the Quantum Variance term inside each trajectory
+    var_quant_k = E2_k - E_k**2
+    
+    # Ensure no negative variances due to numerical precision errors near zero
+    var_quant_k = np.maximum(var_quant_k, 0.0)
+    
+    # 5. Law of Total Variance decomposition (averaging over the ensemble)
+    var_quant = np.mean(var_quant_k, axis=1)  # Mean of intrinsic quantum variances
+    var_stat = np.var(E_k, axis=1)            # Statistical variance of the trajectory means
+    
+    # The Total Variance is exactly the sum of the two terms
+    var_total = var_quant + var_stat          
+    
+    return var_total, var_quant, var_stat
+
+
+def get_exact_variance(observable_matrix, rho_t):
+    """
+    Computes the exact variance of a Hermitian observable using the full density matrix.
+    Formula: Var(O) = Tr(O^2 * rho) - (Tr(O * rho))^2
+    
+    Parameters:
+    -----------
+    observable_matrix : ndarray, shape (N, N)
+    rho_t : ndarray, shape (n_times, N, N)
+    """
+    observable_sq = observable_matrix @ observable_matrix
+    
+    # Using einsum to efficiently compute Trace(O * rho(t)) for each time step t
+    # 'ik, tki -> t' means sum over i and k for each t
+    E_O = np.real(np.einsum('ik,tki->t', observable_matrix, rho_t))
+    E_O2 = np.real(np.einsum('ik,tki->t', observable_sq, rho_t))
+    
+    return np.maximum(E_O2 - E_O**2, 0.0)
+
+
 # ==========================
 # Input Parsing from Bash
 # ==========================
@@ -92,13 +164,15 @@ if 'rho_redfield_site' in data and 'rho_traj_avg_site' in data:
     rho_redfield_site = data['rho_redfield_site']
     rho_traj_avg_site = data['rho_traj_avg_site']
 else:
-    print("Warning: Density matrices (site basis) not found. Trace distance plots will fail.")
+    print("Warning: Density matrices (site basis) not found.")
+    rho_redfield_site = None
 
 if 'rho_redfield_exc' in data and 'rho_traj_avg_exc' in data:
     rho_redfield_exc = data['rho_redfield_exc']
     rho_traj_avg_exc = data['rho_traj_avg_exc']
 else:
-    print("Warning: Density matrices (exciton basis) not found. Trace distance plots will fail.")
+    print("Warning: Density matrices (exciton basis) not found.")
+    rho_redfield_exc = None
 
 n_times = len(times)
 n_traj = psi_traj_exc.shape[2]
@@ -149,20 +223,16 @@ for i in range(N_site):
     ax_skew.plot(times, skew_pop_time[i, :], color=colors[i], linewidth=2, label=SITE_LABELS[i])
     ax_kurt.plot(times, kurt_pop_time[i, :], color=colors[i], linewidth=2, label=SITE_LABELS[i])
 
-# --- Mean Subplot ---
 ax_mean.set_title(f'Statistical Moments over Trajectories (Theta = {theta_deg}°)')
 ax_mean.set_ylabel('Mean')
 ax_mean.legend(loc='center left', bbox_to_anchor=(1.02, 0.5))
 
-# --- Variance Subplot ---
 ax_var.set_ylabel('Variance')
 
-# --- Skewness Subplot ---
 ax_skew.set_ylabel('Skewness ($\\gamma_1$)')
 ax_skew.axhline(0, color='black', linestyle='--', linewidth=1.5, alpha=0.6) 
 ax_skew.set_ylim(-5, 5)
 
-# --- Kurtosis Subplot ---
 ax_kurt.set_ylabel('Excess Kurtosis ($K - 3$)')
 ax_kurt.set_xlabel('Time (fs)')
 ax_kurt.axhline(0, color='black', linestyle='--', linewidth=1.5, alpha=0.6) 
@@ -170,54 +240,202 @@ ax_kurt.set_ylim(-5, 15)
 
 save_fig(fig1, f'All_Statistical_Moments_Time_Theta_{theta_str}')
 
-# ==========================
-# STATISTICAL ANALYSIS: EXCITON BASIS
-# ==========================
-print("Computing Statistical Moments over time (Exciton Basis)...")
 
-# Calculate populations directly from the exciton basis trajectories
-pop_traj_exc = np.abs(psi_traj_exc) ** 2
+# ====================================================================
+# NEW PLOTS: LAW OF TOTAL VARIANCE WITH GENERIC OBSERVABLES
+# ====================================================================
 
-# Compute the four statistical moments for the exciton basis
-mean_pop_exc_time = np.mean(pop_traj_exc, axis=2)
-var_pop_exc_time = np.var(pop_traj_exc, axis=2)
-skew_pop_exc_time = skew(pop_traj_exc, axis=2, nan_policy='omit')
-kurt_pop_exc_time = kurtosis(pop_traj_exc, axis=2, fisher=True, nan_policy='omit')
+# ---------------------------------------------------------
+# A. Site Populations
+# ---------------------------------------------------------
+if rho_redfield_site is not None:
+    print("Computing Total Variance Theorem: Site Populations...")
+    
+    fig_tv_site, axes_tv_site = plt.subplots(N_site, 1, figsize=(10, 2.5 * N_site), sharex=True)
+    if N_site == 1: axes_tv_site = [axes_tv_site]
+        
+    for i in range(N_site):
+        # Build Population Projector Observable |i><i|
+        O_pop = np.zeros((N_site, N_site), dtype=np.complex128)
+        O_pop[i, i] = 1.0
+        
+        # Calculate components using the generic functions
+        var_tot_traj, var_quant, var_stat = compute_total_variance(O_pop, psi_traj_site)
+        var_tot_exact = get_exact_variance(O_pop, rho_redfield_site)
+        
+        max_err = np.max(np.abs(var_tot_exact - var_tot_traj))
+        print(f"  -> Site {i+1} Law of Total Variance max error: {max_err:.2e}")
+        
+        ax = axes_tv_site[i]
+        ax.plot(times, var_tot_exact, color='black', linewidth=3, linestyle='--', label='Total Variance (Redfield)')
+        ax.plot(times, var_stat, color='red', linewidth=2, alpha=0.8, label='Statistical Variance')
+        ax.plot(times, var_quant, color='blue', linewidth=2, alpha=0.8, label='Quantum Variance')
+        ax.plot(times, var_tot_traj, color='limegreen', linewidth=3, linestyle=':', label='Sum (Stat + Quant)')
+        
+        ax.set_ylabel(f'Site {i+1}')
+        if i == 0:
+            ax.legend(loc='upper right', fontsize=8)
+            ax.set_title(f'Law of Total Variance - Site Populations (Theta = {theta_deg}°)')
 
-# ==========================================
-# PLOT 1B: All Statistical Moments over Time (Exciton Basis)
-# ==========================================
-fig1b, axes_exc = plt.subplots(4, 1, figsize=(10, 12), sharex=True)
-ax_mean_e, ax_var_e, ax_skew_e, ax_kurt_e = axes_exc
+    axes_tv_site[-1].set_xlabel('Time (fs)')
+    fig_tv_site.tight_layout()
+    save_fig(fig_tv_site, f'Law_Total_Variance_Sites_Theta_{theta_str}')
 
-EXC_LABELS = [f"Exciton {i+1}" for i in range(N_site)]
 
-for i in range(N_site):
-    ax_mean_e.plot(times, mean_pop_exc_time[i, :], color=colors[i], linewidth=2, label=EXC_LABELS[i])
-    ax_var_e.plot(times, var_pop_exc_time[i, :], color=colors[i], linewidth=2, label=EXC_LABELS[i])
-    ax_skew_e.plot(times, skew_pop_exc_time[i, :], color=colors[i], linewidth=2, label=EXC_LABELS[i])
-    ax_kurt_e.plot(times, kurt_pop_exc_time[i, :], color=colors[i], linewidth=2, label=EXC_LABELS[i])
+# ---------------------------------------------------------
+# B. Exciton Populations
+# ---------------------------------------------------------
+if rho_redfield_exc is not None:
+    print("Computing Total Variance Theorem: Exciton Populations...")
+    
+    fig_tv_exc, axes_tv_exc = plt.subplots(N_site, 1, figsize=(10, 2.5 * N_site), sharex=True)
+    if N_site == 1: axes_tv_exc = [axes_tv_exc]
+        
+    for i in range(N_site):
+        # Build Population Projector Observable |alpha><alpha|
+        O_exc = np.zeros((N_site, N_site), dtype=np.complex128)
+        O_exc[i, i] = 1.0
+        
+        var_tot_traj, var_quant, var_stat = compute_total_variance(O_exc, psi_traj_exc)
+        var_tot_exact = get_exact_variance(O_exc, rho_redfield_exc)
+        
+        max_err = np.max(np.abs(var_tot_exact - var_tot_traj))
+        print(f"  -> Exciton {i+1} Law of Total Variance max error: {max_err:.2e}")
+        
+        ax = axes_tv_exc[i]
+        ax.plot(times, var_tot_exact, color='black', linewidth=3, linestyle='--', label='Total Variance (Redfield)')
+        ax.plot(times, var_stat, color='red', linewidth=2, alpha=0.8, label='Statistical Variance')
+        ax.plot(times, var_quant, color='blue', linewidth=2, alpha=0.8, label='Quantum Variance')
+        ax.plot(times, var_tot_traj, color='limegreen', linewidth=3, linestyle=':', label='Sum (Stat + Quant)')
+        
+        ax.set_ylabel(f'Exciton {i+1}')
+        if i == 0:
+            ax.legend(loc='upper right', fontsize=8)
+            ax.set_title(f'Law of Total Variance - Exciton Populations (Theta = {theta_deg}°)')
 
-# --- Mean Subplot ---
-ax_mean_e.set_title(f'Exciton Statistical Moments over Trajectories (Theta = {theta_deg}°)')
-ax_mean_e.set_ylabel('Mean')
-ax_mean_e.legend(loc='center left', bbox_to_anchor=(1.02, 0.5))
+    axes_tv_exc[-1].set_xlabel('Time (fs)')
+    fig_tv_exc.tight_layout()
+    save_fig(fig_tv_exc, f'Law_Total_Variance_Excitons_Theta_{theta_str}')
 
-# --- Variance Subplot ---
-ax_var_e.set_ylabel('Variance')
 
-# --- Skewness Subplot ---
-ax_skew_e.set_ylabel('Skewness ($\\gamma_1$)')
-ax_skew_e.axhline(0, color='black', linestyle='--', linewidth=1.5, alpha=0.6) 
-ax_skew_e.set_ylim(-5, 5)
+# ---------------------------------------------------------
+# C. Selected Coherences (Real and Imaginary Parts)
+# ---------------------------------------------------------
+if rho_redfield_site is not None:
+    print("Computing Total Variance Theorem: Coherences (Site Basis)...")
+    
+    # Define a list of 10 relevant coherences (e.g., adjacent and some non-adjacent sites)
+    # Python uses 0-based indexing (0 corresponds to Site 1)
+    coherence_pairs = [
+        (0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6),  # Nearest neighbors
+        (0, 5), (1, 3), (2, 4), (0, 6)                   # Long-range coupling/correlations
+    ]
+    n_pairs = len(coherence_pairs)
+    
+    fig_creal, axes_creal = plt.subplots(n_pairs, 1, figsize=(10, 2.5 * n_pairs), sharex=True)
+    fig_cimag, axes_cimag = plt.subplots(n_pairs, 1, figsize=(10, 2.5 * n_pairs), sharex=True)
+    
+    for idx, (m, n) in enumerate(coherence_pairs):
+        
+        # --- REAL PART OBSERVABLE: |m><n| + |n><m| ---
+        O_real = np.zeros((N_site, N_site), dtype=np.complex128)
+        O_real[m, n] = 1.0
+        O_real[n, m] = 1.0
+        
+        vt_real_traj, vq_real, vs_real = compute_total_variance(O_real, psi_traj_site)
+        vt_real_exact = get_exact_variance(O_real, rho_redfield_site)
+        
+        # --- IMAGINARY PART OBSERVABLE: -i|m><n| + i|n><m| ---
+        O_imag = np.zeros((N_site, N_site), dtype=np.complex128)
+        O_imag[m, n] = -1.0j
+        O_imag[n, m] = 1.0j
+        
+        vt_imag_traj, vq_imag, vs_imag = compute_total_variance(O_imag, psi_traj_site)
+        vt_imag_exact = get_exact_variance(O_imag, rho_redfield_site)
+        
+        # Logs
+        err_real = np.max(np.abs(vt_real_exact - vt_real_traj))
+        err_imag = np.max(np.abs(vt_imag_exact - vt_imag_traj))
+        print(f"  -> Coherence ({m+1},{n+1}) | Max Error - Real: {err_real:.2e}, Imag: {err_imag:.2e}")
+        
+        # Plot Real Part
+        ax_r = axes_creal[idx]
+        ax_r.plot(times, vt_real_exact, color='black', linewidth=3, linestyle='--')
+        ax_r.plot(times, vs_real, color='red', linewidth=2, alpha=0.8)
+        ax_r.plot(times, vq_real, color='blue', linewidth=2, alpha=0.8)
+        ax_r.plot(times, vt_real_traj, color='limegreen', linewidth=3, linestyle=':')
+        ax_r.set_ylabel(f'Re( $\\rho_{{{m+1}{n+1}}}$ )')
+        if idx == 0:
+            ax_r.set_title(f'Law of Total Variance - Coherences REAL Part (Theta = {theta_deg}°)')
+            # Adding custom legend to the first plot
+            ax_r.plot([], [], color='black', linewidth=3, linestyle='--', label='Total Variance (Redfield)')
+            ax_r.plot([], [], color='red', linewidth=2, label='Statistical Variance')
+            ax_r.plot([], [], color='blue', linewidth=2, label='Quantum Variance')
+            ax_r.plot([], [], color='limegreen', linewidth=3, linestyle=':', label='Sum (Stat + Quant)')
+            ax_r.legend(loc='upper right', fontsize=8)
 
-# --- Kurtosis Subplot ---
-ax_kurt_e.set_ylabel('Excess Kurtosis ($K - 3$)')
-ax_kurt_e.set_xlabel('Time (fs)')
-ax_kurt_e.axhline(0, color='black', linestyle='--', linewidth=1.5, alpha=0.6) 
-ax_kurt_e.set_ylim(-5, 15)
+        # Plot Imaginary Part
+        ax_i = axes_cimag[idx]
+        ax_i.plot(times, vt_imag_exact, color='black', linewidth=3, linestyle='--')
+        ax_i.plot(times, vs_imag, color='red', linewidth=2, alpha=0.8)
+        ax_i.plot(times, vq_imag, color='blue', linewidth=2, alpha=0.8)
+        ax_i.plot(times, vt_imag_traj, color='limegreen', linewidth=3, linestyle=':')
+        ax_i.set_ylabel(f'Im( $\\rho_{{{m+1}{n+1}}}$ )')
+        if idx == 0:
+            ax_i.set_title(f'Law of Total Variance - Coherences IMAGINARY Part (Theta = {theta_deg}°)')
+            ax_i.legend(loc='upper right', fontsize=8)
+            ax_i.plot([], [], color='black', linewidth=3, linestyle='--', label='Total Variance (Redfield)')
+            ax_i.plot([], [], color='red', linewidth=2, label='Statistical Variance')
+            ax_i.plot([], [], color='blue', linewidth=2, label='Quantum Variance')
+            ax_i.plot([], [], color='limegreen', linewidth=3, linestyle=':', label='Sum (Stat + Quant)')
+            ax_i.legend(loc='upper right', fontsize=8)
 
-save_fig(fig1b, f'All_Statistical_Moments_EXCITON_Time_Theta_{theta_str}')
+    axes_creal[-1].set_xlabel('Time (fs)')
+    axes_cimag[-1].set_xlabel('Time (fs)')
+    
+    fig_creal.tight_layout()
+    fig_cimag.tight_layout()
+    
+    save_fig(fig_creal, f'Law_Total_Variance_Coherences_REAL_Theta_{theta_str}')
+    save_fig(fig_cimag, f'Law_Total_Variance_Coherences_IMAG_Theta_{theta_str}')
+    
+    # # ==========================================
+    # # PLOT B: BERRY-ESSEEN (Errore vs Skewness)
+    # # ==========================================
+    # # Il CLT dice che l'errore scala come SEM. 
+    # # Berry-Esseen dice che l'approssimazione gaussiana fatica proporzionalmente alla Skewness.
+    
+    # # Calcolo del Standard Error of the Mean (SEM)
+    # sem = np.sqrt(var_stat) / np.sqrt(n_traj)
+    # # Modulo della skewness
+    # abs_skew = np.abs(skew_pop_time[target_site, :])
+    
+    # fig_be, ax_be1 = plt.subplots(figsize=(8, 5))
+    # ax_be2 = ax_be1.twinx()  # Secondo asse Y per la skewness
+    
+    # # Plottiamo l'errore standard e la skewness
+    # line1, = ax_be1.plot(times, sem, color='darkblue', linewidth=2, label='Standard Error ($\\sigma_{stat} / \\sqrt{N}$)')
+    # line2, = ax_be2.plot(times, abs_skew, color='crimson', linewidth=2, linestyle='--', label='Absolute Skewness $|\\gamma_1|$')
+    
+    # ax_be1.set_xlabel('Time (fs)')
+    # ax_be1.set_ylabel('Monte Carlo Standard Error', color='darkblue')
+    # ax_be2.set_ylabel('Berry-Esseen Penalty (Abs Skewness)', color='crimson')
+    # ax_be1.set_title(f'Berry-Esseen & CLT Convergence - Site {target_site+1} (Theta = {theta_deg}°)')
+    
+    # # Colora i tick e le etichette degli assi per chiarezza
+    # ax_be1.tick_params(axis='y', labelcolor='darkblue')
+    # ax_be2.tick_params(axis='y', labelcolor='crimson')
+    # ax_be1.grid(True, alpha=0.3)
+    
+    # # Uniamo le legende dei due assi gemelli
+    # lines = [line1, line2]
+    # labels = [l.get_label() for l in lines]
+    # ax_be1.legend(lines, labels, loc='upper right')
+    
+    # save_fig(fig_be, f'Berry_Esseen_CLT_Site{target_site+1}_Theta_{theta_str}')
+
+
+print("Statistical analysis and image saving successfully completed!")
 
 # # ==========================================
 # # PLOT 2: Trace distance (Redfield vs Avg Trajectories)
