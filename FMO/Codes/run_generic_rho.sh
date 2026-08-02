@@ -9,6 +9,7 @@ EIGENSTATE_SCRIPT="Eigenstate_Analysis.py"
 HEATMAP_SCRIPT="Heatmap_Tomography.py"      
 VARIANCE_SCRIPT="Variance_and_Trace_Distance_Analysis.py" 
 TIME_SLICE_SCRIPT="Time_Slice_Distribution.py"
+TOTAL_VARIANCE_SCRIPT="Total_Variance_Analysis.py"
 
 export NUMBA_NUM_THREADS=12  # 12/number of angles to run in parallel (adjust as needed)
 
