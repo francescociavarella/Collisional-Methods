@@ -8,7 +8,14 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
+from matplotlib.lines import Line2D
 from numba import njit
+
+# Import custom thesis style and saving function
+from plot_style import set_thesis_style, save_fig
+
+# Apply global thesis style settings
+set_thesis_style()
 
 # =================================
 # NUMBA OPTIMIZED METRIC FUNCTIONS
@@ -92,14 +99,12 @@ n_times, n_traj = jump_counts.shape
 
 # ==========================
 # Site-basis single-trajectory populations
-# psi_traj is in the exciton basis -> transform to site basis
 # ==========================
 psi_traj_site = np.einsum('ia,atk->itk', eigenvectors, psi_traj_exc)   # (N_site, n_times, n_traj)
 pop_traj_site = np.abs(psi_traj_site) ** 2                          # (N_site, n_times, n_traj)
 
 # ==========================
-# Isolated system (no collisions): recomputed on the fly from
-# eigenergies, eigenvectors, psi0_exc, times -- no need to store it upfront
+# Isolated system (no collisions) recomputation
 # ==========================
 phase = np.exp(-1j * np.outer(times, eigenergies))          # (n_times, N)
 psi_iso_exc = phase * psi0_exc[None, :]                      # (n_times, N)
@@ -109,13 +114,12 @@ pop_iso_site = np.abs(psi_iso_site) ** 2                     # (n_times, N_site)
 # ==========================
 # Redfield / collisional / MC-avg populations (site basis)
 # ==========================
-pop_redfield_site = np.real(np.diagonal(rho_redfield_site, axis1=1, axis2=2))       # (n_times, N_site)
-pop_trace_coll_site = np.real(np.diagonal(rho_trace_coll_site, axis1=1, axis2=2))  # (n_times, N_site)
-pop_traj_avg_site = np.real(np.diagonal(rho_traj_avg_site, axis1=1, axis2=2))              # should ~ pop_traj_avg
+pop_redfield_site = np.real(np.diagonal(rho_redfield_site, axis1=1, axis2=2))       
+pop_trace_coll_site = np.real(np.diagonal(rho_trace_coll_site, axis1=1, axis2=2))  
+pop_traj_avg_site = np.real(np.diagonal(rho_traj_avg_site, axis1=1, axis2=2))              
 
 # ==========================
-# Identify trajectories that experienced at least one jump (theta=0 only meaningful)
-# Uses the exact jump record, not a population-threshold heuristic
+# Identify trajectories that experienced at least one jump
 # ==========================
 n_jumps_per_traj = jump_counts.sum(axis=0)   # (n_traj,)
 jump_indices = np.where(n_jumps_per_traj > 0)[0]
@@ -123,22 +127,6 @@ print(f"Total trajectories: {n_traj}")
 print(f"Trajectories with at least one jump: {len(jump_indices)}")
 sample_idx = jump_indices[0] if len(jump_indices) > 0 else 0
 print(f"Selected sample_idx for single-trajectory plots: {sample_idx}")
-
-# ===========================
-# General plot setup
-# ===========================
-plt.rcParams.update({
-    'font.size': 11, 'axes.titlesize': 13, 'axes.labelsize': 11,
-    'xtick.labelsize': 11, 'ytick.labelsize': 11, 'legend.fontsize': 9,
-    'axes.grid': True, 'grid.alpha': 0.3, 'grid.linestyle': ':',
-    'figure.autolayout': True
-})
-
-def save_fig(fig, filename):
-    path_png = os.path.join(Output_dir, f"{filename}.png")
-    fig.savefig(path_png, dpi=300, bbox_inches='tight')
-    print(f"Saved: {path_png}")
-    plt.close(fig)
 
 SITE_LABELS = [f"Site {i+1}" for i in range(N_site)]
 
@@ -148,77 +136,86 @@ SITE_LABELS = [f"Site {i+1}" for i in range(N_site)]
 fig0, ax0 = plt.subplots(figsize=(10, 5))
 ax0.plot(times, total_jumps, color='purple', alpha=0.8, linewidth=1.5,
          label=f'Jumps per step (Total: {np.sum(total_jumps)})')
-ax0.set_title(f"Total Jumps Over Time (Theta={theta_deg} deg, dt={dt_val})")
 ax0.set_xlabel("Time (fs)")
 ax0.set_ylabel("Number of Jumps")
-ax0.legend(loc='upper right')
-save_fig(fig0, f'Total_Jumps_Theta_{theta_str}')
+ax0.legend(title=fr"$\theta = {theta_deg}^\circ$", loc='upper right', title_fontsize=11)
+save_fig(fig0, f'Total_Jumps_Theta_{theta_str}', Output_dir)
 
 
 # ==========================================
-# Plot 1: Populations - Redfield vs Collisional (trace) vs Avg trajectories
-# One subplot per site (grid layout)
+# Plot 1: Populations - Redfield vs Collisional vs Avg (Centered Grid Layout)
 # ==========================================
-ncols = 4
-nrows = int(np.ceil(N_site / ncols))
-fig1, axes1 = plt.subplots(nrows, ncols, figsize=(5 * ncols, 4 * nrows), sharey=False)
-axes1 = np.atleast_1d(axes1).flatten()
+fig1 = plt.figure(figsize=(20, 8))
+gs1 = fig1.add_gridspec(2, 8)
+axes1 = []
+for i in range(4):
+    axes1.append(fig1.add_subplot(gs1[0, i*2:(i+1)*2]))
+for c_start, c_end in [(1, 3), (3, 5), (5, 7)]:
+    axes1.append(fig1.add_subplot(gs1[1, c_start:c_end]))
+axes1 = np.array(axes1)
 
 for i in range(N_site):
     ax = axes1[i]
     ax.plot(times, pop_redfield_site[:, i], label='Redfield', linewidth=2, linestyle='--', color='black')
     ax.plot(times, pop_trace_coll_site[:, i], label='Ancilla trace', linewidth=2, linestyle=':', color='green')
     ax.plot(times, pop_traj_avg_site[:, i], label='Avg trajectories', linewidth=2, color='blue', alpha=0.7)
-    ax.set_title(SITE_LABELS[i])
     ax.set_xlabel('Time (fs)')
-    ax.set_ylabel('Population')
-    ax.legend(loc='best')
+    ax.set_ylabel(f'Population {SITE_LABELS[i]}')
+    ax.legend(title=fr"$\theta = {theta_deg}^\circ$", loc='best', title_fontsize=11)
 
-for j in range(N_site, len(axes1)):
-    axes1[j].axis('off')
-
-fig1.suptitle(f'Theta={theta_deg} deg - Redfield vs Ancilla-trace vs Avg-trajectories | dt={dt_val}, N_traj={n_traj}')
-save_fig(fig1, f'Comparison_Populations_Theta_{theta_str}')
+save_fig(fig1, f'Comparison_Populations_Theta_{theta_str}', Output_dir)
 
 
 # ==========================================
-# Plot 2: Single trajectory (with jump) vs isolated system, sites 1,2,3
+# Plot 2: Single trajectory vs isolated system for all sites (Centered Grid Layout)
 # ==========================================
-sites_to_plot = [0, 1, 2]   # sites 1, 2, 3
+fig2 = plt.figure(figsize=(20, 8))
+gs2 = fig2.add_gridspec(2, 8)
+axes2 = []
+for i in range(4):
+    axes2.append(fig2.add_subplot(gs2[0, i*2:(i+1)*2]))
+for c_start, c_end in [(1, 3), (3, 5), (5, 7)]:
+    axes2.append(fig2.add_subplot(gs2[1, c_start:c_end]))
+axes2 = np.array(axes2)
 
-fig2, axes2 = plt.subplots(1, len(sites_to_plot), figsize=(6 * len(sites_to_plot), 5))
-for ax, i in zip(np.atleast_1d(axes2), sites_to_plot):
+for i in range(N_site):
+    ax = axes2[i]
     ax.plot(times, pop_traj_site[i, :, sample_idx], label='Single trajectory', linewidth=1.8, color='blue', alpha=0.85)
-    ax.plot(times, pop_iso_site[:, i], label='Isolated system (no collisions)', linewidth=2, linestyle=':', color='red')
+    ax.plot(times, pop_iso_site[:, i], label='Isolated system', linewidth=2, linestyle=':', color='red')
     ax.plot(times, pop_redfield_site[:, i], label='Redfield', linewidth=1.5, linestyle='--', color='black', alpha=0.8)
-    ax.set_title(SITE_LABELS[i])
     ax.set_xlabel('Time (fs)')
-    ax.set_ylabel('Population')
-    ax.legend(loc='best')
+    ax.set_ylabel(f'Population {SITE_LABELS[i]}')
+    ax.legend(title=fr"$\theta = {theta_deg}^\circ$", loc='best', title_fontsize=11)
 
-fig2.suptitle(f'Theta={theta_deg} deg - Single Trajectory (idx={sample_idx}) vs Isolated System')
-save_fig(fig2, f'Single_Traj_vs_Isolated_Theta_{theta_str}')
+save_fig(fig2, f'Single_Traj_vs_Isolated_Theta_{theta_str}', Output_dir)
 
 
 # ==========================================
-# Plot 3: Many single trajectories (light) + avg + Redfield, sites 1,2,3
+# Plot 3: Many single trajectories + avg + Redfield for all sites (Centered Grid Layout)
 # ==========================================
 num_samples = min(100, n_traj)
 
-fig3, axes3 = plt.subplots(1, len(sites_to_plot), figsize=(6 * len(sites_to_plot), 5))
-for ax, i in zip(np.atleast_1d(axes3), sites_to_plot):
+fig3 = plt.figure(figsize=(20, 8))
+gs3 = fig3.add_gridspec(2, 8)
+axes3 = []
+for i in range(4):
+    axes3.append(fig3.add_subplot(gs3[0, i*2:(i+1)*2]))
+for c_start, c_end in [(1, 3), (3, 5), (5, 7)]:
+    axes3.append(fig3.add_subplot(gs3[1, c_start:c_end]))
+axes3 = np.array(axes3)
+
+for i in range(N_site):
+    ax = axes3[i]
     for k in range(num_samples):
         ax.plot(times, pop_traj_site[i, :, k], color='gray', alpha=0.12, linewidth=0.5,
                  label='Single trajectories' if k == 0 else "")
     ax.plot(times, pop_redfield_site[:, i], label='Redfield', linewidth=2.2, linestyle='--', color='black')
     ax.plot(times, pop_traj_avg_site[:, i], label='Avg trajectories', linewidth=2.2, color='blue', alpha=0.9)
-    ax.set_title(SITE_LABELS[i])
     ax.set_xlabel('Time (fs)')
-    ax.set_ylabel('Population')
-    ax.legend(loc='best')
+    ax.set_ylabel(f'Population {SITE_LABELS[i]}')
+    ax.legend(title=fr"$\theta = {theta_deg}^\circ$", loc='best', title_fontsize=11)
 
-fig3.suptitle(f'Theta={theta_deg} deg - {num_samples} Trajectories vs Average vs Redfield')
-save_fig(fig3, f'Many_Traj_vs_Average_Theta_{theta_str}')
+save_fig(fig3, f'Many_Traj_vs_Average_Theta_{theta_str}', Output_dir)
 
 
 # ==========================================
@@ -237,25 +234,23 @@ for row, (i, j) in enumerate(pairs_to_plot):
     ax_re.plot(times, np.real(coh_redfield), label='Redfield', linewidth=2, linestyle='--', color='black')
     ax_re.plot(times, np.real(coh_trace_coll), label='Ancilla trace', linewidth=2, linestyle=':', color='green')
     ax_re.plot(times, np.real(coh_avg), label='Avg trajectories', linewidth=2, color='blue', alpha=0.7)
-    ax_re.set_title(f'Re[$\\rho_{{{i+1}{j+1}}}$]')
+    ax_re.set_ylabel(fr'Re($\rho_{{{i+1}{j+1}}}$)')
 
     ax_im = axes4[row, 1]
     ax_im.plot(times, np.imag(coh_redfield), label='Redfield', linewidth=2, linestyle='--', color='black')
     ax_im.plot(times, np.imag(coh_trace_coll), label='Ancilla trace', linewidth=2, linestyle=':', color='green')
     ax_im.plot(times, np.imag(coh_avg), label='Avg trajectories', linewidth=2, color='blue', alpha=0.7)
-    ax_im.set_title(f'Im[$\\rho_{{{i+1}{j+1}}}$]')
+    ax_im.set_ylabel(fr'Im($\rho_{{{i+1}{j+1}}}$)')
 
 for ax in axes4.flat:
     ax.set_xlabel('Time (fs)')
-    ax.set_ylabel('Value')
-    ax.legend(loc='best')
+    ax.legend(title=fr"$\theta = {theta_deg}^\circ$", loc='best', title_fontsize=11)
 
-fig4.suptitle(f'Theta={theta_deg} deg - Coherences: Redfield vs Ancilla-trace vs Avg-trajectories', y=0.995)
-save_fig(fig4, f'Coherences_Theta_{theta_str}')
+save_fig(fig4, f'Coherences_Theta_{theta_str}', Output_dir)
 
 
 # ==========================================
-# Bonus Plot 5: Purity Tr[rho^2] over time -- model consistency check
+# Bonus Plot 5: Purity Tr[rho^2] over time
 # ==========================================
 def purity(rho_traj):
     return np.real(np.einsum('tij,tji->t', rho_traj, rho_traj))
@@ -269,71 +264,61 @@ ax5.plot(times, purity_redfield, label='Redfield', linewidth=2, linestyle='--', 
 ax5.plot(times, purity_trace_coll, label='Ancilla trace', linewidth=2, linestyle=':', color='green')
 ax5.plot(times, purity_traj, label='Avg trajectories', linewidth=2, color='blue', alpha=0.7)
 ax5.axhline(1.0 / N_site, color='gray', linestyle='-.', linewidth=1, label=f'Maximally mixed (1/{N_site})')
-ax5.set_title(f'Theta={theta_deg} deg - Purity Tr[$\\rho^2$] Over Time')
 ax5.set_xlabel('Time (fs)')
-ax5.set_ylabel('Purity')
-ax5.legend(loc='best')
-save_fig(fig5, f'Purity_Theta_{theta_str}')
+ax5.set_ylabel('Purity Tr[$\\rho^2$]')
+ax5.legend(title=fr"$\theta = {theta_deg}^\circ$", loc='best', title_fontsize=11)
+save_fig(fig5, f'Purity_Theta_{theta_str}', Output_dir)
 
 
 # ==========================================
-# Bonus Plot 6: Histogram of jumps per trajectory (meaningful mainly at theta=0)
+# Bonus Plot 6: Histogram of jumps per trajectory
 # ==========================================
 fig6, ax6 = plt.subplots(figsize=(8, 5))
 ax6.hist(n_jumps_per_traj, bins=min(50, int(n_jumps_per_traj.max()) + 1), color='purple', alpha=0.75)
-ax6.set_title(f'Theta={theta_deg} deg - Distribution of Total Jumps per Trajectory')
 ax6.set_xlabel('Number of jumps (over full trajectory)')
 ax6.set_ylabel('Number of trajectories')
-save_fig(fig6, f'Jumps_Histogram_Theta_{theta_str}')
+ax6.legend(title=fr"$\theta = {theta_deg}^\circ$", loc='best', title_fontsize=11)
+save_fig(fig6, f'Jumps_Histogram_Theta_{theta_str}', Output_dir)
+
 
 # ==========================================
 # Plot 7: All populations in a single plot (Redfield vs Avg Trajectories)
 # ==========================================
 fig7, ax7 = plt.subplots(figsize=(10, 6))
 
-# Generiamo colori distinti per ogni sito
 colors = plt.cm.tab10(np.linspace(0, 1, N_site))
 
 for i in range(N_site):
-    # Plot Redfield (tratteggiato)
-    ax7.plot(times, pop_redfield_site[:, i], color=colors[i], linestyle='--', 
-             linewidth=2, label=f'Redfield S{i+1}')
-    # Plot Average MC (linea continua)
-    ax7.plot(times, pop_traj_avg_site[:, i], color=colors[i], linestyle='-', 
-             linewidth=2, alpha=0.7, label=f'Avg MC S{i+1}')
+    ax7.plot(times, pop_redfield_site[:, i], color=colors[i], linestyle='--', linewidth=2)
+    ax7.plot(times, pop_traj_avg_site[:, i], color=colors[i], linestyle='-', linewidth=2, alpha=0.7)
 
-ax7.set_title(f'All Populations: Redfield vs Avg Trajectories (Theta={theta_deg} deg)')
 ax7.set_xlabel('Time (fs)')
 ax7.set_ylabel('Population')
 
-# Spostiamo la legenda fuori dal grafico perché 14 etichette occupano molto spazio
-ax7.legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=9)
-save_fig(fig7, f'All_Populations_Together_Theta_{theta_str}')
+custom_handles = [
+    Line2D([0], [0], color=colors[i], lw=2, label=f'Site {i+1}')
+    for i in range(N_site)
+]
+
+ax7.legend(handles=custom_handles, title=fr"$\theta = {theta_deg}^\circ$", 
+           loc='upper right', ncol=2, title_fontsize=11)
+save_fig(fig7, f'All_Populations_Together_Theta_{theta_str}', Output_dir)
 
 
 # ==========================================
 # Plot 8: Trace distance (Redfield vs Avg Trajectories)
 # ==========================================
-# Calcoliamo la trace distance istante per istante
 td_time = np.zeros(n_times)
-fid_time = np.zeros(n_times)
 
 for t in range(n_times):
     td_time[t] = trace_distance_generic_njit(rho_redfield_site[t], rho_traj_avg_site[t])
-    # Se vuoi calcolare anche la fidelity, decommenta la riga sotto:
-    # fid_time[t] = fidelity_generic_njit(rho_redfield_site[t], rho_traj_avg_site[t])
 
 fig8, ax8 = plt.subplots(figsize=(8, 5))
 ax8.plot(times, td_time, color='red', linewidth=2, label='Trace Distance')
-ax8.set_title(f'Trace Distance: Redfield vs Avg Trajectories (Theta={theta_deg} deg)')
 ax8.set_xlabel('Time (fs)')
 ax8.set_ylabel('Trace Distance')
-
-# È spesso utile usare scala logaritmica per vedere bene la convergenza asintotica
-# Se preferisci lineare, rimuovi semplicemente la riga sottostante
 ax8.set_yscale('log') 
+ax8.legend(title=fr"$\theta = {theta_deg}^\circ$", loc='best', title_fontsize=11)
+save_fig(fig8, f'Trace_Distance_Theta_{theta_str}', Output_dir)
 
-ax8.legend(loc='best')
-save_fig(fig8, f'Trace_Distance_Theta_{theta_str}')
-
-print("All plots generated and saved successfully.")
+print("All site population plots generated and saved successfully.")

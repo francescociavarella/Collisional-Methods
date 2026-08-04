@@ -7,7 +7,14 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 from numba import njit
+
+# Import custom thesis style and saving function
+from plot_style import set_thesis_style, save_fig
+
+# Apply global thesis style settings
+set_thesis_style()
 
 # =================================
 # NUMBA OPTIMIZED METRIC FUNCTIONS
@@ -115,27 +122,7 @@ print(f"Trajectories with at least one jump: {len(jump_indices)}")
 sample_idx = jump_indices[0] if len(jump_indices) > 0 else 0
 print(f"Selected sample_idx for single-trajectory plots: {sample_idx}")
 
-# ===========================
-# General plot setup
-# ===========================
-plt.rcParams.update({
-    'font.size': 11, 'axes.titlesize': 13, 'axes.labelsize': 11,
-    'xtick.labelsize': 11, 'ytick.labelsize': 11, 'legend.fontsize': 9,
-    'axes.grid': True, 'grid.alpha': 0.3, 'grid.linestyle': ':',
-    'figure.autolayout': True
-})
-
-def save_fig(fig, filename):
-    path_png = os.path.join(Output_dir, f"{filename}.png")
-    fig.savefig(path_png, dpi=300, bbox_inches='tight')
-    print(f"Saved: {path_png}")
-    plt.close(fig)
-
 EXC_LABELS = [f"Exciton {i+1}" for i in range(N_site)]
-
-# Grid configuration for subplots
-ncols = 4
-nrows = int(np.ceil(N_site / ncols))
 
 # ==========================================
 # Plot 0: Total jump counts over time
@@ -143,57 +130,58 @@ nrows = int(np.ceil(N_site / ncols))
 fig0, ax0 = plt.subplots(figsize=(10, 5))
 ax0.plot(times, total_jumps, color='purple', alpha=0.8, linewidth=1.5,
          label=f'Jumps per step (Total: {np.sum(total_jumps)})')
-ax0.set_title(f"Total Jumps Over Time (Theta={theta_deg} deg, dt={dt_val})")
 ax0.set_xlabel("Time (fs)")
 ax0.set_ylabel("Number of Jumps")
-ax0.legend(loc='upper right')
-save_fig(fig0, f'Total_Jumps_Theta_{theta_str}')
+ax0.legend(title=fr"$\theta = {theta_deg}^\circ$", loc='upper right', title_fontsize=11)
+save_fig(fig0, f'Total_Jumps_Theta_{theta_str}', Output_dir)
 
 
 # ==========================================
 # Plot 1: Populations - Redfield vs Collisional (trace) vs Avg trajectories
 # ==========================================
-fig1, axes1 = plt.subplots(nrows, ncols, figsize=(5 * ncols, 4 * nrows), sharey=False)
-axes1 = np.atleast_1d(axes1).flatten()
+fig1 = plt.figure(figsize=(20, 8))
+gs1 = fig1.add_gridspec(2, 8)
+axes1 = []
+for i in range(4):
+    axes1.append(fig1.add_subplot(gs1[0, i*2:(i+1)*2]))
+for c_start, c_end in [(1, 3), (3, 5), (5, 7)]:
+    axes1.append(fig1.add_subplot(gs1[1, c_start:c_end]))
+axes1 = np.array(axes1)
 
 for i in range(N_site):
     ax = axes1[i]
     ax.plot(times, pop_redfield_exc[:, i], label='Redfield', linewidth=2, linestyle='--', color='black')
     ax.plot(times, pop_trace_coll_exc[:, i], label='Ancilla trace', linewidth=2, linestyle=':', color='green')
     ax.plot(times, pop_traj_avg_exc[:, i], label='Avg trajectories', linewidth=2, color='blue', alpha=0.7)
-    ax.set_title(EXC_LABELS[i])
     ax.set_xlabel('Time (fs)')
-    ax.set_ylabel('Population')
-    ax.legend(loc='best')
+    ax.set_ylabel(f'Population {EXC_LABELS[i]}')
+    ax.legend(title=fr"$\theta = {theta_deg}^\circ$", loc='best', title_fontsize=11)
 
-for j in range(N_site, len(axes1)):
-    axes1[j].axis('off')
-
-fig1.suptitle(f'Exciton Populations ($\\Theta={theta_deg}^\\circ$) - Redfield vs Ancilla-trace vs Avg')
-save_fig(fig1, f'Comparison_Eigen_Populations_Theta_{theta_str}')
+save_fig(fig1, f'Comparison_Eigen_Populations_Theta_{theta_str}', Output_dir)
 
 
 # ==========================================
 # Plot 2: Single trajectory vs isolated system (All Excitons)
 # ==========================================
-fig2, axes2 = plt.subplots(nrows, ncols, figsize=(5 * ncols, 4 * nrows), sharey=False)
-axes2 = np.atleast_1d(axes2).flatten()
+fig2 = plt.figure(figsize=(20, 8))
+gs2 = fig2.add_gridspec(2, 8)
+axes2 = []
+for i in range(4):
+    axes2.append(fig2.add_subplot(gs2[0, i*2:(i+1)*2]))
+for c_start, c_end in [(1, 3), (3, 5), (5, 7)]:
+    axes2.append(fig2.add_subplot(gs2[1, c_start:c_end]))
+axes2 = np.array(axes2)
 
 for i in range(N_site):
     ax = axes2[i]
     ax.plot(times, pop_traj_exc[i, :, sample_idx], label='Single trajectory', linewidth=1.8, color='blue', alpha=0.85)
-    ax.plot(times, pop_iso_exc[:, i], label='Isolated system (no collisions)', linewidth=2, linestyle=':', color='red')
+    ax.plot(times, pop_iso_exc[:, i], label='Isolated system', linewidth=2, linestyle=':', color='red')
     ax.plot(times, pop_redfield_exc[:, i], label='Redfield', linewidth=1.5, linestyle='--', color='black', alpha=0.8)
-    ax.set_title(EXC_LABELS[i])
     ax.set_xlabel('Time (fs)')
-    ax.set_ylabel('Population')
-    ax.legend(loc='best')
+    ax.set_ylabel(f'Population {EXC_LABELS[i]}')
+    ax.legend(title=fr"$\theta = {theta_deg}^\circ$", loc='best', title_fontsize=11)
 
-for j in range(N_site, len(axes2)):
-    axes2[j].axis('off')
-
-fig2.suptitle(f'Exciton Single Traj (idx={sample_idx}) vs Isolated ($\\Theta={theta_deg}^\\circ$)')
-save_fig(fig2, f'Single_EigenTraj_vs_Isolated_Theta_{theta_str}')
+save_fig(fig2, f'Single_EigenTraj_vs_Isolated_Theta_{theta_str}', Output_dir)
 
 
 # ==========================================
@@ -201,8 +189,14 @@ save_fig(fig2, f'Single_EigenTraj_vs_Isolated_Theta_{theta_str}')
 # ==========================================
 num_samples = min(100, n_traj)
 
-fig3, axes3 = plt.subplots(nrows, ncols, figsize=(5 * ncols, 4 * nrows), sharey=False)
-axes3 = np.atleast_1d(axes3).flatten()
+fig3 = plt.figure(figsize=(20, 8))
+gs3 = fig3.add_gridspec(2, 8)
+axes3 = []
+for i in range(4):
+    axes3.append(fig3.add_subplot(gs3[0, i*2:(i+1)*2]))
+for c_start, c_end in [(1, 3), (3, 5), (5, 7)]:
+    axes3.append(fig3.add_subplot(gs3[1, c_start:c_end]))
+axes3 = np.array(axes3)
 
 for i in range(N_site):
     ax = axes3[i]
@@ -211,16 +205,11 @@ for i in range(N_site):
                  label='Single trajectories' if k == 0 else "")
     ax.plot(times, pop_redfield_exc[:, i], label='Redfield', linewidth=2.2, linestyle='--', color='black')
     ax.plot(times, pop_traj_avg_exc[:, i], label='Avg trajectories', linewidth=2.2, color='blue', alpha=0.9)
-    ax.set_title(EXC_LABELS[i])
     ax.set_xlabel('Time (fs)')
-    ax.set_ylabel('Population')
-    ax.legend(loc='best')
+    ax.set_ylabel(f'Population {EXC_LABELS[i]}')
+    ax.legend(title=fr"$\theta = {theta_deg}^\circ$", loc='best', title_fontsize=11)
 
-for j in range(N_site, len(axes3)):
-    axes3[j].axis('off')
-
-fig3.suptitle(f'Exciton Populations ($\\Theta={theta_deg}^\\circ$) - {num_samples} Traj vs Average')
-save_fig(fig3, f'Many_EigenTraj_vs_Average_Theta_{theta_str}')
+save_fig(fig3, f'Many_EigenTraj_vs_Average_Theta_{theta_str}', Output_dir)
 
 
 # ==========================================
@@ -239,21 +228,19 @@ for row, (i, j) in enumerate(pairs_to_plot):
     ax_re.plot(times, np.real(coh_redfield), label='Redfield', linewidth=2, linestyle='--', color='black')
     ax_re.plot(times, np.real(coh_trace_coll), label='Ancilla trace', linewidth=2, linestyle=':', color='green')
     ax_re.plot(times, np.real(coh_avg), label='Avg trajectories', linewidth=2, color='blue', alpha=0.7)
-    ax_re.set_title(f'Re[$\\rho_{{{i+1}{j+1}}}$] (Exciton basis)')
+    ax_re.set_ylabel(fr'Re($\rho_{{{i+1}{j+1}}}$)')
 
     ax_im = axes4[row, 1]
     ax_im.plot(times, np.imag(coh_redfield), label='Redfield', linewidth=2, linestyle='--', color='black')
     ax_im.plot(times, np.imag(coh_trace_coll), label='Ancilla trace', linewidth=2, linestyle=':', color='green')
     ax_im.plot(times, np.imag(coh_avg), label='Avg trajectories', linewidth=2, color='blue', alpha=0.7)
-    ax_im.set_title(f'Im[$\\rho_{{{i+1}{j+1}}}$] (Exciton basis)')
+    ax_im.set_ylabel(fr'Im($\rho_{{{i+1}{j+1}}}$)')
 
 for ax in axes4.flat:
     ax.set_xlabel('Time (fs)')
-    ax.set_ylabel('Value')
-    ax.legend(loc='best')
+    ax.legend(title=fr"$\theta = {theta_deg}^\circ$", loc='best', title_fontsize=11)
 
-fig4.suptitle(f'Exciton Coherences ($\\Theta={theta_deg}^\\circ$) - Redfield vs Ancilla vs Avg', y=0.995)
-save_fig(fig4, f'Eigen_Coherences_Theta_{theta_str}')
+save_fig(fig4, f'Eigen_Coherences_Theta_{theta_str}', Output_dir)
 
 
 # ==========================================
@@ -272,11 +259,10 @@ ax5.plot(times, purity_redfield, label='Redfield', linewidth=2, linestyle='--', 
 ax5.plot(times, purity_trace_coll, label='Ancilla trace', linewidth=2, linestyle=':', color='green')
 ax5.plot(times, purity_traj, label='Avg trajectories', linewidth=2, color='blue', alpha=0.7)
 ax5.axhline(1.0 / N_site, color='gray', linestyle='-.', linewidth=1, label=f'Maximally mixed (1/{N_site})')
-ax5.set_title(f'Exciton Purity Tr[$\\rho^2$] Over Time ($\\Theta={theta_deg}^\\circ$)')
 ax5.set_xlabel('Time (fs)')
-ax5.set_ylabel('Purity')
-ax5.legend(loc='best')
-save_fig(fig5, f'Eigen_Purity_Theta_{theta_str}')
+ax5.set_ylabel('Purity Tr[$\\rho^2$]')
+ax5.legend(title=fr"$\theta = {theta_deg}^\circ$", loc='best', title_fontsize=11)
+save_fig(fig5, f'Eigen_Purity_Theta_{theta_str}', Output_dir)
 
 
 # ==========================================
@@ -284,10 +270,10 @@ save_fig(fig5, f'Eigen_Purity_Theta_{theta_str}')
 # ==========================================
 fig6, ax6 = plt.subplots(figsize=(8, 5))
 ax6.hist(n_jumps_per_traj, bins=min(50, int(n_jumps_per_traj.max()) + 1), color='purple', alpha=0.75)
-ax6.set_title(f'Distribution of Total Jumps per Trajectory ($\\Theta={theta_deg}^\\circ$)')
 ax6.set_xlabel('Number of jumps (over full trajectory)')
 ax6.set_ylabel('Number of trajectories')
-save_fig(fig6, f'Jumps_Histogram_Theta_{theta_str}')
+ax6.legend(title=fr"$\theta = {theta_deg}^\circ$", loc='best', title_fontsize=11)
+save_fig(fig6, f'Jumps_Histogram_Theta_{theta_str}', Output_dir)
 
 
 # ==========================================
@@ -295,24 +281,23 @@ save_fig(fig6, f'Jumps_Histogram_Theta_{theta_str}')
 # ==========================================
 fig7, ax7 = plt.subplots(figsize=(10, 6))
 
-# Generate distinct colors for each exciton
 colors = plt.cm.tab10(np.linspace(0, 1, N_site))
 
 for i in range(N_site):
-    # Plot Redfield (dashed line)
-    ax7.plot(times, pop_redfield_exc[:, i], color=colors[i], linestyle='--', 
-             linewidth=2, label=f'Redfield E{i+1}')
-    # Plot Average MC (solid line)
-    ax7.plot(times, pop_traj_avg_exc[:, i], color=colors[i], linestyle='-', 
-             linewidth=2, alpha=0.7, label=f'Avg MC E{i+1}')
+    ax7.plot(times, pop_redfield_exc[:, i], color=colors[i], linestyle='--', linewidth=2)
+    ax7.plot(times, pop_traj_avg_exc[:, i], color=colors[i], linestyle='-', linewidth=2, alpha=0.7)
 
-ax7.set_title(f'All Exciton Populations: Redfield vs Avg Trajectories ($\\Theta={theta_deg}^\\circ$)')
 ax7.set_xlabel('Time (fs)')
 ax7.set_ylabel('Population')
 
-# Move legend outside the plot area to avoid cluttering
-ax7.legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=9)
-save_fig(fig7, f'All_Eigen_Populations_Together_Theta_{theta_str}')
+custom_handles = [
+    Line2D([0], [0], color=colors[i], lw=2, label=f'Exciton {i+1}')
+    for i in range(N_site)
+]
+
+ax7.legend(handles=custom_handles, title=fr"$\theta = {theta_deg}^\circ$", 
+           loc='upper right', ncol=2, title_fontsize=11)
+save_fig(fig7, f'All_Eigen_Populations_Together_Theta_{theta_str}', Output_dir)
 
 
 # ==========================================
@@ -320,20 +305,15 @@ save_fig(fig7, f'All_Eigen_Populations_Together_Theta_{theta_str}')
 # ==========================================
 td_time = np.zeros(n_times)
 
-# Calculate trace distance at each time step
 for t in range(n_times):
     td_time[t] = trace_distance_generic_njit(rho_redfield_exc[t], rho_traj_avg_exc[t])
 
 fig8, ax8 = plt.subplots(figsize=(8, 5))
 ax8.plot(times, td_time, color='red', linewidth=2, label='Trace Distance')
-ax8.set_title(f'Trace Distance (Exciton): Redfield vs Avg Trajectories ($\\Theta={theta_deg}^\\circ$)')
 ax8.set_xlabel('Time (fs)')
 ax8.set_ylabel('Trace Distance')
-
-# Log scale is often useful to observe asymptotic convergence
 ax8.set_yscale('log') 
-
-ax8.legend(loc='best')
-save_fig(fig8, f'Eigen_Trace_Distance_Theta_{theta_str}')
+ax8.legend(title=fr"$\theta = {theta_deg}^\circ$", loc='best', title_fontsize=11)
+save_fig(fig8, f'Eigen_Trace_Distance_Theta_{theta_str}', Output_dir)
 
 print("All eigenstate basis plots generated and saved successfully.")
