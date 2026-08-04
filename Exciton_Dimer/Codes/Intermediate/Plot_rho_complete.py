@@ -2,11 +2,13 @@ import sys
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+from plot_style import set_thesis_style, save_fig
+
+set_thesis_style()
 
 # =========================================================
 # PARSE COMMAND LINE ARGUMENTS
 # =========================================================
-
 # Argument 1: Theta (Angle)
 if len(sys.argv) > 1:
     theta_target_deg = float(sys.argv[1])
@@ -49,20 +51,6 @@ angle_folder = str(int(theta_target_deg)) if theta_target_deg.is_integer() else 
 # Dynamically set the Output directory splitting by MODE
 Output_dir = os.path.join("../Results/Plot/Populations", MODE, angle_folder)
 os.makedirs(Output_dir, exist_ok=True)
-
-# Global Style Settings
-plt.rcParams.update({
-    'font.size': 11, 'axes.titlesize': 13, 'axes.labelsize': 11,
-    'xtick.labelsize': 11, 'ytick.labelsize': 11, 'legend.fontsize': 10,
-    'figure.figsize': (10, 5), 'axes.grid': True,
-    'grid.alpha': 0.3, 'grid.linestyle': ':', 'figure.autolayout': True
-})
-
-def save_fig(fig, filename):
-    """Saves the generated matplotlib figure as a PNG file."""
-    path_png = os.path.join(Output_dir, f"{filename}.png")
-    fig.savefig(path_png, dpi=300, bbox_inches='tight')
-    print(f"Saved: {path_png}")
 
 # =================
 # Input Data Setup
@@ -110,13 +98,17 @@ print("Data extracted successfully!")
 if site_index == 0:
     pop_lindblad = pop_lindblad_10
     avg_pop = avg_pop_10
-    label_site = r"1 ($|10\rangle$)"
+    label_site = r"$|10\rangle$"
     single_trajs = single_trajs_10
 else:
     pop_lindblad = pop_lindblad_01
     avg_pop = avg_pop_01
-    label_site = r"2 ($|01\rangle$)"
+    label_site = r"$|01\rangle$"            
     single_trajs = single_trajs_01
+
+# Mathematically invert the angle 
+# This works for 0.0, 90.0, and any intermediate angle
+theta_deg = 90.0 - theta_target_deg
 
 # =================================================
 # Plot 1: Convergence Avg vs Trace vs Lindblad
@@ -127,12 +119,13 @@ ax.plot(times, pop_lindblad, label=r'Lindblad', linewidth=2, linestyle='--')
 ax.plot(times, pops_trace[site_index, :], label=r'Anc_trace', linewidth=2, linestyle=':')
 ax.plot(times, avg_pop, label=r'Avg_traj', linewidth=2, alpha=0.5)
 
-ax.set_title(f'Comparison Lindblad, Trace, Avg Trajectories | $\\theta$={theta_target_deg}°')
+# ax.set_title(f'Comparison Lindblad, Trace, Avg Trajectories | $\\theta$={theta_deg}°')
 ax.set_xlabel('Time')
 ax.set_ylabel(f'Population {label_site}')
-ax.legend()
+# Add the theta value as the title of the legend
+ax.legend(title=fr"$\theta = {theta_deg}^\circ$", title_fontsize=11)
 
-save_fig(fig01, f"Convergence_Avg_Trace_Lindblad_Theta_{theta_str}")
+save_fig(fig01, f"Convergence_Analysis_Theta_{theta_str}", Output_dir)
 
 # =================================================
 # Plot 2: Collisional vs Isolated Trajectories
@@ -142,12 +135,13 @@ fig02, ax = plt.subplots()
 ax.plot(times, single_trajs[:, 0], label='Single Traj', linewidth=2)
 ax.plot(times, pop_iso[site_index, :], label='Traj Isolated', linewidth=2, linestyle=':')
 
-ax.set_title(f'Trajectories Collisional vs Isolated | $\\theta$={theta_target_deg}°')
+# ax.set_title(f'Trajectories Collisional vs Isolated | $\\theta$={theta_deg}°')
 ax.set_xlabel('Time')
 ax.set_ylabel(f'Population {label_site}')
-ax.legend()
+# Add the theta value as the title of the legend
+ax.legend(title=fr"$\theta = {theta_deg}^\circ$", title_fontsize=11)
 
-save_fig(fig02, f"Collisional_vs_Isolated_Theta_{theta_str}")
+save_fig(fig02, f"Collisional_vs_Isolated_Theta_{theta_str}", Output_dir)
 
 # ===================================================
 # Plot 3: Single Trajectories vs Average vs Lindblad
@@ -155,19 +149,20 @@ save_fig(fig02, f"Collisional_vs_Isolated_Theta_{theta_str}")
 plt.close('all')
 fig03, ax = plt.subplots()
 # Plot the background spaghetti trajectories
-for i in range(single_trajs.shape[1]):
+for i in range(20):
     ax.plot(times, single_trajs[:, i], color='gray', alpha=0.15, linewidth=0.5, 
              label='Single Traj' if i==0 else "")
 
 ax.plot(times, pop_lindblad, label=r'Lindblad', linewidth=2, linestyle='--', color='blue')
 ax.plot(times, avg_pop, label=r'Avg_traj', linewidth=2, color='red')
 
-ax.set_title(f'Single Trajectories vs Average vs Lindblad | $\\theta$={theta_target_deg}°')
+#ax.set_title(f'Single Trajectories vs Average vs Lindblad | $\\theta$={theta_deg}°')
 ax.set_xlabel('Time')
 ax.set_ylabel(f'Population {label_site}')
-ax.legend()
+# Add the theta value as the title of the legend
+ax.legend(title=fr"$\theta = {theta_deg}^\circ$", title_fontsize=11)
 
-save_fig(fig03, f"SingleTraj_vs_Avg_vs_Lindblad_Theta_{theta_str}")
+save_fig(fig03, f"SingleTraj_vs_Avg_vs_Lindblad_Theta_{theta_str}", Output_dir)
 
 print(f"All Population plots successfully generated for {theta_target_deg}°!\n")
 

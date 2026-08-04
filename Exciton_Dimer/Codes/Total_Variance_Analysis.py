@@ -152,7 +152,7 @@ N_traj = 20000
 theta_rad = np.radians(theta_deg)
 
 # NOTE: the generation script writes to one of two subfolders depending on
-# MODE ("normal" or "close_to_90_deg"). Adjust this line if you generated
+# MODE ("normal" or "close_90_deg"). Adjust this line if you generated
 # data with MODE="normal" instead.
 results_dir = "../Results/Data/Complete_rho/close_90_deg/"
 
@@ -230,6 +230,44 @@ ax_kurt.set_xlabel('Time')
 ax_kurt.axhline(0, color='black', linestyle='--', linewidth=1.5, alpha=0.6)
 ax_kurt.set_ylim(-5, 15)
 save_fig(fig1, f'All_Statistical_Moments_Time_Theta_{theta_str}', Output_dir)
+
+# ==========================
+# PLOT 2: All Statistical Moments over Time - Expectation Values (sigma_x, sigma_y, sigma_z)
+# ==========================
+print("Computing Statistical Moments over time (expectation values)...")
+Ex_k = 2.0 * np.real(coh_01_10)   # <sigma_x>_k per trajectory
+Ey_k = -2.0 * np.imag(coh_01_10)  # <sigma_y>_k per trajectory
+Ez_k = pop_01 - pop_10            # <sigma_z>_k per trajectory
+
+exp_stack = np.stack([Ex_k, Ey_k, Ez_k], axis=0)  # (3, n_times, n_traj)
+EXP_LABELS = ['$\\langle\\sigma_x\\rangle$', '$\\langle\\sigma_y\\rangle$', '$\\langle\\sigma_z\\rangle$']
+exp_colors = ['tab:red', 'tab:green', 'tab:purple']
+
+mean_exp_time = np.mean(exp_stack, axis=2)
+var_exp_time = np.var(exp_stack, axis=2)
+skew_exp_time = skew(exp_stack, axis=2, nan_policy='omit')
+kurt_exp_time = kurtosis(exp_stack, axis=2, fisher=True, nan_policy='omit')
+
+fig2, axes2 = plt.subplots(4, 1, figsize=(10, 12), sharex=True)
+ax_mean2, ax_var2, ax_skew2, ax_kurt2 = axes2
+for i in range(3):
+    ax_mean2.plot(times, mean_exp_time[i, :], color=exp_colors[i], linewidth=2, label=EXP_LABELS[i])
+    ax_var2.plot(times, var_exp_time[i, :], color=exp_colors[i], linewidth=2, label=EXP_LABELS[i])
+    ax_skew2.plot(times, skew_exp_time[i, :], color=exp_colors[i], linewidth=2, label=EXP_LABELS[i])
+    ax_kurt2.plot(times, kurt_exp_time[i, :], color=exp_colors[i], linewidth=2, label=EXP_LABELS[i])
+
+ax_mean2.set_title(f'Statistical Moments over Trajectories - Expectation Values (Theta = {theta_deg}°)')
+ax_mean2.set_ylabel('Mean')
+ax_mean2.legend(loc='center left', bbox_to_anchor=(1.02, 0.5))
+ax_var2.set_ylabel('Variance')
+ax_skew2.set_ylabel('Skewness ($\\gamma_1$)')
+ax_skew2.axhline(0, color='black', linestyle='--', linewidth=1.5, alpha=0.6)
+ax_skew2.set_ylim(-5, 5)
+ax_kurt2.set_ylabel('Excess Kurtosis ($K - 3$)')
+ax_kurt2.set_xlabel('Time')
+ax_kurt2.axhline(0, color='black', linestyle='--', linewidth=1.5, alpha=0.6)
+ax_kurt2.set_ylim(-5, 15)
+save_fig(fig2, f'All_Statistical_Moments_ExpVal_Theta_{theta_str}', Output_dir)
 
 # ==========================
 # Mean-convergence check (trajectory avg vs Lindblad exact), restricted to the
@@ -333,7 +371,6 @@ save_fig(fig_coh, f'Law_Total_Variance_Coherence_Theta_{theta_str}', Output_dir)
 # ==========================
 print("Computing Total Variance Theorem: Bloch Vector (sigma_x, sigma_y, sigma_z)...")
 
-Ez_k = pop_01 - pop_10
 vt_z, vq_z, vs_z = total_variance_qubit_observable(Ez_k, pop_10, pop_01)
 vt_z_exact = get_exact_variance(sigma_z_op, rho_list_lindblad)
 

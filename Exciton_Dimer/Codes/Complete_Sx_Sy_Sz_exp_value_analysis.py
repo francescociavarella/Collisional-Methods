@@ -24,6 +24,9 @@ import sys
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 from IPython.display import Image, display, Math
+from plot_style import set_thesis_style, save_fig
+
+set_thesis_style()
 
 
 # In[3]:
@@ -98,6 +101,8 @@ print("="*50 + "\n")
 
 theta_rad = np.radians(theta_target_deg)
 
+theta_deg = 90 - theta_target_deg  # Adjusted angle for calculations
+
 # Site selector: 0 for |10>, 1 for |01>
 site_index = 0
 
@@ -124,32 +129,32 @@ else:
 Output_dir = os.path.join("../Results/Plot/Sxyz_exp_value/Complete", angle_folder)
 os.makedirs(Output_dir, exist_ok=True)
 
-# --- 2. Global Style Settings (Matplotlib rcParams) ---
-plt.rcParams.update({
-    'font.size': 11,
-    'axes.titlesize': 13,
-    'axes.labelsize': 11,
-    'xtick.labelsize': 11,
-    'ytick.labelsize': 11,
-    'legend.fontsize': 10,
-    'figure.figsize': (8, 5),
-    'axes.grid': True,
-    'grid.alpha': 0.3,
-    'grid.linestyle': ':',
-    'figure.autolayout': True # plt.tight_layout()
-})
+# # --- 2. Global Style Settings (Matplotlib rcParams) ---
+# plt.rcParams.update({
+#     'font.size': 11,
+#     'axes.titlesize': 13,
+#     'axes.labelsize': 11,
+#     'xtick.labelsize': 11,
+#     'ytick.labelsize': 11,
+#     'legend.fontsize': 10,
+#     'figure.figsize': (8, 5),
+#     'axes.grid': True,
+#     'grid.alpha': 0.3,
+#     'grid.linestyle': ':',
+#     'figure.autolayout': True # plt.tight_layout()
+# })
 
-# --- 3. Automatic Figure Saving Function ---
-def save_fig(fig, filename):
-    """
-    Saves the figure in both PNG or PDF
-    """
-    path_png = os.path.join(Output_dir, f"{filename}.png")
-    # path_pdf = os.path.join(Output_dir, f"{filename}.pdf")  # save in pdf
+# # --- 3. Automatic Figure Saving Function ---
+# def save_fig(fig, filename):
+#     """
+#     Saves the figure in both PNG or PDF
+#     """
+#     path_png = os.path.join(Output_dir, f"{filename}.png")
+#     # path_pdf = os.path.join(Output_dir, f"{filename}.pdf")  # save in pdf
     
-    fig.savefig(path_png, dpi=300, bbox_inches='tight')
-    # fig.savefig(path_pdf, bbox_inches='tight') # save in pdf
-    print(f"Figure saved in: {Output_dir}/{filename}")
+#     fig.savefig(path_png, dpi=300, bbox_inches='tight')
+#     # fig.savefig(path_pdf, bbox_inches='tight') # save in pdf
+#     print(f"Figure saved in: {Output_dir}/{filename}")
 
 
 # In[6]:
@@ -252,119 +257,119 @@ print(f"Calculation finished. Shape of arrays: {all_sigma_z.shape}")
 # In[ ]:
 
 
-# ==============================================================
-# PLOT HEATMAP COMPLETE: PAULI EXPECTATION VALUES (Sx, Sy, Sz)
-# ==============================================================
+# # ==============================================================
+# # PLOT HEATMAP COMPLETE: PAULI EXPECTATION VALUES (Sx, Sy, Sz)
+# # ==============================================================
 
-plt.close('all')
+# plt.close('all')
 
-# Ensure we have the correct dimensions from the previously calculated arrays
-# The Numba function returns arrays of shape (time_steps, n_traj)
-n_times, n_traj = all_sigma_x.shape
+# # Ensure we have the correct dimensions from the previously calculated arrays
+# # The Numba function returns arrays of shape (time_steps, n_traj)
+# n_times, n_traj = all_sigma_x.shape
 
-# Heatmap bin parameters (Pauli values range from -1 to 1)
-n_bins = 150 
-pauli_bins = np.linspace(-1.0, 1.0, n_bins + 1)
+# # Heatmap bin parameters (Pauli values range from -1 to 1)
+# n_bins = 150 
+# pauli_bins = np.linspace(-1.0, 1.0, n_bins + 1)
 
-# List of the matrices and their corresponding labels for the loop
-matrices = [all_sigma_x, all_sigma_y, all_sigma_z]
-labels = [r'\sigma_x', r'\sigma_y', r'\sigma_z']
-filenames = ['Sigma_X', 'Sigma_Y', 'Sigma_Z']
+# # List of the matrices and their corresponding labels for the loop
+# matrices = [all_sigma_x, all_sigma_y, all_sigma_z]
+# labels = [r'\sigma_x', r'\sigma_y', r'\sigma_z']
+# filenames = ['Sigma_X', 'Sigma_Y', 'Sigma_Z']
 
-# Loop over the 3 expectation values to generate 3 separate plots
-for sigma_matrix, label, file_suffix in zip(matrices, labels, filenames):
+# # Loop over the 3 expectation values to generate 3 separate plots
+# for sigma_matrix, label, file_suffix in zip(matrices, labels, filenames):
     
-    # Initialize an empty heatmap for the current Pauli matrix
-    heatmap_complete = np.zeros((n_bins, n_times))
+#     # Initialize an empty heatmap for the current Pauli matrix
+#     heatmap_complete = np.zeros((n_bins, n_times))
     
-    # Compute the histogram for each time step
-    for t in range(n_times):
-        # Extract all trajectories at time 't'
-        counts, _ = np.histogram(sigma_matrix[t, :], bins=pauli_bins)
-        heatmap_complete[:, t] = counts
+#     # Compute the histogram for each time step
+#     for t in range(n_times):
+#         # Extract all trajectories at time 't'
+#         counts, _ = np.histogram(sigma_matrix[t, :], bins=pauli_bins)
+#         heatmap_complete[:, t] = counts
 
-    # Create the figure with a wider figsize, just like the Fidelity Complete plot
-    fig, ax = plt.subplots(figsize=(12, 5))
+#     # Create the figure with a wider figsize, just like the Fidelity Complete plot
+#     fig, ax = plt.subplots(figsize=(12, 5))
 
-    # Mask zero counts to improve visualization (transparent background)
-    heatmap_masked_complete = np.ma.masked_where(heatmap_complete == 0, heatmap_complete) 
+#     # Mask zero counts to improve visualization (transparent background)
+#     heatmap_masked_complete = np.ma.masked_where(heatmap_complete == 0, heatmap_complete) 
 
-    # Plot the heatmap
-    im = ax.imshow(
-        heatmap_masked_complete,
-        aspect='auto',
-        origin='lower',
-        extent=[times[0], times[-1], -1.0, 1.0], # Y-axis goes from -1 to 1
-        cmap='viridis',                          # Kept 'viridis' as requested
-        interpolation='nearest',
-        vmin=1, vmax=np.max(heatmap_complete)*0.8
-    )
+#     # Plot the heatmap
+#     im = ax.imshow(
+#         heatmap_masked_complete,
+#         aspect='auto',
+#         origin='lower',
+#         extent=[times[0], times[-1], -1.0, 1.0], # Y-axis goes from -1 to 1
+#         cmap='viridis',                          # Kept 'viridis' as requested
+#         interpolation='nearest',
+#         vmin=1, vmax=np.max(heatmap_complete)*0.8
+#     )
 
-    # Add colorbar
-    cbar = fig.colorbar(im, ax=ax)
-    cbar.set_label('Number of trajectories')
+#     # Add colorbar
+#     cbar = fig.colorbar(im, ax=ax)
+#     cbar.set_label('Number of trajectories')
 
-    # Apply labels and dynamic title
-    ax.set_xlabel('Time steps')
-    ax.set_ylabel(f'Expectation Value $\\langle {label} \\rangle$')
-    ax.set_title(f'Distribution of $\\langle {label} \\rangle$ over Time | $\\theta$ = {theta_target_deg}°')
+#     # Apply labels and dynamic title
+#     ax.set_xlabel('Time steps')
+#     ax.set_ylabel(f'Expectation Value $\\langle {label} \\rangle$')
+#     ax.set_title(f'Distribution of $\\langle {label} \\rangle$ over Time | $\\theta$ = {theta_target_deg}°')
 
-    # plt.show()
-
-
-# In[ ]:
+#     # plt.show()
 
 
-# ==============================================================
-# PLOT HEATMAP COMPLETE: PAULI EXPECTATION VALUES (LOG SCALE)
-# ==============================================================
+# # In[ ]:
 
-plt.close('all')
 
-n_times, n_traj = all_sigma_x.shape
-n_bins = 150 
-pauli_bins = np.linspace(-1.0, 1.0, n_bins + 1)
+# # ==============================================================
+# # PLOT HEATMAP COMPLETE: PAULI EXPECTATION VALUES (LOG SCALE)
+# # ==============================================================
 
-matrices = [all_sigma_x, all_sigma_y, all_sigma_z]
-labels = [r'\sigma_x', r'\sigma_y', r'\sigma_z']
+# plt.close('all')
 
-for sigma_matrix, label, file_suffix in zip(matrices, labels, filenames):
+# n_times, n_traj = all_sigma_x.shape
+# n_bins = 150 
+# pauli_bins = np.linspace(-1.0, 1.0, n_bins + 1)
+
+# matrices = [all_sigma_x, all_sigma_y, all_sigma_z]
+# labels = [r'\sigma_x', r'\sigma_y', r'\sigma_z']
+
+# for sigma_matrix, label, file_suffix in zip(matrices, labels, filenames):
     
-    heatmap_complete = np.zeros((n_bins, n_times))
+#     heatmap_complete = np.zeros((n_bins, n_times))
     
-    for t in range(n_times):
-        counts, _ = np.histogram(sigma_matrix[t, :], bins=pauli_bins)
-        # Normalize to fraction of trajectories
-        heatmap_complete[:, t] = counts / n_traj
+#     for t in range(n_times):
+#         counts, _ = np.histogram(sigma_matrix[t, :], bins=pauli_bins)
+#         # Normalize to fraction of trajectories
+#         heatmap_complete[:, t] = counts / n_traj
 
-    fig, ax = plt.subplots(figsize=(12, 5))
+#     fig, ax = plt.subplots(figsize=(12, 5))
 
-    heatmap_masked = np.ma.masked_where(heatmap_complete == 0, heatmap_complete) 
-    vmin_val = 1.0 / n_traj  # Minimum observable fraction
+#     heatmap_masked = np.ma.masked_where(heatmap_complete == 0, heatmap_complete) 
+#     vmin_val = 1.0 / n_traj  # Minimum observable fraction
 
-    # Plot using LogNorm and magma to see the fine details!
-    im = ax.imshow(
-        heatmap_masked,
-        aspect='auto',
-        origin='lower',
-        extent=[times[0], times[-1], -1.0, 1.0], 
-        cmap='viridis', 
-        norm=LogNorm(vmin=vmin_val, vmax=1.0),
-        interpolation='nearest'
-    )
+#     # Plot using LogNorm and magma to see the fine details!
+#     im = ax.imshow(
+#         heatmap_masked,
+#         aspect='auto',
+#         origin='lower',
+#         extent=[times[0], times[-1], -1.0, 1.0], 
+#         cmap='viridis', 
+#         norm=LogNorm(vmin=vmin_val, vmax=1.0),
+#         interpolation='nearest'
+#     )
 
-    cbar = fig.colorbar(im, ax=ax)
-    cbar.set_label('Fraction of trajectories (Log Scale)')
+#     cbar = fig.colorbar(im, ax=ax)
+#     cbar.set_label('Fraction of trajectories (Log Scale)')
 
-    ax.set_xlabel('Time steps')
-    ax.set_ylabel(f'Expectation Value $\\langle {label} \\rangle$')
-    ax.set_title(f'Distribution of $\\langle {label} \\rangle$ over Time | $\\theta$ = {theta_target_deg}°')
+#     ax.set_xlabel('Time steps')
+#     ax.set_ylabel(f'Expectation Value $\\langle {label} \\rangle$')
+#     ax.set_title(f'Distribution of $\\langle {label} \\rangle$ over Time | $\\theta$ = {theta_target_deg}°')
 
-    # Automatically save the heatmap figure (uncomment when needed)
-    filename_heatmap = f"Heatmap_{file_suffix}_Complete_Theta_{theta_str}_dt_{dt_str}"
-    #save_fig(fig, filename_heatmap)
+#     # Automatically save the heatmap figure (uncomment when needed)
+#     filename_heatmap = f"Heatmap_{file_suffix}_Complete_Theta_{theta_str}_dt_{dt_str}"
+#     #save_fig(fig, filename_heatmap)
 
-    #plt.show()
+#     #plt.show()
 
 
 # In[ ]:
@@ -393,7 +398,7 @@ labels = [r'\sigma_x', r'\sigma_y', r'\sigma_z']
 filenames = ['Sigma_X', 'Sigma_Y', 'Sigma_Z']
 
 # List of trajectory counts to average over
-N_list = [100, 1000, 10000]
+N_list = [10000]
 
 # 3. Loop over the 3 expectation values
 for traj_matrix, lind_array, label, file_suffix in zip(trajectory_matrices, lindblad_expectations, labels, filenames):
@@ -416,15 +421,14 @@ for traj_matrix, lind_array, label, file_suffix in zip(trajectory_matrices, lind
     
     # Apply labels, legend and dynamic title
     ax.set_xlabel("Time steps")
-    ax.set_ylabel(f"Expectation Value $\\langle {label} \\rangle$")
-    ax.set_title(f"Time Evolution of $\\langle {label} \\rangle$ | $\\theta$ = {theta_target_deg}°")
-    ax.legend()
-    ax.grid(alpha=0.4, linestyle='--')
+    ax.set_ylabel(fr"Expectation Value $\langle {label} \rangle$")
+    ax.legend(title=fr"$\theta = {theta_deg}^\circ$", title_fontsize=11)
+    # ax.grid(alpha=0.4, linestyle='--')
     fig.tight_layout()
     
     # Automatically save the figure (uncomment when you want to save)
     filename_avg = f"Avg_{file_suffix}_Evolution_Theta_{theta_target_deg}deg"
-    #save_fig(fig, filename_avg)
+    save_fig(fig, filename_avg, output_dir=Output_dir)
     
     #plt.show()
 
@@ -438,7 +442,7 @@ for traj_matrix, lind_array, label, file_suffix in zip(trajectory_matrices, lind
 
 print("Calculating variances across different numbers of trajectories")
 
-Var_N_traj = [100, 1000, 5000, 20000]
+Var_N_traj = [10000]
 
 for N in Var_N_traj:
     print(f"Processing variance for N = {N} trajectories")
@@ -463,15 +467,15 @@ for N in Var_N_traj:
     # Set labels and dynamic titles
     ax.set_xlabel("Time steps")
     ax.set_ylabel("Variance")
-    ax.set_title(f"Variance of Pauli Expectation Values over Time | $\\theta$ = {theta_target_deg}°, N_traj = {max_N}")
-    ax.legend()
-    ax.grid(alpha=0.4, linestyle='--')
+    # ax.set_title(f"Variance of Pauli Expectation Values over Time | $\\theta$ = {theta_target_deg}°, N_traj = {max_N}")
+    # ax.grid(alpha=0.4, linestyle='--')
+    ax.legend(title=fr"$\theta = {theta_deg}^\circ$", title_fontsize=11)
 
     fig.tight_layout()
 
     # Automatically save the figure 
     filename_var_pauli = f"Variance_Pauli_Theta_{theta_str}_dt_{dt_str}_N_traj_{max_N}"
-    save_fig(fig, filename_var_pauli)
+    save_fig(fig, filename_var_pauli, output_dir=Output_dir)
 
 # plt.show()
 
