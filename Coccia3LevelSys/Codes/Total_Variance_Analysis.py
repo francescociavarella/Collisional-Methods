@@ -4,27 +4,6 @@
 Law-of-Total-Variance analysis for the 3-level collisional-model trajectories
 (site basis only), matching the data saved by the trajectory-generation script
 that calls compute_trajectory_wf(...) and np.savez_compressed(..., rho_tot_all=...).
-
-Key difference vs. the FMO version: here each trajectory is stored as a FULL
-density matrix rho_k(t) (shape N x N), not a state vector psi_k(t). Since the
-Kraus-operator (M0/M1) evolution never mixes states, every trajectory stays
-EXACTLY pure (rho_k(t) = |psi_k(t)><psi_k(t)|) - this script checks that
-assumption once (purity diagnostic) and then exploits it: the same algebraic
-identities used for the FMO case (O^2=O for population projectors,
-O_real^2=O_imag^2=|m><m|+|n><n| for 2-level coherences) still hold, and are
-now even more direct since we can read rho_mn,k(t) straight from the stored
-array, with no need to reconstruct it from amplitudes.
-
-"Exact" reference for the Law of Total Variance: the Lindblad master-equation
-solution (rho_list_lindblad), since that is the actual open-system dynamics
-that the stochastic trajectories are unraveling. rho_trace (the collision-
-model dynamics obtained by tracing out the ancilla) is used only as an
-independent cross-check that the two "exact" descriptions agree - it is not
-itself the LTV reference.
-
-NOTE on paths: results_dir / Output_dir below mirror the "../../Results/..."
-relative depth used in the trajectory-generation script. Adjust if you place
-this analysis script at a different depth in your folder structure.
 """
 
 import sys
@@ -38,7 +17,14 @@ import matplotlib.pyplot as plt
 from numba import njit
 from scipy.stats import skew, kurtosis
 
+# Import custom thesis style and saving function
+from plot_style import set_thesis_style, save_fig
+
+# Apply global thesis style settings
+set_thesis_style()
+
 warnings.filterwarnings("ignore", message="Precision loss occurred in moment calculation")
+
 
 # =================================
 # NUMBA METRIC FUNCTIONS (for the convergence / cross-check plots)
@@ -68,7 +54,6 @@ def trace_distance_generic_njit(rho, sigma):
 
 
 def compute_matrix_metric_series(rho_a, rho_b, metric_fn):
-    """rho_a, rho_b: shape (n_times, N, N)."""
     n_times = rho_a.shape[0]
     result = np.empty(n_times)
     for t in range(n_times):
@@ -81,11 +66,6 @@ def compute_matrix_metric_series(rho_a, rho_b, metric_fn):
 # ==========================================
 
 def get_exact_variance(observable_matrix, rho_t):
-    """
-    Var(O) = Tr(O^2 rho) - Tr(O rho)^2
-    observable_matrix : (N, N)
-    rho_t : (n_times, N, N)
-    """
     observable_sq = observable_matrix @ observable_matrix
     E_O = np.real(np.einsum('ik,tki->t', observable_matrix, rho_t))
     E_O2 = np.real(np.einsum('ik,tki->t', observable_sq, rho_t))
@@ -97,11 +77,6 @@ def get_exact_variance(observable_matrix, rho_t):
 # ==========================================
 
 def total_variance_projector(pop_k):
-    """
-    pop_k : ndarray, shape (n_times, n_traj). O=|i><i| is a projector, O^2=O,
-    so quantum variance per trajectory = p(1-p) exactly (see FMO script for
-    the full derivation).
-    """
     var_quant_k = pop_k * (1.0 - pop_k)
     var_quant = np.mean(var_quant_k, axis=1)
     var_stat = np.var(pop_k, axis=1)
@@ -109,16 +84,6 @@ def total_variance_projector(pop_k):
 
 
 def total_variance_coherence_rho(rho_mn_k, pop_m_k, pop_n_k, part='real'):
-    """
-    Same identity as in the FMO script (O_real^2 = O_imag^2 = |m><m|+|n><n|),
-    but here rho_mn,k(t) = <m|rho_k(t)|n> is read directly from the stored
-    per-trajectory density matrix instead of being built from amplitudes:
-
-        <O_real>  =  rho_nm,k + rho_mn,k  =  2 Re(rho_mn,k)
-        <O_imag>  =  i(rho_mn,k - rho_nm,k)  =  -2 Im(rho_mn,k)
-
-    rho_mn_k, pop_m_k, pop_n_k : ndarray, shape (n_times, n_traj)
-    """
     E_k = 2.0 * np.real(rho_mn_k) if part == 'real' else -2.0 * np.imag(rho_mn_k)
     E2_k = pop_m_k + pop_n_k
     var_quant_k = np.maximum(E2_k - E_k ** 2, 0.0)
@@ -131,29 +96,24 @@ def total_variance_coherence_rho(rho_mn_k, pop_m_k, pop_n_k, part='real'):
 # PLOTTING HELPERS
 # ==========================
 
-def save_fig(fig, filename, output_dir):
-    path_png = os.path.join(output_dir, f"{filename}.png")
-    fig.savefig(path_png, dpi=300, bbox_inches='tight')
-    print(f"Saved: {path_png}")
-    plt.close(fig)
-
-
 def plot_ltv_panel(ax, times, var_exact, var_stat, var_quant, var_sum, ylabel,
-                    show_legend=False, title=None):
+                    show_legend=False, theta_deg=None):
     ax.plot(times, var_exact, color='black', linewidth=3, linestyle='--', label='Total Variance (Lindblad)')
     ax.plot(times, var_stat, color='red', linewidth=2, alpha=0.8, label='Statistical Variance')
     ax.plot(times, var_quant, color='blue', linewidth=2, alpha=0.8, label='Quantum Variance')
     ax.plot(times, var_sum, color='limegreen', linewidth=3, linestyle=':', label='Sum (Stat + Quant)')
     ax.set_ylabel(ylabel)
-    if title:
-        ax.set_title(title)
+    
+    # Thesis-style formatting: no title, legend contains the angle parameter if provided
     if show_legend:
-        ax.legend(loc='upper right', fontsize=8)
+        if theta_deg is not None:
+            ax.legend(title=fr"$\theta = {theta_deg}^\circ$", loc='upper right', title_fontsize=11)
+        else:
+            ax.legend(loc='upper right')
 
 
 def analyze_population_ltv(times, pop_traj, rho_exact, N_states, state_labels,
                             phi_deg, phi_str, output_dir):
-    """pop_traj : ndarray, shape (N_states, n_times, n_traj)."""
     fig, axes = plt.subplots(N_states, 1, figsize=(10, 2.5 * N_states), sharex=True)
     if N_states == 1:
         axes = [axes]
@@ -170,9 +130,9 @@ def analyze_population_ltv(times, pop_traj, rho_exact, N_states, state_labels,
 
         plot_ltv_panel(
             axes[i], times, var_tot_exact, var_stat, var_quant, var_tot_traj,
-            ylabel=state_labels[i],
+            ylabel=f'Variance {state_labels[i]}',
             show_legend=(i == 0),
-            title=f'Law of Total Variance - Populations (Phi = {phi_deg}°)' if i == 0 else None,
+            theta_deg=phi_deg
         )
 
     axes[-1].set_xlabel('Time')
@@ -182,11 +142,6 @@ def analyze_population_ltv(times, pop_traj, rho_exact, N_states, state_labels,
 
 def analyze_coherence_ltv(times, rho_tot_all, pop_traj, rho_exact, coherence_pairs,
                            N_states, phi_deg, phi_str, output_dir):
-    """
-    rho_tot_all : ndarray, shape (N_states, N_states, n_times, n_traj)
-    pop_traj    : ndarray, shape (N_states, n_times, n_traj) - populations,
-                  reused here for the E2_k = p_m + p_n identity.
-    """
     n_pairs = len(coherence_pairs)
     fig_real, axes_real = plt.subplots(n_pairs, 1, figsize=(10, 2.5 * n_pairs), sharex=True)
     fig_imag, axes_imag = plt.subplots(n_pairs, 1, figsize=(10, 2.5 * n_pairs), sharex=True)
@@ -214,13 +169,11 @@ def analyze_coherence_ltv(times, rho_tot_all, pop_traj, rho_exact, coherence_pai
 
         plot_ltv_panel(
             axes_real[idx], times, vt_real_exact, vs_real, vq_real, vt_real,
-            ylabel=f'Re( $\\rho_{{{m}{n}}}$ )', show_legend=(idx == 0),
-            title=f'Law of Total Variance - Coherences REAL Part (Phi = {phi_deg}°)' if idx == 0 else None,
+            ylabel=fr'Var(Re($\rho_{{{m}{n}}}$))', show_legend=(idx == 0), theta_deg=phi_deg
         )
         plot_ltv_panel(
             axes_imag[idx], times, vt_imag_exact, vs_imag, vq_imag, vt_imag,
-            ylabel=f'Im( $\\rho_{{{m}{n}}}$ )', show_legend=(idx == 0),
-            title=f'Law of Total Variance - Coherences IMAGINARY Part (Phi = {phi_deg}°)' if idx == 0 else None,
+            ylabel=fr'Var(Im($\rho_{{{m}{n}}}$))', show_legend=(idx == 0), theta_deg=phi_deg
         )
 
     axes_real[-1].set_xlabel('Time')
@@ -232,7 +185,6 @@ def analyze_coherence_ltv(times, rho_tot_all, pop_traj, rho_exact, coherence_pai
 
 
 def plot_convergence(times, rho_a, rho_b, label, phi_deg, phi_str, output_dir):
-    """rho_a, rho_b : shape (n_times, N, N). Trace distance & fidelity between them."""
     trace_dist = compute_matrix_metric_series(rho_a, rho_b, trace_distance_generic_njit)
     fidelity = compute_matrix_metric_series(rho_a, rho_b, fidelity_generic_njit)
 
@@ -240,7 +192,10 @@ def plot_convergence(times, rho_a, rho_b, label, phi_deg, phi_str, output_dir):
     ax1.plot(times, trace_dist, color='darkorange', linewidth=2)
     ax1.set_ylabel('Trace Distance')
     ax1.axhline(0, color='black', linestyle=':', linewidth=1, alpha=0.6)
-    ax1.set_title(f'{label} (Phi = {phi_deg}°)')
+    
+    # Place phi inside legend instead of title
+    ax1.plot([], [], ' ', label=fr"$\theta = {phi_deg}^\circ$")
+    ax1.legend(loc='best', frameon=False)
 
     ax2.plot(times, fidelity, color='teal', linewidth=2)
     ax2.set_ylabel('Fidelity')
@@ -252,7 +207,7 @@ def plot_convergence(times, rho_a, rho_b, label, phi_deg, phi_str, output_dir):
 
 
 # ==========================
-# Input parsing & file location (mirrors the generation script exactly)
+# Input parsing & file location 
 # ==========================
 if len(sys.argv) > 1:
     phi_deg = float(sys.argv[1])
@@ -266,20 +221,17 @@ dt = float(sys.argv[2]) if len(sys.argv) > 2 else 0.01
 N_traj = 10000
 
 results_dir = "../Results/Data/Complete_rho/"
-phi_str = f"{phi_deg:.4f}".replace(".", "p")  # only this token gets the dot->p substitution
+phi_str = f"{phi_rad:.4f}".replace(".", "p")  # Note: mapped to radians for correct file matching
 Output_dir = os.path.join("../Results/Plot/Variance_Analysis", phi_str)
 os.makedirs(Output_dir, exist_ok=True)
 
 
-
-def _make_fname_npz(results_dir, phi_deg, dt, N_traj):
-    """Copied verbatim from the trajectory-generation script to guarantee a matching filename."""
+def _make_fname_npz(results_dir, phi_rad, dt, N_traj):
     dt_str = f"{dt:.6f}".replace(".", "p")
-    phi_str = f"{phi_deg:.4f}".replace(".", "p")
-    return os.path.join(results_dir, f"result_phi{phi_str}_dt{dt_str}_Ntraj{N_traj}.npz")
+    phi_str_local = f"{phi_rad:.4f}".replace(".", "p")
+    return os.path.join(results_dir, f"result_phi{phi_str_local}_dt{dt_str}_Ntraj{N_traj}.npz")
 
 
-phi_str = f"{phi_deg:.4f}".replace(".", "p")
 fname = _make_fname_npz(results_dir, phi_rad, dt, N_traj)
 
 try:
@@ -304,79 +256,65 @@ n_traj = rho_tot_all.shape[3]
 # rho_trace is stored time-last; get_exact_variance / compute_matrix_metric_series expect time-first
 rho_trace_tfirst = np.moveaxis(rho_trace, -1, 0)
 
-# ==========================
-# Purity sanity check
-# ==========================
-# The fast LTV shortcuts rely on every trajectory being exactly pure
-# (Tr(rho_k(t)^2) = 1). This is guaranteed by construction for a Kraus-operator
-# jump/no-jump unraveling, but it costs almost nothing to verify once.
-purity = np.sum(np.abs(rho_tot_all) ** 2, axis=(0, 1))  # (n_times, n_traj), = Tr(rho_k(t)^2)
-max_purity_dev = np.max(np.abs(purity - 1.0))
-print(f"Purity check: max |Tr(rho_k(t)^2) - 1| over all trajectories/times = {max_purity_dev:.2e}")
-if max_purity_dev > 1e-6:
-    print("WARNING: trajectories are not numerically pure - the fast analytic LTV shortcuts "
-          "(which assume O^2=O for projectors) may be inaccurate. Consider using the generic "
-          "tensordot-based formulas from the FMO script instead.")
 
-# ==========================
-# Statistical moments over trajectories
-# ==========================
-print("Computing Statistical Moments over time...")
-pop_traj_site = np.real(np.stack([rho_tot_all[i, i, :, :] for i in range(N_site)], axis=0))  # (N_site, n_times, n_traj)
+# # ==========================
+# # Purity sanity check
+# # ==========================
+# purity = np.sum(np.abs(rho_tot_all) ** 2, axis=(0, 1))  
+# max_purity_dev = np.max(np.abs(purity - 1.0))
+# print(f"Purity check: max |Tr(rho_k(t)^2) - 1| over all trajectories/times = {max_purity_dev:.2e}")
+# if max_purity_dev > 1e-6:
+#     print("WARNING: trajectories are not numerically pure.")
 
-mean_pop_time = np.mean(pop_traj_site, axis=2)
-var_pop_time = np.var(pop_traj_site, axis=2)
-skew_pop_time = skew(pop_traj_site, axis=2, nan_policy='omit')
-kurt_pop_time = kurtosis(pop_traj_site, axis=2, fisher=True, nan_policy='omit')
+# # ==========================
+# # Statistical moments over trajectories
+# # ==========================
+# print("Computing Statistical Moments over time...")
 
-plt.rcParams.update({
-    'font.size': 11, 'axes.titlesize': 13, 'axes.labelsize': 11,
-    'xtick.labelsize': 11, 'ytick.labelsize': 11, 'legend.fontsize': 9,
-    'axes.grid': True, 'grid.alpha': 0.3, 'grid.linestyle': ':',
-    'figure.autolayout': True
-})
+# THIS LINE MUST REMAIN UNCOMMENTED FOR LTV TO WORK
+pop_traj_site = np.real(np.stack([rho_tot_all[i, i, :, :] for i in range(N_site)], axis=0))  
+STATE_LABELS = [fr'$|{i}\rangle$' for i in range(N_site)]
 
-STATE_LABELS = [f'State {i}' for i in range(N_site)]
-colors = plt.cm.viridis(np.linspace(0, 1, N_site))
+# mean_pop_time = np.mean(pop_traj_site, axis=2)
+# var_pop_time = np.var(pop_traj_site, axis=2)
+# skew_pop_time = skew(pop_traj_site, axis=2, nan_policy='omit')
+# kurt_pop_time = kurtosis(pop_traj_site, axis=2, fisher=True, nan_policy='omit')
 
-fig1, axes = plt.subplots(4, 1, figsize=(10, 12), sharex=True)
-ax_mean, ax_var, ax_skew, ax_kurt = axes
+# colors = plt.cm.viridis(np.linspace(0, 1, N_site))
 
-for i in range(N_site):
-    ax_mean.plot(times, mean_pop_time[i, :], color=colors[i], linewidth=2, label=STATE_LABELS[i])
-    ax_var.plot(times, var_pop_time[i, :], color=colors[i], linewidth=2, label=STATE_LABELS[i])
-    ax_skew.plot(times, skew_pop_time[i, :], color=colors[i], linewidth=2, label=STATE_LABELS[i])
-    ax_kurt.plot(times, kurt_pop_time[i, :], color=colors[i], linewidth=2, label=STATE_LABELS[i])
+# fig1, axes = plt.subplots(4, 1, figsize=(10, 12), sharex=True)
+# ax_mean, ax_var, ax_skew, ax_kurt = axes
 
-ax_mean.set_title(f'Statistical Moments over Trajectories (Phi = {phi_deg}°)')
-ax_mean.set_ylabel('Mean')
-ax_mean.legend(loc='center left', bbox_to_anchor=(1.02, 0.5))
-ax_var.set_ylabel('Variance')
-ax_skew.set_ylabel('Skewness ($\\gamma_1$)')
-ax_skew.axhline(0, color='black', linestyle='--', linewidth=1.5, alpha=0.6)
-ax_skew.set_ylim(-5, 5)
-ax_kurt.set_ylabel('Excess Kurtosis ($K - 3$)')
-ax_kurt.set_xlabel('Time')
-ax_kurt.axhline(0, color='black', linestyle='--', linewidth=1.5, alpha=0.6)
-ax_kurt.set_ylim(-5, 15)
+# for i in range(N_site):
+#     ax_mean.plot(times, mean_pop_time[i, :], color=colors[i], linewidth=2, label=STATE_LABELS[i])
+#     ax_var.plot(times, var_pop_time[i, :], color=colors[i], linewidth=2, label=STATE_LABELS[i])
+#     ax_skew.plot(times, skew_pop_time[i, :], color=colors[i], linewidth=2, label=STATE_LABELS[i])
+#     ax_kurt.plot(times, kurt_pop_time[i, :], color=colors[i], linewidth=2, label=STATE_LABELS[i])
 
-save_fig(fig1, f'All_Statistical_Moments_Time_Phi_{phi_str}', Output_dir)
+# ax_mean.set_ylabel('Mean')
+# ax_mean.legend(loc='center left', bbox_to_anchor=(1.02, 0.5))
+# ax_var.set_ylabel('Variance')
+# ax_skew.set_ylabel('Skewness ($\\gamma_1$)')
+# ax_skew.axhline(0, color='black', linestyle='--', linewidth=1.5, alpha=0.6)
+# ax_skew.set_ylim(-5, 5)
+# ax_kurt.set_ylabel('Excess Kurtosis ($K - 3$)')
+# ax_kurt.set_xlabel('Time')
+# ax_kurt.axhline(0, color='black', linestyle='--', linewidth=1.5, alpha=0.6)
+# ax_kurt.set_ylim(-5, 15)
 
-# ==========================
-# Convergence check: trajectory average vs Lindblad exact
-# ==========================
-print("Computing Convergence Check: Trajectory Average vs Lindblad...")
-rho_traj_avg = np.moveaxis(np.mean(rho_tot_all, axis=3), -1, 0)  # (n_times, N, N)
-plot_convergence(times, rho_list_lindblad, rho_traj_avg,
-                  "Convergence_TrajAvg_vs_Lindblad", phi_deg, phi_str, Output_dir)
+# save_fig(fig1, f'All_Statistical_Moments_Time_Phi_{phi_str}', Output_dir)
 
-# Bonus cross-check: does the independent collision-model reduction (rho_trace,
-# obtained by tracing out the ancilla from the full unitary) agree with the
-# Lindblad master-equation solution? This validates the master-equation
-# approximation itself, separately from the trajectory sampling error above.
-print("Computing Cross-Check: Collision-Model Trace vs Lindblad...")
-plot_convergence(times, rho_list_lindblad, rho_trace_tfirst,
-                  "CrossCheck_CollisionTrace_vs_Lindblad", phi_deg, phi_str, Output_dir)
+# # ==========================
+# # Convergence check: trajectory average vs Lindblad exact
+# # ==========================
+# print("Computing Convergence Check: Trajectory Average vs Lindblad...")
+# rho_traj_avg = np.moveaxis(np.mean(rho_tot_all, axis=3), -1, 0)  
+# plot_convergence(times, rho_list_lindblad, rho_traj_avg,
+#                   "Convergence_TrajAvg_vs_Lindblad", phi_deg, phi_str, Output_dir)
+
+# print("Computing Cross-Check: Collision-Model Trace vs Lindblad...")
+# plot_convergence(times, rho_list_lindblad, rho_trace_tfirst,
+#                   "CrossCheck_CollisionTrace_vs_Lindblad", phi_deg, phi_str, Output_dir)
 
 # ==========================
 # A. Population LTV (site basis)

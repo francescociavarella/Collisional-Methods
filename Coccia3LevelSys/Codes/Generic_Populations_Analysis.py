@@ -8,6 +8,10 @@ import matplotlib
 matplotlib.use('Agg') # Backend for rendering without a display
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors # Required for LogNorm
+from plot_style import set_thesis_style, save_fig
+
+# Apply global thesis style settings
+set_thesis_style()
 
 # ==================
 # Angles Definition
@@ -27,7 +31,7 @@ phi_rad = np.radians(phi_deg)
 dt = 0.01
 N_traj = 10000
 dt_str = f"{dt:.6f}".replace(".", "p")
-phi_str = f"{phi_deg:.4f}".replace(".", "p")
+phi_str = f"{phi_rad:.4f}".replace(".", "p")
 
 # --- Results Directory and Output Setup ---
 results_dir = "../Results/Data/Complete_rho/"
@@ -45,35 +49,6 @@ except FileNotFoundError:
 # Create a specific subfolder for the current angle (e.g., Plot/Populations/180)
 Output_dir = f"../Results/Plot/Populations/{phi_str}"
 os.makedirs(Output_dir, exist_ok=True)
-
-
-# ===========================
-# General Setup for Plotting
-# ===========================
-
-# Global Style Settings (Matplotlib rcParams)
-plt.rcParams.update({
-    'font.size': 11,
-    'axes.titlesize': 13,
-    'axes.labelsize': 11,
-    'xtick.labelsize': 11,
-    'ytick.labelsize': 11,
-    'legend.fontsize': 10,
-    'figure.figsize': (10, 5),
-    'axes.grid': True,
-    'grid.alpha': 0.3,
-    'grid.linestyle': ':',
-    'figure.autolayout': True, 
-    'axes.formatter.useoffset': False 
-})
-
-def save_fig(fig, filename):
-    """Saves the figure cleanly in the dynamically created output directory"""
-    path_png = os.path.join(Output_dir, f"{filename}.png")
-    fig.savefig(path_png, dpi=300, bbox_inches='tight')
-    print(f"Saved: {path_png}")
-    plt.close(fig)
-
 
 # ================
 # DATA EXTRACTION
@@ -122,17 +97,18 @@ ax.plot(times, var_22, label=r'Variance $|2\rangle$', color='darkorange', linewi
 # Formatting
 ax.set_xlabel('Time')
 ax.set_ylabel(r'Variance $\sigma^2$')
-ax.set_title(f'Population Variance over Time (Angle: {phi_deg}°)')
 ax.set_ylim(bottom=0)
-ax.grid(True, linestyle='--', alpha=0.5)
-ax.legend(loc='best')
 
-# Global figure settings
-fig_var.suptitle(f'Statistical Spread of Populations | dt={dt}, N_traj={N_traj}', fontsize=14)
+# CORREZIONE: Uso phi_deg al posto di theta_deg
+ax.legend(title=fr"$\theta = {phi_deg}^\circ$", loc='best', title_fontsize=11)
+
+# CORREZIONE: Titolo disabilitato per formato tesi
+# fig_var.suptitle(f'Statistical Spread of Populations | dt={dt}, N_traj={N_traj}', fontsize=14)
 
 # Save the figure
+# CORREZIONE: Aggiunto Output_dir
 filename_var = f"Angle_{phi_str}_Populations_Variance_dt{dt_str}"
-save_fig(fig_var, filename_var)
+save_fig(fig_var, filename_var, Output_dir)
 
 
 # =================================================================
@@ -193,17 +169,18 @@ save_fig(fig_var, filename_var)
     
 #     ax.set_xlabel('Time')
 #     ax.set_ylabel('Population')
-#     ax.set_title(title)
+#     # ax.set_title(title)
     
 #     # Add colorbar 
 #     cbar = fig_hm.colorbar(im, ax=ax)
 #     cbar.set_label('Trajectory Count ($\log_{10}$)')
 
 # # Global Formatting
-# fig_hm.suptitle(f'[Angle: {phi_deg}°] Population Distributions over Time | dt={dt}', fontsize=16, y=1.05)
+# # fig_hm.suptitle(f'[Angle: {phi_deg}°] Population Distributions over Time | dt={dt}', fontsize=16, y=1.05)
 
 # # Save the figure
+# # CORREZIONE: Aggiunto Output_dir
 # filename_hm_pop = f"Angle_{phi_str}_Populations_LogHeatmap_dt{dt_str}"
-# save_fig(fig_hm, filename_hm_pop)
+# save_fig(fig_hm, filename_hm_pop, Output_dir)
 
-# print(f"All plots for Angle = {phi_str} generated and saved.")
+print(f"All plots for Angle = {phi_str} generated and saved.")

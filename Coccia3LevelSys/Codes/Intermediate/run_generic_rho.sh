@@ -18,7 +18,8 @@
 # fi
 
 # ANGLES=(0 0.001 0.005 0.1 0.2 0.5 0.7 1 3)
-ANGLES=(0.01 0.05 0.07)
+# ANGLES=(0 60 90 120 180 270)
+ANGLES=(60 90 120)
 
 
 echo "Starting automated parallel batch processing..."
@@ -29,7 +30,8 @@ do
     echo "Launching Python scripts for Theta = $THETA in background..."
     
     # Raggruppa calcolo e plot in un unico job in background
-    ( python -u CM_generic_rho_only.py $THETA && python -u Plot_generic.py $THETA ) &
+    # ( python -u CM_generic_rho_only.py $THETA && python -u Plot_generic.py $THETA ) &
+    python -u Plot_generic.py $THETA &
 done
 
 # Wait for all background processes to finish before exiting the script

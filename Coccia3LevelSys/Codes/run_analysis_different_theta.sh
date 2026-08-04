@@ -18,7 +18,7 @@
 # fi
 
 # ANGLES=(0 0.001 0.005 0.1 0.2 0.5 0.7 1 3)
-ANGLES=(0 60 90 120)
+ANGLES=(0 60 90 120 180 270)
 
 # Loop through each angle in the array
 for THETA in "${ANGLES[@]}"
@@ -38,7 +38,7 @@ do
     
     # Run only the populations analysis in the background for each angle
     python -u Total_Variance_Analysis.py $THETA &
-
+    # python -u Generic_Populations_Analysis.py $THETA &
 done
 
 # Wait for all background groups to finish

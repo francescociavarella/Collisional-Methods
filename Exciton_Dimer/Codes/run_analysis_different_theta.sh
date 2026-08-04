@@ -39,6 +39,8 @@
 
 #!/bin/bash
 
+MODE="normal"
+
 ANGLES=(0.0 30.0 45.0 60.0 90.0)
 #ANGLES=(89.9 89.7 89.5 89 88.5 88 87 86)
 
@@ -61,7 +63,7 @@ do
     echo "Launching Python scripts for Theta = $THETA in background..."
     
     # (python -u $PYTHON_SCRIPT $THETA "batch_run" && python -u $PLOT_SCRIPT $THETA && python -u $HEATMAP_SCRIPT $THETA && python -u $VARIANCE_SCRIPT $THETA && python -u $TIME_SLICE_SCRIPT $THETA )  # & (add & for parallel execution, may be too expensive)
-    python -u $PAULI_EXP_COMPLETE $THETA & 
+    python -u $PLOT_SCRIPT $THETA $MODE & 
 
 done
 
