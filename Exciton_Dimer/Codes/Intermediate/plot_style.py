@@ -10,12 +10,13 @@ def set_thesis_style():
     plt.rcParams.update({
         # Font e testi
         'font.family': 'serif',      # Serif si sposa meglio con i font di LaTeX (es. Computer Modern)
-        'font.size': 11, 
-        'axes.titlesize': 13, 
-        'axes.labelsize': 11,
+        'font.size': 16, 
+        'axes.titlesize': 16, 
+        'axes.labelsize': 16,
         'xtick.labelsize': 11, 
         'ytick.labelsize': 11, 
-        'legend.fontsize': 10,
+        'legend.fontsize': 16,
+        'legend.title_fontsize': 16,
         'lines.linewidth': 2.0,
         
         # Dimensioni

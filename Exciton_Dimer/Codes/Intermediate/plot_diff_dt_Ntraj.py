@@ -45,7 +45,7 @@ N_TRAJ_CONV = 10000                         # <-- CAMBIA QUI se serve
 
 # ---- Plot D: singole traiettorie vs sistema isolato ----
 DT_SINGLE = 0.01                            # <-- CAMBIA QUI se serve
-N_TRAJ_SINGLE = 10000                       # <-- deve essere un file gia' calcolato
+N_TRAJ_SINGLE = 1000                       # <-- deve essere un file gia' calcolato
 N_TRAJ_TO_PLOT = 10                         # <-- quante traiettorie individuali mostrare (<= N_SINGLE_TRAJ_SAVE)
 
 MODE_LABEL = "single_theta_sweep"
@@ -152,31 +152,31 @@ def load_single_trajs_and_isolated(theta_str, dt, N_traj, site_index):
     return times, single_trajs, pop_isolated
 
 
-# # ============================================================
-# #         PLOT A: confronto al variare di N_traj (dt fisso)
-# # ============================================================
-# plt.close('all')
-# figA, axA = plt.subplots()
+# ============================================================
+#         PLOT A: confronto al variare di N_traj (dt fisso)
+# ============================================================
+plt.close('all')
+figA, axA = plt.subplots()
 
-# for N_traj in N_TRAJ_SWEEP:
-#     times, avg_pop = load_population(theta_str, DT_FIXED, N_traj, site_index)
-#     if times is None:
-#         continue
-#     axA.plot(times, avg_pop, label=fr'$N_{{traj}}={N_traj}$', linewidth=1.2)
+for N_traj in N_TRAJ_SWEEP:
+    times, avg_pop = load_population(theta_str, DT_FIXED, N_traj, site_index)
+    if times is None:
+        continue
+    axA.plot(times, avg_pop, label=fr'$N_{{traj}}={N_traj}$')
 
-# # Baseline Lindblad (non dipende da N_traj, presa dal primo file disponibile)
-# times_lind, pop_lind = load_lindblad(theta_str, DT_FIXED, N_TRAJ_SWEEP[0], site_index)
-# if times_lind is not None:
-#     axA.plot(times_lind, pop_lind, label='Lindblad', color='black', linestyle='--', linewidth=1.2)
+# Baseline Lindblad (non dipende da N_traj, presa dal primo file disponibile)
+times_lind, pop_lind = load_lindblad(theta_str, DT_FIXED, N_TRAJ_SWEEP[0], site_index)
+if times_lind is not None:
+    axA.plot(times_lind, pop_lind, label='Lindblad', color='black', linestyle='--')
 
-# # axA.set_xlim(55, 65)  # Zoom su un intervallo di tempo specifico
-# # axA.set_ylim(0.4, 0.6)    # Limiti dell'asse y per chiarezza
-# axA.set_xlabel(r'Time [1/V]')
-# axA.set_ylabel(r'Population $|1\rangle$')
-# axA.legend(title=fr"$dt = {DT_FIXED}$", title_fontsize=11)
+axA.set_xlim(60, 80)  # Zoom su un intervallo di tempo specifico
+axA.set_ylim(0.4, 0.6)    # Limiti dell'asse y per chiarezza
+axA.set_xlabel(r'Time [1/V]')
+axA.set_ylabel(r'Population $|1\rangle$')
+axA.legend(title=fr"$dt = {DT_FIXED}$", loc='upper right')
 
 # save_fig(figA, f"Ntraj_sweep_Theta_{theta_str}_dt{str(DT_FIXED).replace('.', 'p')}", Output_dir)
-# # save_fig(figA, f"ZOOM_Ntraj_sweep_Theta_{theta_str}_dt{str(DT_FIXED).replace('.', 'p')}", Output_dir)
+save_fig(figA, f"ZOOM_Ntraj_sweep_Theta_{theta_str}_dt{str(DT_FIXED).replace('.', 'p')}", Output_dir)
 
 
 # # ============================================================
@@ -206,33 +206,33 @@ def load_single_trajs_and_isolated(theta_str, dt, N_traj, site_index):
 # # save_fig(figB, f"ZOOM_dt_sweep_Theta_{theta_str}_Ntraj{N_TRAJ_FIXED}", Output_dir)
 
 
-# ============================================================
-#         PLOT C: convergenza Lindblad / traccia / media WF
-#                 per una singola coppia (dt, N_traj)
-# ============================================================
-plt.close('all')
-figC, axC = plt.subplots()
+# # ============================================================
+# #         PLOT C: convergenza Lindblad / traccia / media WF
+# #                 per una singola coppia (dt, N_traj)
+# # ============================================================
+# plt.close('all')
+# figC, axC = plt.subplots()
 
-times_conv, avg_pop_conv = load_population(theta_str, DT_CONV, N_TRAJ_CONV, site_index)
-times_lind_c, pop_lind_c = load_lindblad(theta_str, DT_CONV, N_TRAJ_CONV, site_index)
-times_trace_c, pop_trace_c = load_trace_ancilla(theta_str, DT_CONV, N_TRAJ_CONV, site_index)
+# times_conv, avg_pop_conv = load_population(theta_str, DT_CONV, N_TRAJ_CONV, site_index)
+# times_lind_c, pop_lind_c = load_lindblad(theta_str, DT_CONV, N_TRAJ_CONV, site_index)
+# times_trace_c, pop_trace_c = load_trace_ancilla(theta_str, DT_CONV, N_TRAJ_CONV, site_index)
 
-if pop_lind_c is not None:
-    axC.plot(times_lind_c, pop_lind_c, label='Lindblad', color='black', linestyle='--', linewidth=1.2)
+# if pop_lind_c is not None:
+#     axC.plot(times_lind_c, pop_lind_c, label='Lindblad', color='black', linestyle='--', linewidth=2.0)
 
-if pop_trace_c is not None:
-    axC.plot(times_trace_c, pop_trace_c, label='Ancilla trace', linestyle=':', linewidth=1.2)
+# if pop_trace_c is not None:
+#     axC.plot(times_trace_c, pop_trace_c, label='Ancilla trace', color='green', linewidth=1.2)
 
-if avg_pop_conv is not None:
-    axC.plot(times_conv, avg_pop_conv, label='Avg trajectories', alpha=0.7, linewidth=1.2)
+# if avg_pop_conv is not None:
+#     axC.plot(times_conv, avg_pop_conv, label='Avg trajectories', color='#0072B2', alpha=0.7, linewidth=2.0)
 
 # axC.set_xlim(55, 65)  # Zoom su un intervallo di tempo specifico
-# axC.set_ylim(0.4, 0.6)    # Limiti dell'asse y per chiarezza
-axC.set_xlabel(r'Time [1/V]')
-axC.set_ylabel(r'Population $|1\rangle$')
-axC.legend(title=fr"$dt = {DT_CONV}$, $N_{{traj}} = {N_TRAJ_CONV}$", title_fontsize=11)
+# axC.set_ylim(0.45, 0.55)    # Limiti dell'asse y per chiarezza
+# axC.set_xlabel(r'Time [1/V]')
+# axC.set_ylabel(r'Population $|1\rangle$')
+# axC.legend(title=fr"$dt = {DT_CONV}$, $N_{{traj}} = {N_TRAJ_CONV}$", title_fontsize=16)
 
-save_fig(figC, f"Convergence_Theta_{theta_str}_dt{str(DT_CONV).replace('.', 'p')}_Ntraj{N_TRAJ_CONV}", Output_dir)
+# # save_fig(figC, f"Convergence_Theta_{theta_str}_dt{str(DT_CONV).replace('.', 'p')}_Ntraj{N_TRAJ_CONV}", Output_dir)
 # save_fig(figC, f"ZOOM_Convergence_Theta_{theta_str}_dt{str(DT_CONV).replace('.', 'p')}_Ntraj{N_TRAJ_CONV}", Output_dir)
 
 

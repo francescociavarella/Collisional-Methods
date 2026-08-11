@@ -50,7 +50,7 @@ THETA_COLOR_MAP = {
     30.0: '#009E73',   # verde
     45.0: '#AE7F26',   # ocra/marrone
     60.0: '#CC79A7',   # rosa/magenta
-    90.0: '#D55E00',   # rosso/arancione (quantum jump)
+    90.0: "#D51500",   # rosso/arancione (quantum jump)
 }
 
 
@@ -81,10 +81,10 @@ def load_theta_data(theta_target_deg, site_index, single_traj_index):
     return times, pop_iso, single_traj
 
 
-def plot_single_panel(ax, theta_target_deg, site_index, single_traj_index):
+def plot_single_panel(ax, theta_target_deg, site_index, single_traj_index, legend_size=12, show_labels=True):
     """
-    Disegna, su un singolo asse, la traiettoria collisionale singola e
-    quella del sistema isolato per un dato angolo.
+    Draws the single collisional trajectory and the isolated system 
+    trajectory for a given angle on a single axis.
     """
     result = load_theta_data(theta_target_deg, site_index, single_traj_index)
     if result is None:
@@ -95,58 +95,94 @@ def plot_single_panel(ax, theta_target_deg, site_index, single_traj_index):
 
     traj_color = THETA_COLOR_MAP.get(theta_target_deg, 'tab:blue')
 
-    ax.plot(times, single_traj, label='Collisional', linewidth=1.5, color=traj_color)
-    ax.plot(times, pop_iso, label='Isolated', linewidth=1.2, linestyle='--', color=ISOLATED_COLOR)
+    ax.plot(times, single_traj, label='Collisional', linewidth=2.0, color=traj_color)
+    ax.plot(times, pop_iso, label='Isolated', linewidth=1.5, linestyle='--', color='black', alpha=0.7)
 
     ax.set_xlim(0, 50)
 
-    ax.set_xlabel('Time')
-    ax.set_ylabel(r'Population $|1\rangle$')
-    ax.legend(title=fr"$\theta = {theta_target_deg}^\circ$", title_fontsize=10, fontsize=9, loc='upper left')
+    # Add labels only if show_labels is True
+    if show_labels:
+        ax.set_xlabel(r'Time [1/V]')
+        ax.set_ylabel(r'Population $|1\rangle$')
+    
+    ax.legend(title=fr"$\theta = {theta_target_deg}^\circ$", loc='upper left', 
+              fontsize=legend_size, title_fontsize=legend_size)
 
+# # =========================================================
+# # FIGURA A GRIGLIA: 3 subplot sopra, 2 subplot sotto, stessa dimensione,
+# # con i 2 in basso centrati rispetto ai 3 in alto.
+# # =========================================================
+# plt.close('all')
+# fig = plt.figure(figsize=(15, 8))
+
+# # Griglia 2x6: ogni subplot (sopra e sotto) occupa 2 colonne su 6,
+# # quindi tutti i pannelli hanno la stessa larghezza.
+# # Sopra: colonne [0:2], [2:4], [4:6] -> 3 pannelli affiancati, nessun offset.
+# # Sotto: colonne [1:3], [3:5] -> 2 pannelli della stessa larghezza (2 colonne),
+# # spostati di 1 colonna per risultare centrati rispetto ai 3 di sopra.
+# gs = fig.add_gridspec(2, 6)
+
+# ax_top = [fig.add_subplot(gs[0, 0:2]),
+#           fig.add_subplot(gs[0, 2:4]),
+#           fig.add_subplot(gs[0, 4:6])]
+
+# ax_bottom = [fig.add_subplot(gs[1, 1:3]),
+#              fig.add_subplot(gs[1, 3:5])]
+
+# for ax, theta_deg in zip(ax_top, THETA_TOP_DEG):
+#     plot_single_panel(ax, theta_deg, site_index, single_traj_index)
+
+# for ax, theta_deg in zip(ax_bottom, THETA_BOTTOM_DEG):
+#     plot_single_panel(ax, theta_deg, site_index, single_traj_index)
+
+# save_fig(fig, f"Collisional_vs_Isolated_Grid_dt{dt_str}", Output_dir)
+
+# print("Plot a griglia completato e salvato in:", Output_dir)
+
+
+# # =========================================================
+# # SINGLE FIGURES: theta = 0° and theta = 90°
+# # =========================================================
+# for theta_deg in [0.0, 90.0]:
+#     plt.close('all')
+#     fig_single, ax_single = plt.subplots()
+
+#     # Pass legend_size=14 specifically for these single plots
+#     plot_single_panel(ax_single, theta_deg, site_index, single_traj_index, legend_size=16)
+
+#     theta_deg_str = str(int(theta_deg)) if float(theta_deg).is_integer() else str(theta_deg)
+#     save_fig(fig_single, f"Collisional_vs_Isolated_Theta{theta_deg_str}_dt{dt_str}", Output_dir)
+
+# print("Single plots completed and saved in:", Output_dir)
 
 # =========================================================
-# FIGURA A GRIGLIA: 3 subplot sopra, 2 subplot sotto, stessa dimensione,
-# con i 2 in basso centrati rispetto ai 3 in alto.
+# VERTICAL STACKED FIGURE: 5 subplots with common axes
 # =========================================================
 plt.close('all')
-fig = plt.figure(figsize=(15, 8))
 
-# Griglia 2x6: ogni subplot (sopra e sotto) occupa 2 colonne su 6,
-# quindi tutti i pannelli hanno la stessa larghezza.
-# Sopra: colonne [0:2], [2:4], [4:6] -> 3 pannelli affiancati, nessun offset.
-# Sotto: colonne [1:3], [3:5] -> 2 pannelli della stessa larghezza (2 colonne),
-# spostati di 1 colonna per risultare centrati rispetto ai 3 di sopra.
-gs = fig.add_gridspec(2, 6)
+ALL_THETA_DEG = THETA_TOP_DEG + THETA_BOTTOM_DEG 
 
-ax_top = [fig.add_subplot(gs[0, 0:2]),
-          fig.add_subplot(gs[0, 2:4]),
-          fig.add_subplot(gs[0, 4:6])]
+# Create a figure with 5 rows. 
+# sharex=True ensures only the bottom plot has x-axis tick labels.
+fig_stacked, axes_stacked = plt.subplots(nrows=5, ncols=1, figsize=(10, 20), sharex=True)
 
-ax_bottom = [fig.add_subplot(gs[1, 1:3]),
-             fig.add_subplot(gs[1, 3:5])]
+# Iterate through the axes and plot data without individual labels
+for ax, theta_deg in zip(axes_stacked, ALL_THETA_DEG):
+    plot_single_panel(ax, theta_deg, site_index, single_traj_index, legend_size=16, show_labels=False)
 
-for ax, theta_deg in zip(ax_top, THETA_TOP_DEG):
-    plot_single_panel(ax, theta_deg, site_index, single_traj_index)
+# Remove vertical space between subplots for a cleaner shared-axis look
+plt.subplots_adjust(hspace=0.0)
 
-for ax, theta_deg in zip(ax_bottom, THETA_BOTTOM_DEG):
-    plot_single_panel(ax, theta_deg, site_index, single_traj_index)
+# Set common X and Y labels for the entire figure
+# Adjust the font size as needed to match your style
+fig_stacked.supxlabel(r'Time [1/V]', fontsize=20)
+fig_stacked.supylabel(r'Population $|1\rangle$', fontsize=20)
 
-save_fig(fig, f"Collisional_vs_Isolated_Grid_dt{dt_str}", Output_dir)
+# Note: when using supxlabel/supylabel and hspace=0, tight_layout might sometimes conflict.
+# If labels are cut off, comment out tight_layout or use it before setting the common labels.
+plt.tight_layout() 
 
-print("Plot a griglia completato e salvato in:", Output_dir)
+# Save the stacked figure
+save_fig(fig_stacked, f"Collisional_vs_Isolated_Stacked_Shared_dt{dt_str}", Output_dir)
 
-
-# =========================================================
-# FIGURE SINGOLE: theta = 0° e theta = 90°
-# =========================================================
-for theta_deg in [0.0, 90.0]:
-    plt.close('all')
-    fig_single, ax_single = plt.subplots()
-
-    plot_single_panel(ax_single, theta_deg, site_index, single_traj_index)
-
-    theta_deg_str = str(int(theta_deg)) if float(theta_deg).is_integer() else str(theta_deg)
-    save_fig(fig_single, f"Collisional_vs_Isolated_Theta{theta_deg_str}_dt{dt_str}", Output_dir)
-
-print("Plot singoli completati e salvati in:", Output_dir)
+print("Stacked vertical plots with common axes completed and saved in:", Output_dir)
