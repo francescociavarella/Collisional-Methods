@@ -5,7 +5,7 @@ def set_thesis_style():
     """Applica le impostazioni di stile globali per i grafici della tesi."""
     
     # Palette di colori ad alto contrasto (Colorblind-friendly)
-    my_palette = ['#0072B2', '#D55E00', '#009E73', '#F0E442', '#CC79A7']
+    my_palette = ['#0072B2', "#D51500", "#AE7F26", '#009E73', '#CC79A7']
     
     plt.rcParams.update({
         # Font e testi
@@ -16,6 +16,7 @@ def set_thesis_style():
         'xtick.labelsize': 11, 
         'ytick.labelsize': 11, 
         'legend.fontsize': 10,
+        'lines.linewidth': 2.0,
         
         # Dimensioni
         'figure.figsize': (10, 5), 

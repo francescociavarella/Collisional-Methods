@@ -29,7 +29,7 @@ print(f"\n🚀 STARTING POPULATION ANALYSIS FOR THETA = {theta_target_deg}° ({M
 theta_rad = np.radians(theta_target_deg)
 
 # Site selector: 0 for |10>, 1 for |01>
-site_index = 0
+site_index = 1
 dt = 0.01
 
 # Number of trajectories for the ensemble average
@@ -108,24 +108,24 @@ else:
 
 # Mathematically invert the angle 
 # This works for 0.0, 90.0, and any intermediate angle
-theta_deg = 90.0 - theta_target_deg
+theta_deg = theta_target_deg
 
-# =================================================
-# Plot 1: Convergence Avg vs Trace vs Lindblad
-# =================================================
-plt.close('all')
-fig01, ax = plt.subplots()
-ax.plot(times, pop_lindblad, label=r'Lindblad', linewidth=2, linestyle='--')
-ax.plot(times, pops_trace[site_index, :], label=r'Anc_trace', linewidth=2, linestyle=':')
-ax.plot(times, avg_pop, label=r'Avg_traj', linewidth=2, alpha=0.5)
+# # =================================================
+# # Plot 1: Convergence Avg vs Trace vs Lindblad
+# # =================================================
+# plt.close('all')
+# fig01, ax = plt.subplots()
+# ax.plot(times, pop_lindblad, label=r'Lindblad', linewidth=2, linestyle='--')
+# ax.plot(times, pops_trace[site_index, :], label=r'Anc_trace', linewidth=2, linestyle=':')
+# ax.plot(times, avg_pop, label=r'Avg_traj', linewidth=2, alpha=0.5)
 
-# ax.set_title(f'Comparison Lindblad, Trace, Avg Trajectories | $\\theta$={theta_deg}°')
-ax.set_xlabel('Time')
-ax.set_ylabel(f'Population {label_site}')
-# Add the theta value as the title of the legend
-ax.legend(title=fr"$\theta = {theta_deg}^\circ$", title_fontsize=11)
+# # ax.set_title(f'Comparison Lindblad, Trace, Avg Trajectories | $\\theta$={theta_deg}°')
+# ax.set_xlabel('Time')
+# ax.set_ylabel(f'Population {label_site}')
+# # Add the theta value as the title of the legend
+# ax.legend(title=fr"$\theta = {theta_deg}^\circ$", title_fontsize=11)
 
-save_fig(fig01, f"Convergence_Analysis_Theta_{theta_str}", Output_dir)
+# save_fig(fig01, f"Convergence_Analysis_Theta_{theta_str}", Output_dir)
 
 # =================================================
 # Plot 2: Collisional vs Isolated Trajectories
@@ -143,26 +143,26 @@ ax.legend(title=fr"$\theta = {theta_deg}^\circ$", title_fontsize=11)
 
 save_fig(fig02, f"Collisional_vs_Isolated_Theta_{theta_str}", Output_dir)
 
-# ===================================================
-# Plot 3: Single Trajectories vs Average vs Lindblad
-# ===================================================
-plt.close('all')
-fig03, ax = plt.subplots()
-# Plot the background spaghetti trajectories
-for i in range(20):
-    ax.plot(times, single_trajs[:, i], color='gray', alpha=0.15, linewidth=0.5, 
-             label='Single Traj' if i==0 else "")
+# # ===================================================
+# # Plot 3: Single Trajectories vs Average vs Lindblad
+# # ===================================================
+# plt.close('all')
+# fig03, ax = plt.subplots()
+# # Plot the background spaghetti trajectories
+# for i in range(20):
+#     ax.plot(times, single_trajs[:, i], color='gray', alpha=0.15, linewidth=0.5, 
+#              label='Single Traj' if i==0 else "")
 
-ax.plot(times, pop_lindblad, label=r'Lindblad', linewidth=2, linestyle='--', color='blue')
-ax.plot(times, avg_pop, label=r'Avg_traj', linewidth=2, color='red')
+# ax.plot(times, pop_lindblad, label=r'Lindblad', linewidth=2, linestyle='--', color='blue')
+# ax.plot(times, avg_pop, label=r'Avg_traj', linewidth=2, color='red')
 
-#ax.set_title(f'Single Trajectories vs Average vs Lindblad | $\\theta$={theta_deg}°')
-ax.set_xlabel('Time')
-ax.set_ylabel(f'Population {label_site}')
-# Add the theta value as the title of the legend
-ax.legend(title=fr"$\theta = {theta_deg}^\circ$", title_fontsize=11)
+# #ax.set_title(f'Single Trajectories vs Average vs Lindblad | $\\theta$={theta_deg}°')
+# ax.set_xlabel('Time')
+# ax.set_ylabel(f'Population {label_site}')
+# # Add the theta value as the title of the legend
+# ax.legend(title=fr"$\theta = {theta_deg}^\circ$", title_fontsize=11)
 
-save_fig(fig03, f"SingleTraj_vs_Avg_vs_Lindblad_Theta_{theta_str}", Output_dir)
+# save_fig(fig03, f"SingleTraj_vs_Avg_vs_Lindblad_Theta_{theta_str}", Output_dir)
 
 print(f"All Population plots successfully generated for {theta_target_deg}°!\n")
 
