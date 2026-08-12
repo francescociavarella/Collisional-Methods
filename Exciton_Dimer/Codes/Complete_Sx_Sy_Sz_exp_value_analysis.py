@@ -29,6 +29,32 @@ from plot_style import set_thesis_style, save_fig
 set_thesis_style()
 
 
+# ==========================================
+# FIXED COLOR MAP (per target theta angle)
+# ==========================================
+# Same palette used in the Trace Distance analysis script, kept consistent
+# across the whole project so figures for the same angle are recognizable.
+THETA_COLOR_MAP = {
+    90: '#0072B2',
+    0:  '#D55E00',
+    60: '#009E73',
+    45: '#F0E442',
+    30: '#CC79A7',
+}
+
+
+def get_theta_color(theta_target_deg, default='black'):
+    """Returns the fixed color assigned to a given target theta angle (degrees)."""
+    theta_key = int(round(theta_target_deg))
+    return THETA_COLOR_MAP.get(theta_key, default)
+
+
+# Uniform styling constants used throughout all plots below
+LINEWIDTH = 2.0
+LABEL_FONTSIZE = 16
+LEGEND_FONTSIZE = 16
+
+
 # In[3]:
 
 
@@ -102,6 +128,9 @@ print("="*50 + "\n")
 theta_rad = np.radians(theta_target_deg)
 
 theta_deg = 90 - theta_target_deg  # Adjusted angle for calculations
+
+# Fixed color assigned to this angle (used across all figures below)
+color_theta = get_theta_color(theta_target_deg)
 
 # Site selector: 0 for |10>, 1 for |01>
 site_index = 0
@@ -410,19 +439,15 @@ for traj_matrix, lind_array, label, file_suffix in zip(trajectory_matrices, lind
         # Calculate the mean over the first N trajectories along the columns (axis=1)
         avg_traj = np.mean(traj_matrix[:, :N], axis=1)
         
-        # Dynamic styling: make the curve for 10000 trajectories fully opaque and thicker
-        alpha_val = 0.6 if N < 10000 else 1.0
-        lw = 1.5 if N < 10000 else 2.5
-        
-        ax.plot(times, avg_traj, label=f'Avg N = {N}', alpha=alpha_val, linewidth=lw)
+        ax.plot(times, avg_traj, label=f'Avg N = {N}', color=color_theta, linewidth=LINEWIDTH)
     
     # Plot the exact Lindblad solution as a dashed black line for comparison
-    ax.plot(times, lind_array, label='Lindblad (Exact)', color='black', linestyle='--', linewidth=2.0)
+    ax.plot(times, lind_array, label='Lindblad (Exact)', color='black', linestyle='--', linewidth=LINEWIDTH)
     
     # Apply labels, legend and dynamic title
-    ax.set_xlabel("Time steps")
-    ax.set_ylabel(fr"Expectation Value $\langle {label} \rangle$")
-    ax.legend(title=fr"$\theta = {theta_deg}^\circ$", title_fontsize=11)
+    ax.set_xlabel("Time steps", fontsize=LABEL_FONTSIZE)
+    ax.set_ylabel(fr"Expectation Value $\langle {label} \rangle$", fontsize=LABEL_FONTSIZE)
+    ax.legend(title=fr"$\theta = {theta_deg}^\circ$", title_fontsize=LEGEND_FONTSIZE, fontsize=LEGEND_FONTSIZE)
     # ax.grid(alpha=0.4, linestyle='--')
     fig.tight_layout()
     
@@ -459,17 +484,21 @@ for N in Var_N_traj:
 
     fig, ax = plt.subplots(figsize=(10, 6))
 
-    # Plot the three variances
-    ax.plot(times, variance_sx, label=r'Variance of $\langle \sigma_x \rangle$', color='dodgerblue', linewidth=2)
-    ax.plot(times, variance_sy, label=r'Variance of $\langle \sigma_y \rangle$', color='mediumseagreen', linewidth=2, alpha=0.8)
-    ax.plot(times, variance_sz, label=r'Variance of $\langle \sigma_z \rangle$', color='crimson', linewidth=2)
+    # Plot the three variances using the theta color, differentiated by linestyle
+    # (solid / dashed / dotted) since all three share the same color.
+    ax.plot(times, variance_sx, label=r'Variance of $\langle \sigma_x \rangle$',
+            color=color_theta, linestyle='-', linewidth=LINEWIDTH)
+    ax.plot(times, variance_sy, label=r'Variance of $\langle \sigma_y \rangle$',
+            color=color_theta, linestyle='-', linewidth=LINEWIDTH)
+    ax.plot(times, variance_sz, label=r'Variance of $\langle \sigma_z \rangle$',
+            color=color_theta, linestyle='-', linewidth=LINEWIDTH)
 
     # Set labels and dynamic titles
-    ax.set_xlabel("Time steps")
-    ax.set_ylabel("Variance")
+    ax.set_xlabel(r"Time [1/V]", fontsize=LABEL_FONTSIZE)
+    ax.set_ylabel("Var(t)", fontsize=LABEL_FONTSIZE)
     # ax.set_title(f"Variance of Pauli Expectation Values over Time | $\\theta$ = {theta_target_deg}°, N_traj = {max_N}")
     # ax.grid(alpha=0.4, linestyle='--')
-    ax.legend(title=fr"$\theta = {theta_deg}^\circ$", title_fontsize=11)
+    ax.legend(title=fr"$\theta = {theta_deg}^\circ$", title_fontsize=LEGEND_FONTSIZE, fontsize=LEGEND_FONTSIZE)
 
     fig.tight_layout()
 
@@ -515,4 +544,3 @@ for N in Var_N_traj:
 # print(f"✅ Complete Sx data and variance successfully saved in: {filepath_sx}")
 # print(f"✅ Complete Sy data and variance successfully saved in: {filepath_sy}")
 # print(f"✅ Complete Sz data and variance successfully saved in: {filepath_sz}")
-
