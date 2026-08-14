@@ -659,7 +659,7 @@ if __name__ == "__main__":
     # =========================
     # Time Evolution Parameters
     # =========================
-    dt_list = [0.01]     # change : time step
+    dt_list = [0.0012]     # change : time step
     tf = 100.0    # Final Time
     steps_list = [int(tf / dt_list[i]) for i in range(len(dt_list))]
     times_list = [np.linspace(0, tf, int(steps_list[i])) for i in range(len(dt_list))]
@@ -669,7 +669,7 @@ if __name__ == "__main__":
     # ==========================
     # Salvataggio sottocampionato
     # ==========================
-    SAVE_STRIDE = 10          # salva la densita' ogni 10 step (ogni 0.1 in tempo, con dt=0.01)
+    SAVE_STRIDE = 50          # salva la densita' ogni 50 step (ogni 0.06 in tempo, con dt=0.0012)
     SAVE_DTYPE = np.complex64  # complex64 dimezza lo spazio su disco rispetto a complex128
 
     # ===================
