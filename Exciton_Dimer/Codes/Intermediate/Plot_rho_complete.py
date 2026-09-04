@@ -116,7 +116,7 @@ theta_deg = theta_target_deg
 # plt.close('all')
 # fig01, ax = plt.subplots()
 # ax.plot(times, pop_lindblad, label=r'Lindblad', linewidth=2, linestyle='--')
-# ax.plot(times, pops_trace[site_index, :], label=r'Anc_trace', linewidth=2, linestyle=':')
+# ax.plot(times, pops_trace[site_index, :], label=r'AS_trace', linewidth=2, linestyle=':')
 # ax.plot(times, avg_pop, label=r'Avg_traj', linewidth=2, alpha=0.5)
 
 # # ax.set_title(f'Comparison Lindblad, Trace, Avg Trajectories | $\\theta$={theta_deg}°')

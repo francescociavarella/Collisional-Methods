@@ -15,7 +15,7 @@ from numba import njit
 from scipy.stats import skew, kurtosis
 
 # Import custom thesis style and saving function
-from plot_style import set_thesis_style, save_fig
+from plot_style import set_thesis_style, save_fig, get_angle_color, get_angle_gradient
 
 # Apply global thesis style settings
 set_thesis_style()
@@ -126,18 +126,71 @@ def total_variance_coherence(psi_m, psi_n, pop_m, pop_n, part='real'):
 # ==========================
 
 def plot_ltv_panel(ax, times, var_exact, var_stat, var_quant, var_sum, ylabel,
-                    show_legend=False, theta_deg=None):
+                    show_legend=False, theta_deg=None, legend_loc='upper right'):
+    # Colore statistico legato all'angolo (get_angle_color) e colore quantistico
+    # come sfumatura piu' chiara della stessa famiglia (get_angle_gradient),
+    # cosi' Statistical e Quantum Variance restano nella stessa tonalita' ma
+    # distinguibili tra loro. Se theta_deg non e' disponibile, fallback ai
+    # colori fissi originali (rosso/blu).
+    if theta_deg is not None:
+        stat_color = get_angle_color(theta_deg)
+        quant_color = get_angle_gradient(theta_deg, 2)[0]  # tonalita' piu' chiara della stessa famiglia
+    else:
+        stat_color = 'red'
+        quant_color = 'blue'
+
     ax.plot(times, var_exact, color='black', linewidth=3, linestyle='--', label='Total Variance (Redfield)')
-    ax.plot(times, var_stat, color='red', linewidth=2, alpha=0.8, label='Statistical Variance')
-    ax.plot(times, var_quant, color='blue', linewidth=2, alpha=0.8, label='Quantum Variance')
+    ax.plot(times, var_stat, color=stat_color, linewidth=2, alpha=0.9, label='Statistical Variance')
+    ax.plot(times, var_quant, color=quant_color, linewidth=2, alpha=0.9, label='Quantum Variance')
     ax.plot(times, var_sum, color='limegreen', linewidth=3, linestyle=':', label='Sum (Stat + Quant)')
     ax.set_ylabel(ylabel)
-    
+
     if show_legend:
         if theta_deg is not None:
-            ax.legend(title=fr"$\theta = {theta_deg}^\circ$", loc='upper right', title_fontsize=11)
+            ax.legend(title=fr"$\theta = {theta_deg}^\circ$", loc=legend_loc)
         else:
-            ax.legend(loc='upper right')
+            ax.legend(loc=legend_loc)
+
+
+def compute_top_margin(fig_height_inches, reserved_inches=1.0, min_margin=0.5, max_margin=0.97):
+    """
+    Calcola il bordo superiore (in frazione di figura, 0-1) da riservare per
+    una legenda condivisa sopra i pannelli, in modo che l'altezza ASSOLUTA
+    riservata (in pollici) resti approssimativamente costante indipendentemente
+    dall'altezza della figura: figure alte (griglie a piu' righe) riservano
+    una frazione piccola; figure corte (poche righe) una frazione maggiore,
+    ma lo spazio fisico per la legenda resta simile in entrambi i casi.
+    """
+    margin = 1.0 - reserved_inches / fig_height_inches
+    return min(max(margin, min_margin), max_margin)
+
+
+def add_shared_legend(fig, source_ax, theta_deg, reserved_inches=1.0):
+    """
+    Aggiunge un'UNICA legenda condivisa per l'intera figura, orizzontale su
+    una sola riga, in una fascia RISERVATA sopra i pannelli (invece di una
+    legenda dentro ogni singolo pannello, che con piu' pannelli risulta
+    ripetuta e ingombrante).
+
+    fig.tight_layout(rect=(0, 0, 1, top_margin)) restringe esplicitamente
+    l'area occupata dagli assi, lasciando una fascia libera sopra in cui la
+    legenda viene poi posizionata: questo evita qualunque sovrapposizione
+    con i tick label o le curve dei pannelli superiori, indipendentemente
+    da quanto la griglia sia fitta o quanto sia alta la figura (il margine
+    e' calcolato dinamicamente da compute_top_margin in base all'altezza
+    reale della figura).
+
+    Le voci vengono lette da 'source_ax' (un Axes qualsiasi gia' popolato
+    con le curve, es. il primo pannello), assumendo che tutti i pannelli
+    della figura condividano lo stesso set di curve/etichette.
+    """
+    fig_height = fig.get_size_inches()[1]
+    top_margin = compute_top_margin(fig_height, reserved_inches=reserved_inches)
+    handles, labels = source_ax.get_legend_handles_labels()
+    fig.tight_layout(rect=(0, 0, 1, top_margin))
+    legend_y = top_margin + (1.0 - top_margin) * 0.5 + 0.02
+    fig.legend(handles, labels, title=fr"$\theta = {theta_deg}^\circ$",
+               loc='upper center', bbox_to_anchor=(0.5, legend_y), ncol=len(handles), frameon=False)
 
 
 def analyze_population_ltv(times, pop_traj, rho_redfield, N_states, basis_name,
@@ -162,23 +215,81 @@ def analyze_population_ltv(times, pop_traj, rho_redfield, N_states, basis_name,
         max_err = np.max(np.abs(var_tot_exact - var_tot_traj))
         print(f"  -> {state_label} {i + 1} Law of Total Variance max error: {max_err:.2e}")
 
+        # Notazione a ket per l'asse y SOLO in base eccitone (state_label ==
+        # "Exciton"): la base di sito resta con l'etichetta 'Site i' invariata.
+        if state_label == "Exciton":
+            panel_ylabel = fr'Exciton $|{i + 1}\rangle$'
+        else:
+            panel_ylabel = f'{state_label} {i + 1}'
+
         plot_ltv_panel(
             axes[i], times, var_tot_exact, var_stat, var_quant, var_tot_traj,
-            ylabel=f'{state_label} {i + 1}',
-            show_legend=(i == 0),
+            ylabel=panel_ylabel,
+            show_legend=False,
             theta_deg=theta_deg
         )
-        axes[i].set_xlabel('Time (fs)')
+        axes[i].set_xlabel('Time (ps)')
 
-    fig.tight_layout()
+    add_shared_legend(fig, axes[0], theta_deg)
     save_fig(fig, f'Law_Total_Variance_{basis_name.replace(" ", "_")}_Theta_{theta_str}', output_dir)
+
+
+def analyze_selected_population_ltv(times, pop_traj, rho_redfield, selected_indices, state_label,
+                                     theta_deg, theta_str, output_dir, basis_name):
+    """
+    Population LTV plot ristretto a un sottoinsieme di stati (es. Exciton 3, 6, 7),
+    mostrato come N pannelli affiancati (invece della griglia 4-in-alto/3-in-basso
+    usata per tutti gli stati). Legenda UNICA e condivisa, orizzontale, su
+    un'unica riga sopra i pannelli (invece di una legenda dentro il primo
+    pannello, che con 4 voci risultava troppo invadente rispetto ai dati).
+    """
+    N_states = pop_traj.shape[0]
+    n_sel = len(selected_indices)
+
+    fig, axes = plt.subplots(1, n_sel, figsize=(6 * n_sel, 5))
+    if n_sel == 1:
+        axes = [axes]
+
+    for panel_idx, i in enumerate(selected_indices):
+        var_tot_traj, var_quant, var_stat = total_variance_projector(pop_traj[i])
+
+        O_pop = np.zeros((N_states, N_states), dtype=np.complex128)
+        O_pop[i, i] = 1.0
+        var_tot_exact = get_exact_variance(O_pop, rho_redfield)
+
+        max_err = np.max(np.abs(var_tot_exact - var_tot_traj))
+        print(f"  -> {state_label} {i + 1} (selected) Law of Total Variance max error: {max_err:.2e}")
+
+        # Notazione a ket per l'asse y SOLO in base eccitone (state_label ==
+        # "Exciton"): la base di sito resta con l'etichetta 'Site i' invariata.
+        if state_label == "Exciton":
+            panel_ylabel = fr'Exciton $|{i + 1}\rangle$'
+        else:
+            panel_ylabel = f'{state_label} {i + 1}'
+
+        # show_legend=False su ogni pannello: la legenda viene aggiunta una
+        # sola volta, a livello di figura, subito dopo il ciclo.
+        plot_ltv_panel(
+            axes[panel_idx], times, var_tot_exact, var_stat, var_quant, var_tot_traj,
+            ylabel=panel_ylabel,
+            show_legend=False,
+            theta_deg=theta_deg
+        )
+        axes[panel_idx].set_xlabel('Time (ps)')
+
+    # Legenda condivisa dell'intera figura, su un'unica riga orizzontale
+    # (una voce per ciascuna delle 4 curve), posizionata sopra i tre
+    # pannelli cosi' non copre mai i dati. Stesso helper riutilizzato in
+    # tutte le funzioni di questo file, per coerenza visiva.
+    add_shared_legend(fig, axes[0], theta_deg)
+    save_fig(fig, f'Law_Total_Variance_{basis_name.replace(" ", "_")}_Selected_Theta_{theta_str}', output_dir)
 
 
 def analyze_coherence_ltv(times, psi_traj, pop_traj, rho_redfield, coherence_pairs, N_states,
                            theta_deg, theta_str, output_dir, basis_tag="", basis_title="Coherences"):
     """Coherence (real & imaginary quadrature) LTV plots using a centered 4-top / 3-bottom grid layout when n_pairs == 7."""
     n_pairs = len(coherence_pairs)
-    
+
     def create_grid_figure():
         if n_pairs == 7:
             fig = plt.figure(figsize=(20, 10))
@@ -219,18 +330,20 @@ def analyze_coherence_ltv(times, psi_traj, pop_traj, rho_redfield, coherence_pai
 
         plot_ltv_panel(
             axes_real[idx], times, vt_real_exact, vs_real, vq_real, vt_real,
-            ylabel=f'Re( $\\rho_{{{m + 1}{n + 1}}}$ )', show_legend=(idx == 0), theta_deg=theta_deg
+            ylabel=f'Re( $\\rho_{{{m + 1}{n + 1}}}$ )', show_legend=False, theta_deg=theta_deg
         )
         plot_ltv_panel(
             axes_imag[idx], times, vt_imag_exact, vs_imag, vq_imag, vt_imag,
-            ylabel=f'Im( $\\rho_{{{m + 1}{n + 1}}}$ )', show_legend=(idx == 0), theta_deg=theta_deg
+            ylabel=f'Im( $\\rho_{{{m + 1}{n + 1}}}$ )', show_legend=False, theta_deg=theta_deg
         )
 
-        axes_real[idx].set_xlabel('Time (fs)')
-        axes_imag[idx].set_xlabel('Time (fs)')
+        axes_real[idx].set_xlabel('Time (ps)')
+        axes_imag[idx].set_xlabel('Time (ps)')
 
-    fig_real.tight_layout()
-    fig_imag.tight_layout()
+    # Legenda condivisa per ciascuna delle due figure (Real e Imag sono
+    # figure separate, quindi ognuna riceve la propria legenda unica).
+    add_shared_legend(fig_real, axes_real[0], theta_deg)
+    add_shared_legend(fig_imag, axes_imag[0], theta_deg)
     save_fig(fig_real, f'Law_Total_Variance_Coherences{basis_tag}_REAL_Theta_{theta_str}', output_dir)
     save_fig(fig_imag, f'Law_Total_Variance_Coherences{basis_tag}_IMAG_Theta_{theta_str}', output_dir)
 
@@ -244,13 +357,13 @@ def plot_convergence(times, rho_redfield, rho_traj_avg, basis_name, theta_deg, t
     ax1.plot(times, trace_dist, color='darkorange', linewidth=2)
     ax1.set_ylabel('Trace Distance')
     ax1.axhline(0, color='black', linestyle=':', linewidth=1, alpha=0.6)
-    
+
     ax1.plot([], [], ' ', label=fr"$\theta = {theta_deg}^\circ$")
     ax1.legend(loc='best', frameon=False)
 
     ax2.plot(times, fidelity, color='teal', linewidth=2)
     ax2.set_ylabel('Fidelity')
-    ax2.set_xlabel('Time (fs)')
+    ax2.set_xlabel('Time (ps)')
     ax2.axhline(1, color='black', linestyle=':', linewidth=1, alpha=0.6)
 
     fig.tight_layout()
@@ -287,6 +400,11 @@ except FileNotFoundError:
 
 # Data Extraction
 times = data['times']
+# Conversione a picosecondi: 'times' nel file e' in femtosecondi, si divide
+# per 1000 per ottenere i ps. La conversione avviene UNA SOLA VOLTA qui, e
+# si propaga automaticamente a tutti i plot del file (asse x), dato che
+# tutte le funzioni di analisi ricevono questa stessa variabile 'times'.
+times = times / 1000.0
 dt_val = float(data['dt'])
 N_site = int(data['N_site'])
 eigenergies = data['eigenergies']
@@ -353,6 +471,22 @@ if rho_redfield_exc is not None:
     print("Computing Total Variance Theorem: Exciton Populations...")
     analyze_population_ltv(times, pop_traj_exc, rho_redfield_exc, N_site,
                             "Exciton_Populations", "Exciton", theta_deg, theta_str, Output_dir)
+
+# ---------------------------------------------------------
+# B2. Selected Exciton Populations (3, 6, 7)
+# ---------------------------------------------------------
+if rho_redfield_exc is not None:
+    print("Computing Total Variance Theorem: Selected Exciton Populations (3, 6, 7)...")
+    selected_exciton_indices = [2, 5, 6]  # Exciton 3, 6, 7 (indici array 0-based)
+    valid_selected_exciton_indices = [i for i in selected_exciton_indices if i < N_site]
+    if len(valid_selected_exciton_indices) < len(selected_exciton_indices):
+        skipped = [i + 1 for i in selected_exciton_indices if i not in valid_selected_exciton_indices]
+        print(f"Warning: skipping selected excitons {skipped} - out of range for N_site={N_site}")
+
+    if valid_selected_exciton_indices:
+        analyze_selected_population_ltv(times, pop_traj_exc, rho_redfield_exc,
+                                         valid_selected_exciton_indices, "Exciton",
+                                         theta_deg, theta_str, Output_dir, "Exciton_Populations")
 
 # ---------------------------------------------------------
 # C. Selected Coherences (Real and Imaginary Parts) - Site Basis

@@ -23,6 +23,15 @@ Reference for the "exact" Total Variance: rho_list_lindblad (n_times, 4, 4),
 the full-basis master-equation solution. pops_trace (populations from tracing
 out the ancilla in the full collisional Hamiltonian) is used as an
 independent secondary cross-check on the populations only.
+
+STYLE NOTE: Sections A/B/C (Population, Coherence, Bloch Vector LTV) use the
+plot_style.py conventions shared with the other case studies (theta-based
+colors, single shared horizontal legend above the panels). The statistical
+moments / convergence-check / cross-check plots earlier in the script
+(fig1, fig2, fig_conv, fig_cc) are intentionally left with their original
+appearance (local rcParams override, per-panel legends): set_thesis_style()
+is called only right before Section A begins, so it cannot affect figures
+created (and already saved) before that point.
 """
 
 import sys
@@ -33,6 +42,11 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from scipy.stats import skew, kurtosis
+
+# Import custom thesis style and saving function (used from Section A
+# onward; see STYLE NOTE above for why set_thesis_style() is not called at
+# module import time).
+from plot_style import set_thesis_style, save_fig, get_angle_color, get_angle_gradient
 
 warnings.filterwarnings("ignore", message="Precision loss occurred in moment calculation")
 
@@ -117,24 +131,88 @@ def total_variance_qubit_observable(E_k, pop_m_k, pop_n_k):
 # PLOTTING HELPERS
 # ==========================
 
-def save_fig(fig, filename, output_dir):
-    path_png = os.path.join(output_dir, f"{filename}.png")
-    fig.savefig(path_png, dpi=300, bbox_inches='tight')
-    print(f"Saved: {path_png}")
-    plt.close(fig)
-
-
 def plot_ltv_panel(ax, times, var_exact, var_stat, var_quant, var_sum, ylabel,
-                    show_legend=False, title=None):
+                    show_legend=False, theta_deg=None, legend_loc='upper right'):
+    # Colore statistico legato all'angolo (get_angle_color) e colore quantistico
+    # come sfumatura piu' chiara della stessa famiglia (get_angle_gradient),
+    # stessa convenzione usata nel file FMO. Se theta_deg non e' disponibile,
+    # fallback ai colori fissi originali (rosso/blu).
+    if theta_deg is not None:
+        stat_color = get_angle_color(theta_deg)
+        quant_color = get_angle_gradient(theta_deg, 2)[0]  # tonalita' piu' chiara della stessa famiglia
+    else:
+        stat_color = 'red'
+        quant_color = 'blue'
+
     ax.plot(times, var_exact, color='black', linewidth=3, linestyle='--', label='Total Variance (Lindblad)')
-    ax.plot(times, var_stat, color='red', linewidth=2, alpha=0.8, label='Statistical Variance')
-    ax.plot(times, var_quant, color='blue', linewidth=2, alpha=0.8, label='Quantum Variance')
+    ax.plot(times, var_stat, color=stat_color, linewidth=2, alpha=0.9, label='Statistical Variance')
+    ax.plot(times, var_quant, color=quant_color, linewidth=2, alpha=0.9, label='Quantum Variance')
     ax.plot(times, var_sum, color='limegreen', linewidth=3, linestyle=':', label='Sum (Stat + Quant)')
     ax.set_ylabel(ylabel)
-    if title:
-        ax.set_title(title)
+
     if show_legend:
-        ax.legend(loc='upper right', fontsize=8)
+        if theta_deg is not None:
+            ax.legend(title=fr"$\theta = {theta_deg}^\circ$", loc=legend_loc)
+        else:
+            ax.legend(loc=legend_loc)
+
+
+def compute_top_margin(fig_height_inches, reserved_inches=1.0, min_margin=0.5, max_margin=0.97):
+    """
+    Calcola il bordo superiore (in frazione di figura, 0-1) da riservare per
+    una legenda condivisa sopra i pannelli, in modo che l'altezza ASSOLUTA
+    riservata (in pollici) resti approssimativamente costante indipendentemente
+    dall'altezza della figura.
+    """
+    margin = 1.0 - reserved_inches / fig_height_inches
+    return min(max(margin, min_margin), max_margin)
+
+
+def add_shared_legend(fig, source_ax, theta_deg, reserved_inches=1.0):
+    """
+    Aggiunge un'UNICA legenda condivisa per l'intera figura, orizzontale su
+    una sola riga, in una fascia RISERVATA sopra i pannelli (invece di una
+    legenda dentro ogni singolo pannello, che con piu' pannelli risulta
+    ripetuta e ingombrante). Stessa convenzione usata nel file FMO.
+    """
+    fig_height = fig.get_size_inches()[1]
+    top_margin = compute_top_margin(fig_height, reserved_inches=reserved_inches)
+    handles, labels = source_ax.get_legend_handles_labels()
+    fig.tight_layout(rect=(0, 0, 1, top_margin))
+    legend_y = top_margin + (1.0 - top_margin) * 0.5 + 0.02
+    fig.legend(handles, labels, title=fr"$\theta = {theta_deg}^\circ$",
+               loc='upper center', bbox_to_anchor=(0.5, legend_y), ncol=len(handles), frameon=False)
+
+
+def add_side_legend(fig, source_ax, theta_deg, right_margin=0.78, order=None):
+    """
+    Aggiunge un'UNICA legenda condivisa a DESTRA della figura, disposta in
+    colonna verticale (una voce per riga) invece che sopra i pannelli in
+    riga orizzontale. fig.tight_layout(rect=(0, 0, right_margin, 1))
+    riserva esplicitamente lo spazio a destra, cosi' la legenda non si
+    sovrappone mai ai pannelli.
+
+    Parameters:
+    - fig          : Figure a cui aggiungere la legenda.
+    - source_ax    : Axes da cui leggere handles/labels (es. il primo pannello).
+    - theta_deg    : float, usato come titolo della legenda.
+    - right_margin : float, bordo destro (in frazione di figura) riservato
+                     ai pannelli; lo spazio restante (right_margin..1.0)
+                     ospita la legenda.
+    - order        : lista opzionale di label, nell'ordine desiderato per la
+                      legenda (es. ['Total Variance (Lindblad)',
+                      'Sum (Stat + Quant)', 'Statistical Variance',
+                      'Quantum Variance']). Se None, mantiene l'ordine di
+                      disegno delle curve.
+    """
+    handles, labels = source_ax.get_legend_handles_labels()
+    if order is not None:
+        label_to_handle = dict(zip(labels, handles))
+        handles = [label_to_handle[l] for l in order if l in label_to_handle]
+        labels = [l for l in order if l in label_to_handle]
+    fig.tight_layout(rect=(0, 0, right_margin, 1))
+    fig.legend(handles, labels, title=fr"$\theta = {theta_deg}^\circ$",
+               loc='center left', bbox_to_anchor=(right_margin + 0.02, 0.5), ncol=1, frameon=False)
 
 
 # ==========================
@@ -145,16 +223,37 @@ if len(sys.argv) > 1:
 else:
     theta_deg = 90.0
 
+# Secondo argomento da bash: seleziona la cartella dati (MODE), NON il
+# timestep dt. Il generation script scrive in una di due sottocartelle a
+# seconda del MODE usato per la simulazione: "normal" oppure "close_90_deg".
+# Valori accettati: "normal", "close_90_deg". Default "close_90_deg" se non
+# specificato (comportamento precedente).
+MODE = sys.argv[2] if len(sys.argv) > 2 else "close_90_deg"
+if MODE not in ("normal", "close_90_deg"):
+    print(f"Error: MODE '{MODE}' non riconosciuto. Valori validi: 'normal', 'close_90_deg'.")
+    sys.exit(1)
+
 # --- Must match the values used in the trajectory-generation script ---
-dt = float(sys.argv[2]) if len(sys.argv) > 2 else 0.01
+dt = 0.01
 N_traj = 20000
 
 theta_rad = np.radians(theta_deg)
 
-# NOTE: the generation script writes to one of two subfolders depending on
-# MODE ("normal" or "close_90_deg"). Adjust this line if you generated
-# data with MODE="normal" instead.
-results_dir = "../Results/Data/Complete_rho/close_90_deg/"
+# In questo caso studio la convenzione dell'angolo e' INVERTITA rispetto al
+# resto del progetto: qui theta=0 corrisponde al regime diffusivo (che
+# altrove e' theta=90) e viceversa. 'theta_deg' resta il valore REALE
+# passato da bash e va usato per caricare i dati/costruire il nome file
+# (results_dir, fname, Output_dir) SENZA modifiche. 'theta_display' e'
+# invece la versione "raddrizzata" (90 - theta_deg), usata SOLO per il
+# colore (get_angle_color/get_angle_gradient) e per il titolo theta=...
+# mostrato nelle legende, cosi' che il colore/titolo restino coerenti con
+# la convenzione standard (0=Quantum Jump/rosso, 90=Diffusivo/blu) usata
+# negli altri casi studio.
+theta_display = 90.0 - theta_deg
+
+# results_dir dipende dal MODE passato da bash (secondo argomento), invece
+# di essere fisso su "close_90_deg" come in precedenza.
+results_dir = f"../Results/Data/Complete_rho/{MODE}/"
 
 Output_dir = f"../Results/Plot/Total_Variance_Analysis/{theta_deg}"
 os.makedirs(Output_dir, exist_ok=True)
@@ -314,11 +413,19 @@ axes_cc[1].set_xlabel('Time')
 fig_cc.tight_layout()
 save_fig(fig_cc, f'Population_CrossCheck_CollisionTrace_vs_Lindblad_Theta_{theta_str}', Output_dir)
 
+# ==========================================================================
+# From here on, Sections A/B/C use the shared thesis style (theta-based
+# colors, single horizontal legend above the panels). set_thesis_style() is
+# called only now, so it cannot retroactively affect fig1/fig2/fig_conv/fig_cc
+# above (already rendered and saved before this point).
+# ==========================================================================
+set_thesis_style()
+
 # ==========================
 # A. Population LTV (single-exciton states |10>, |01>)
 # ==========================
 print("Computing Total Variance Theorem: Populations...")
-fig_pop, axes_pop = plt.subplots(2, 1, figsize=(10, 6), sharex=True)
+fig_pop, axes_pop = plt.subplots(2, 1, figsize=(10, 7), sharex=True)
 for i, (pop_traj, O_pop, label) in enumerate([(pop_10, P_10, 'Population |10>'),
                                                (pop_01, P_01, 'Population |01>')]):
     var_tot_traj, var_quant, var_stat = total_variance_projector(pop_traj)
@@ -329,11 +436,10 @@ for i, (pop_traj, O_pop, label) in enumerate([(pop_10, P_10, 'Population |10>'),
 
     plot_ltv_panel(
         axes_pop[i], times, var_tot_exact, var_stat, var_quant, var_tot_traj,
-        ylabel=label, show_legend=(i == 0),
-        title=f'Law of Total Variance - Populations (Theta = {theta_deg}°)' if i == 0 else None,
+        ylabel=label, show_legend=False, theta_deg=theta_display
     )
 axes_pop[-1].set_xlabel('Time')
-fig_pop.tight_layout()
+add_shared_legend(fig_pop, axes_pop[0], theta_display)
 save_fig(fig_pop, f'Law_Total_Variance_Populations_Theta_{theta_str}', Output_dir)
 
 # ==========================
@@ -350,14 +456,13 @@ err_real = np.max(np.abs(vt_real_exact - vt_real))
 err_imag = np.max(np.abs(vt_imag_exact - vt_imag))
 print(f"  -> Coherence |10><01| | Max Error - Real: {err_real:.2e}, Imag: {err_imag:.2e}")
 
-fig_coh, (ax_re, ax_im) = plt.subplots(2, 1, figsize=(10, 6), sharex=True)
+fig_coh, (ax_re, ax_im) = plt.subplots(2, 1, figsize=(10, 7), sharex=True)
 plot_ltv_panel(ax_re, times, vt_real_exact, vs_real, vq_real, vt_real,
-               ylabel='Re( coherence )', show_legend=True,
-               title=f'Law of Total Variance - Coherence |10><01| (Theta = {theta_deg}°)')
+               ylabel='Re( coherence )', show_legend=False, theta_deg=theta_display)
 plot_ltv_panel(ax_im, times, vt_imag_exact, vs_imag, vq_imag, vt_imag,
-               ylabel='Im( coherence )')
+               ylabel='Im( coherence )', show_legend=False, theta_deg=theta_display)
 ax_im.set_xlabel('Time')
-fig_coh.tight_layout()
+add_shared_legend(fig_coh, ax_re, theta_display)
 save_fig(fig_coh, f'Law_Total_Variance_Coherence_Theta_{theta_str}', Output_dir)
 
 # ==========================
@@ -371,20 +476,25 @@ save_fig(fig_coh, f'Law_Total_Variance_Coherence_Theta_{theta_str}', Output_dir)
 # ==========================
 print("Computing Total Variance Theorem: Bloch Vector (sigma_x, sigma_y, sigma_z)...")
 
+# sigma_z per-trajectory expectation value, ricalcolato qui esplicitamente
+# (invece di fare affidamento su Ez_k definito nel blocco dei momenti
+# statistici piu' sopra nel file): questo rende la Sezione C autosufficiente
+# anche se quel blocco viene rimosso o modificato in futuro.
+Ez_k = pop_01 - pop_10  # <sigma_z>_k per trajectory
+
 vt_z, vq_z, vs_z = total_variance_qubit_observable(Ez_k, pop_10, pop_01)
 vt_z_exact = get_exact_variance(sigma_z_op, rho_list_lindblad)
 
 err_z = np.max(np.abs(vt_z_exact - vt_z))
 print(f"  -> sigma_z Law of Total Variance max error: {err_z:.2e}")
 
-fig_bloch, axes_bloch = plt.subplots(3, 1, figsize=(10, 9), sharex=True)
+fig_bloch, axes_bloch = plt.subplots(3, 1, figsize=(14, 13), sharex=True)
 plot_ltv_panel(axes_bloch[0], times, vt_real_exact, vs_real, vq_real, vt_real,
-               ylabel='$\\langle\\sigma_x\\rangle$', show_legend=True,
-               title=f'Law of Total Variance - Bloch Vector (Theta = {theta_deg}°)')
+               ylabel='$\\langle\\sigma_x\\rangle$', show_legend=False, theta_deg=theta_display)
 plot_ltv_panel(axes_bloch[1], times, vt_imag_exact, vs_imag, vq_imag, vt_imag,
-               ylabel='$\\langle\\sigma_y\\rangle$')
+               ylabel='$\\langle\\sigma_y\\rangle$', show_legend=False, theta_deg=theta_display)
 plot_ltv_panel(axes_bloch[2], times, vt_z_exact, vs_z, vq_z, vt_z,
-               ylabel='$\\langle\\sigma_z\\rangle$')
-axes_bloch[-1].set_xlabel('Time')
-fig_bloch.tight_layout()
+               ylabel='$\\langle\\sigma_z\\rangle$', show_legend=False, theta_deg=theta_display)
+axes_bloch[-1].set_xlabel('Time [1/V]')
+add_shared_legend(fig_bloch, axes_bloch[0], theta_display)
 save_fig(fig_bloch, f'Law_Total_Variance_Bloch_Theta_{theta_str}', Output_dir)

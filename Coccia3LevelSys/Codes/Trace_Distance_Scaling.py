@@ -6,7 +6,6 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from scipy.stats import linregress
 from numba import njit
 
 # Import custom thesis style and saving function
@@ -46,17 +45,15 @@ def compute_trace_distance_series(rho_a, rho_b):
 # ==========================================
 # MAIN ANALYSIS FUNCTION
 # ==========================================
-def analyze_scaling(theta_deg, dt=0.01, max_N=10000, n_bootstraps=10):
+def analyze_scaling(theta_deg, dt=0.01, max_N=10000):
     """
     Loads data for a specific angle, computes mean and max trace distance 
-    for varying N_traj using random sampling to estimate error bars, 
-    fits the scaling in log10 space, generates the scaling plots, 
-    and plots the trace distance over time for the maximum number of trajectories.
+    for varying N_traj by taking the first N trajectories (deterministic, 
+    single pass, no repeated resampling), fits the scaling in log10 space, 
+    generates the scaling plots, and plots the trace distance over time 
+    for the maximum number of trajectories.
     """
     print(f"\n{'='*50}\nProcessing Theta = {theta_deg}°\n{'='*50}")
-    
-    # Set seed for reproducible error bars
-    np.random.seed(42)
     
     # Convert angle to match the saved filename convention (radians)
     theta_rad = np.radians(theta_deg)
@@ -114,58 +111,30 @@ def analyze_scaling(theta_deg, dt=0.01, max_N=10000, n_bootstraps=10):
     ])
     
     log_mean_td_list = []
-    log_mean_err_list = []
-    
     log_max_td_list = []
-    log_max_err_list = []
     
-    print("Computing scaling metrics and error bars via random sampling...")
+    print("Computing scaling metrics (single pass, first N trajectories)...")
     for N in N_list:
-        sample_log_means = []
-        sample_log_maxs = []
+        # Take the first N trajectories, deterministically (no random sampling,
+        # no repeated bootstrap averaging)
+        idx = np.arange(N)
         
-        current_bootstraps = 1 if N == total_available_traj else n_bootstraps
+        rho_avg_N = np.mean(rho_tot_all[idx, :, :, :], axis=0)
+        td_series = compute_trace_distance_series(rho_avg_N, rho_lindblad)
         
-        for b in range(current_bootstraps):
-            if N == total_available_traj:
-                idx = np.arange(total_available_traj)
-            else:
-                idx = np.random.choice(total_available_traj, N, replace=False)
-                
-            rho_avg_N = np.mean(rho_tot_all[idx, :, :, :], axis=0)
-            td_series = compute_trace_distance_series(rho_avg_N, rho_lindblad)
-            
-            sample_log_means.append(np.log10(np.mean(td_series)))
-            sample_log_maxs.append(np.log10(np.max(td_series)))
-            
-        log_mean_td_list.append(np.mean(sample_log_means))
-        log_mean_err_list.append(np.std(sample_log_means))
-        
-        log_max_td_list.append(np.mean(sample_log_maxs))
-        log_max_err_list.append(np.std(sample_log_maxs))
+        log_mean_td_list.append(np.log10(np.mean(td_series)))
+        log_max_td_list.append(np.log10(np.max(td_series)))
         
     log_mean_td = np.array(log_mean_td_list)
-    log_mean_err = np.array(log_mean_err_list)
-    
     log_max_td = np.array(log_max_td_list)
-    log_max_err = np.array(log_max_err_list)
     
     # ==========================================
-    # LOG10 FITTING
+    # THEORETICAL SCALING (slope = -0.5)
     # ==========================================
     log_N = np.log10(N_list)
     
-    slope_mean, int_mean, r_mean, p_mean, err_mean = linregress(log_N, log_mean_td)
-    fit_mean_log = slope_mean * log_N + int_mean
-    
-    slope_max, int_max, r_max, p_max, err_max = linregress(log_N, log_max_td)
-    fit_max_log = slope_max * log_N + int_max
-    
     theory_mean_log = -0.5 * (log_N - log_N[0]) + log_mean_td[0]
     theory_max_log = -0.5 * (log_N - log_N[0]) + log_max_td[0]
-
-    print(f"Mean TD Fit: y = {slope_mean:.4f}x + {int_mean:.4f} (R^2 = {r_mean**2:.4f})")
-    print(f"Max TD Fit: y = {slope_max:.4f}x + {int_max:.4f} (R^2 = {r_max**2:.4f})")
 
     # ==========================================
     # PLOTTING SCALING RESULTS
@@ -173,30 +142,24 @@ def analyze_scaling(theta_deg, dt=0.01, max_N=10000, n_bootstraps=10):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
     
     # --- Panel 1: Mean Trace Distance ---
-    ax1.errorbar(log_N, log_mean_td, yerr=log_mean_err, fmt='o', color='royalblue', 
-                 ecolor='royalblue', capsize=4, elinewidth=1.5, markeredgewidth=1.5, 
-                 label='Raw Data', zorder=3)
-    ax1.plot(log_N, fit_mean_log, color='red', linestyle='-', linewidth=2, 
-             label=fr'Fit: $y = {slope_mean:.2f}x {int_mean:+.2f}$', zorder=4)
-    ax1.plot(log_N, theory_mean_log, color='dimgray', linestyle='--', linewidth=1.5, 
+    ax1.plot(log_N, log_mean_td, 'o', color="#D51500", markeredgewidth=1.5, 
+              label='Raw Data', zorder=3)
+    ax1.plot(log_N, theory_mean_log, color="dimgray", linestyle='--', linewidth=1.5, 
              label=r'Theory: slope = $-0.5$', zorder=2)
     
     ax1.set_xlabel(r'$\log_{10}(N_{\mathrm{traj}})$')
-    ax1.set_ylabel(r'$\log_{10} (\langle \mathcal{T} \rangle_t)$')
-    ax1.legend(title=fr"$\theta = {theta_deg}^\circ$", loc='upper right')
+    ax1.set_ylabel(r'$\log_{10} (\langle T \rangle_t)$')
+    ax1.legend(title=fr"$\theta = {theta_deg}^\circ$", loc='lower left')
 
     # --- Panel 2: Max Trace Distance ---
-    ax2.errorbar(log_N, log_max_td, yerr=log_max_err, fmt='s', color='mediumseagreen', 
-                 ecolor='mediumseagreen', capsize=4, elinewidth=1.5, markeredgewidth=1.5, 
-                 label='Raw Data', zorder=3)
-    ax2.plot(log_N, fit_max_log, color='red', linestyle='--', linewidth=2, 
-             label=fr'Fit: $y = {slope_max:.2f}x {int_max:+.2f}$', zorder=4)
+    ax2.plot(log_N, log_max_td, 's', color="#D51500", markeredgewidth=1.5, 
+              label='Raw Data', zorder=3)
     ax2.plot(log_N, theory_max_log, color='dimgray', linestyle='--', linewidth=1.5, 
              label=r'Theory: slope = $-0.5$', zorder=2)
     
     ax2.set_xlabel(r'$\log_{10}(N_{\mathrm{traj}})$')
-    ax2.set_ylabel(r'$\log_{10} (\mathcal{T}_{\mathrm{max}})$')
-    ax2.legend(title=fr"$\theta = {theta_deg}^\circ$", loc='upper right')
+    ax2.set_ylabel(r'$\log_{10} (T_{\mathrm{max}})$')
+    ax2.legend(title=fr"$\theta = {theta_deg}^\circ$", loc='lower left')
 
     # Save scaling figure
     filename = f"Trace_Distance_Scaling_Theta_{phi_str}"

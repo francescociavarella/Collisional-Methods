@@ -63,7 +63,7 @@ do
     echo "Launching Python scripts for Theta = $THETA in background..."
     
     # (python -u $PYTHON_SCRIPT $THETA "batch_run" && python -u $PLOT_SCRIPT $THETA && python -u $HEATMAP_SCRIPT $THETA && python -u $VARIANCE_SCRIPT $THETA && python -u $TIME_SLICE_SCRIPT $THETA )  # & (add & for parallel execution, may be too expensive)
-    python -u $PLOT_SCRIPT $THETA $MODE & 
+    python -u $TOTAL_VARIANCE_SCRIPT $THETA $MODE & 
 
 done
 
